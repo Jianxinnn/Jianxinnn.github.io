@@ -13,5 +13,6 @@
     "dayTheme":"light",
     "nightTheme":"dark_colorblind",
     "showPostSource":1,
-    "bottomText":"转载请注明出处"
+    "allHead":"<script src='https://blog.meekdai.com/Gmeek/plugins/GmeekBSZ.js'></script>",
+    "script":"<script src='https://blog.meekdai.com/Gmeek/plugins/articletoc.js<script src='https://blog.meekdai.com/Gmeek/plugins/lightbox.js'></script>"
 }
