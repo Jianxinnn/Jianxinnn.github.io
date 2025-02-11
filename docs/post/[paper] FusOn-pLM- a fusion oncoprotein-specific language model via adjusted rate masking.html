@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='https://blog.meekdai.com/Gmeek/plugins/GmeekBSZ.js'></script>
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# FusOn-pLM: a fusion oncoprotein-specific language model via adjusted rate masking
+** FusOn-pLM：一种通过调整掩码率的融合癌蛋白特异性语言模型 **
+
+## 1.">
+<meta property="og:title" content="[paper] FusOn-pLM: a fusion oncoprotein-specific language model via adjusted rate masking">
+<meta property="og:description" content="# FusOn-pLM: a fusion oncoprotein-specific language model via adjusted rate masking
+** FusOn-pLM：一种通过调整掩码率的融合癌蛋白特异性语言模型 **
+
+## 1.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://Jianxinnn.github.io/post/%5Bpaper%5D%20FusOn-pLM-%20a%20fusion%20oncoprotein-specific%20language%20model%20via%20adjusted%20rate%20masking.html">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<title>[paper] FusOn-pLM: a fusion oncoprotein-specific language model via adjusted rate masking</title>
+
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">[paper] FusOn-pLM: a fusion oncoprotein-specific language model via adjusted rate masking</h1>
+<div class="title-right">
+    <a href="https://Jianxinnn.github.io" id="buttonHome" class="btn btn-invisible circle" title="home">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/Jianxinnn/Jianxinnn.github.io/issues/4" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="switch theme">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>FusOn-pLM: a fusion oncoprotein-specific language model via adjusted rate masking</h1>
+<p>** FusOn-pLM：一种通过调整掩码率的融合癌蛋白特异性语言模型 **</p>
+<h2>1. 研究背景知识</h2>
+<p>融合癌蛋白是一类由染色体易位产生的嵌合蛋白，它们是多种儿童癌症的主要驱动因素。这些蛋白质通常是<strong>内在无序的</strong>，并且缺乏可成药的口袋结构，这使得它们成为小分子和基于结构的药物设计方法都难以攻克的治疗靶点。</p>
+<p>传统的药物开发策略难以有效靶向融合癌蛋白，因此，生物制剂，如抗体、微蛋白和肽类药物，代表了有吸引力的替代治疗方案。然而，针对这些“不可成药”的蛋白，需要更先进的设计方法来实现特异性靶向。</p>
+<p>近年来，<strong>蛋白质语言模型 (pLMs)</strong> 已经成为捕获蛋白质物理化学和功能特征的强大工具。尽管如此，现有的 pLMs 尚未针对融合癌蛋白序列进行专门训练，而融合蛋白在功能和结构上都与其野生型对应物有所不同，这主要是由于它们改变的结合位点和独特的断点连接。因此，开发针对融合癌蛋白的特异性 pLM 具有重要的意义。</p>
+<h2>2. 文章概述</h2>
+<p>本文介绍了一种名为 <strong>FusOn-pLM</strong> 的新型蛋白质语言模型，它是在一个新 curated 的、全面的融合癌蛋白序列数据集 <strong>FusOn-DB</strong> 上进行微调的 pLM。为了优化特征提取和表征质量，研究者们采用了一种独特的 <strong>余弦退火掩码语言建模策略</strong>，FusOn-pLM 可以动态调整掩码率 (15%-40%)。</p>
+<p>实验结果表明，FusOn-pLM 在融合蛋白特异性任务中，例如定位预测、凝聚体形成预测和无序性预测等方面，性能超越了基线模型。更重要的是，FusOn-pLM 能够<strong>独特地预测药物抗性突变</strong>，为预测抗性机制的治疗设计提供了新的见解。总而言之，FusOn-pLM 为推进融合驱动癌症的治疗发现提供了生物学相关的表征。</p>
+<h2>3. 方法介绍</h2>
+<h3>3.1 数据集</h3>
+<ul>
+<li>
+<p><strong>FusOn-DB 数据集</strong>:  研究人员整合了来自 <strong>FusionPDB</strong> 和 <strong>FOdb</strong> 数据库的 44,414 个融合癌蛋白序列，构建了 FusOn-DB 数据集。这两个数据库分别提供了实验验证和计算预测的融合蛋白，具有临床或生物学相关性。FusOn-DB 数据集覆盖了 16,364 种独特的头尾融合。</p>
+</li>
+<li>
+<p><strong>数据预处理</strong>:  为了保证数据集的质量和非冗余性，研究人员进行了数据清洗和去重处理，并移除了长度超过 2000 个氨基酸的序列。最终用于训练的序列数量为 42,141 条。为了进行模型评估，数据集被划分为训练集 (80.01%)、验证集 (10.00%) 和测试集 (9.99%)。</p>
+</li>
+<li>
+<p><strong>ESM-2 预训练数据</strong>:  文章使用了预训练好的 <strong>ESM-2-650M</strong> 模型作为基础模型。ESM-2 是在一个包含约 6500 万个蛋白质序列的大型数据集 <strong>UniRef50</strong> 上预训练的。UniRef50 中包含了超过 9000 种已知作为融合蛋白头尾组分的野生型蛋白。</p>
+</li>
+</ul>
+<h3>3.2 算法</h3>
+<ul>
+<li>
+<p><strong>模型架构</strong>: FusOn-pLM 基于 <strong>ESM-2-650M</strong> 模型，这是一个 33 层的 Transformer 模型。为了专注于融合癌蛋白的特性，研究人员<strong>解冻了 ESM-2-650M 模型的最后八层权重</strong>进行微调，而冻结了之前的层。模型使用 <strong>掩码语言建模 (MLM)</strong> 目标进行训练。</p>
+</li>
+<li>
+<p><strong>余弦退火掩码策略</strong>:  为了增强模型学习融合蛋白独特特性的能力，研究人员引入了一种 <strong>余弦退火掩码策略</strong>。该策略在每个训练 epoch 中动态调整掩码率，从 15% 线性增加到 40%，然后再线性降低回 15%，呈余弦函数变化。这种动态掩码策略旨在平衡表征学习 (低掩码率) 和重建质量 (高掩码率)，从而优化模型性能。</p>
+</li>
+</ul>
+<h3>3.3 训练过程</h3>
+<ul>
+<li>
+<p><strong>微调</strong>:  FusOn-pLM 在 NVIDIA H100 GPU 上训练了 30 个 epochs，batch size 为 8，学习率为 3e-4。 使用 Adam 优化器，没有权重衰减。</p>
+</li>
+<li>
+<p><strong>序列长度</strong>:  训练仅使用了长度不超过 2000 个氨基酸的融合癌蛋白序列，较短的序列会被 padding 到最大长度。</p>
+</li>
+</ul>
+<h3>3.4 评估过程</h3>
+<p>研究人员通过一系列融合蛋白特异性任务评估了 FusOn-pLM 的性能，包括：</p>
+<ul>
+<li>
+<p><strong>融合蛋白特性预测</strong>:</p>
+<ul>
+<li><strong>凝聚体 (Puncta) 形成预测</strong>:  预测融合蛋白是否形成凝聚体，以及凝聚体是在细胞核、细胞质还是两者中形成。使用 XGBoost 分类器，评估指标包括准确率、精确率、召回率、F1 值和 AUROC。</li>
+<li><strong>内在无序区 (IDR) 特性预测</strong>:  预测 IDR 的四个物理性质：非球形性 (Asphericity)、末端到末端距离 (Re)、回旋半径 (Rg) 和聚合物标度指数 (Polymer Scaling Exponent)。使用多层感知机 (MLP) 回归模型，评估指标为决定系数 (R²) 和均方误差 (MSE)。</li>
+<li><strong>内在无序性预测</strong>:  预测每个氨基酸残基的无序概率。使用 Transformer 编码器分类模型 (FusOn-pLM-Diso)，评估指标包括准确率、精确率、召回率、F1 值和 AUROC，并与 CAID2 竞赛中的其他无序预测器进行比较。</li>
+</ul>
+</li>
+<li>
+<p><strong>零样本突变发现</strong>:  通过 MLM head 逐个掩盖序列中的氨基酸，并预测原始氨基酸的概率分布。评估 FusOn-pLM 在预测药物抗性突变方面的能力，针对 EML4::ALK, BCR::ABL1 和 ETV6::NTRK3 等融合蛋白，考察模型是否能将已知的抗性突变排在预测的前列。</p>
+</li>
+</ul>
+<h2>4. 研究内容与结论</h2>
+<p>文章的研究内容主要围绕 FusOn-pLM 模型的构建、训练和评估展开，旨在开发一种能够有效表征融合癌蛋白特性的蛋白质语言模型。</p>
+<p><strong>研究过程与主要发现</strong>:</p>
+<ul>
+<li>
+<p><strong>融合蛋白序列数据集的构建</strong>:  研究人员整合了 FusionPDB 和 FOdb 数据库，构建了大规模的 FusOn-DB 数据集，为模型训练提供了数据基础。对 FusOn-DB 数据集的分析表明，融合蛋白在序列和结构上都与野生型蛋白有所不同，具有更高的无序性，突出了开发专门模型的必要性。</p>
+</li>
+<li>
+<p><strong>余弦退火掩码策略的有效性</strong>:  实验结果表明，与固定掩码率相比，余弦退火掩码策略能够显著提高模型的序列重建能力和下游任务的性能。这表明动态调整掩码率有助于模型更好地学习融合蛋白的复杂特征。</p>
+</li>
+<li>
+<p><strong>FusOn-pLM 在融合蛋白特异性任务上的优越性能</strong>:  在凝聚体形成预测、定位预测和无序性预测等任务中，FusOn-pLM 的性能均优于基线模型 (ESM-2-650M, ProtT5, FOdb embeddings)。这表明 FusOn-pLM 能够生成更有效地捕获融合蛋白关键特性的表征。</p>
+</li>
+<li>
+<p><strong>FusOn-pLM 准确预测 IDR 特性</strong>:  FusOn-pLM-IDR 模型能够高精度地预测 IDR 的物理性质 (非球形性、末端到末端距离、回旋半径、聚合物标度指数) 和残基级别的无序概率，与 AlphaFold-pLDDT 衍生的无序标签高度一致。这进一步证明了 FusOn-pLM 能够有效捕捉融合蛋白的无序特性。</p>
+</li>
+<li>
+<p><strong>FusOn-pLM 零样本预测药物抗性突变</strong>:  FusOn-pLM 成功预测了 EML4::ALK, BCR::ABL1 和 ETV6::NTRK3 等融合蛋白的已知药物抗性突变，并能识别潜在的抗性突变位点。这展示了 FusOn-pLM 在药物开发和预测抗性机制方面的潜力。</p>
+</li>
+</ul>
+<p><strong>研究结论</strong>:</p>
+<p>文章的主要结论是，FusOn-pLM 是一种有效的融合癌蛋白特异性语言模型，它通过余弦退火掩码策略和在 FusOn-DB 数据集上的微调，能够生成生物学相关的表征，并在融合蛋白特异性任务中表现出色。FusOn-pLM 尤其在预测药物抗性突变方面展现出独特的优势，为融合驱动癌症的治疗设计提供了新的工具和思路。</p>
+<h2>5. 总结与评价</h2>
+<p><strong>总结</strong>:</p>
+<p>这篇文章成功地开发了一种名为 FusOn-pLM 的新型蛋白质语言模型，专门用于表征融合癌蛋白。通过构建 FusOn-DB 数据集，并采用创新的余弦退火掩码策略，FusOn-pLM 在多个融合蛋白特异性任务中取得了显著的性能提升。更重要的是，FusOn-pLM 展现了预测药物抗性突变的潜力，为融合癌蛋白的药物开发和抗性机制研究提供了新的方向。</p>
+<p><strong>评价</strong>:</p>
+<p>这篇文章具有很高的学术价值和应用前景。</p>
+<ul>
+<li>
+<p><strong>创新性</strong>:  文章提出的余弦退火掩码策略和 FusOn-pLM 模型本身都具有创新性。针对融合蛋白的特殊性进行模型定制，并取得了显著效果，体现了研究者对问题的深入理解和解决问题的能力。</p>
+</li>
+<li>
+<p><strong>数据集的价值</strong>:  FusOn-DB 数据集的构建为融合蛋白研究领域提供了宝贵的数据资源，未来可以被更广泛地应用于其他研究。</p>
+</li>
+<li>
+<p><strong>实验的充分性</strong>:  文章进行了全面的实验评估，包括多种融合蛋白特异性任务和零样本突变预测，充分验证了 FusOn-pLM 模型的有效性和泛化能力。</p>
+</li>
+<li>
+<p><strong>应用前景</strong>:  FusOn-pLM 在药物抗性突变预测方面的潜力尤其令人兴奋，未来有望应用于指导融合驱动癌症的精准治疗，加速新药开发进程。</p>
+</li>
+</ul>
+<p><strong>不足与展望</strong>:</p>
+<p>文章作者也指出了 FusOn-pLM 的一些局限性，例如数据集的多样性、长序列的处理能力以及对驱动突变和调控元件的预测能力等。未来的研究可以从以下几个方面进一步拓展：</p>
+<ul>
+<li><strong>扩大和完善 FusOn-DB 数据集</strong>:  纳入更多来源的数据，提高数据集的多样性和覆盖面。</li>
+<li><strong>优化模型架构</strong>:  探索更高效的模型架构和训练方法，以处理更长的序列，并提高模型的性能。</li>
+<li><strong>探索更多应用</strong>:  将 FusOn-pLM 应用于驱动突变预测、调控元件关联等更多融合蛋白相关的任务，并进行实验验证。</li>
+<li><strong>结合实验验证</strong>:  加强与实验研究的结合，验证 FusOn-pLM 预测的药物抗性突变，并探索其在治疗设计中的实际应用价值。</li>
+</ul>
+<p>总而言之，FusOn-pLM 的成功开发是融合蛋白研究领域的一个重要进展，为理解和治疗融合驱动癌症提供了新的有力工具。随着未来研究的深入，FusOn-pLM 有望在精准医学领域发挥更大的作用。</p>
+<hr>
+<h1>Reference</h1>
+<p><a href="https://www.nature.com/articles/s41467-025-56745-6" rel="nofollow">https://www.nature.com/articles/s41467-025-56745-6</a></p></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">comments</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://Jianxinnn.github.io">Jianxin-AI4S</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="run "+diffDay+" days"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","Jianxinnn/Jianxinnn.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+
+
+</script>
+<script src='https://blog.meekdai.com/Gmeek/plugins/articletoc.js<script src='https://blog.meekdai.com/Gmeek/plugins/lightbox.js'></script>
+
+</html>
