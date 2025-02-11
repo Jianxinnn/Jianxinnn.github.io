@@ -1,9 +1,19 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Jianxin-AI4S</title><link>https://Jianxinnn.github.io</link><description>Ad astra per aspera</description><copyright>Jianxin-AI4S</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.githubassets.com/favicons/favicon.svg</url><title>avatar</title><link>https://Jianxinnn.github.io</link></image><lastBuildDate>Tue, 11 Feb 2025 03:47:09 +0000</lastBuildDate><managingEditor>Jianxin-AI4S</managingEditor><ttl>60</ttl><webMaster>Jianxin-AI4S</webMaster><item><title>[Arxiv] s1: Simple test-time scaling</title><link>https://Jianxinnn.github.io/post/%5BArxiv%5D%20s1-%20Simple%20test-time%20scaling.html</link><description># s1: Simple Test-time Scaling
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Jianxin-AI4S</title><link>https://Jianxinnn.github.io</link><description>Ad astra per aspera</description><copyright>Jianxin-AI4S</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.githubassets.com/favicons/favicon.svg</url><title>avatar</title><link>https://Jianxinnn.github.io</link></image><lastBuildDate>Tue, 11 Feb 2025 03:48:21 +0000</lastBuildDate><managingEditor>Jianxin-AI4S</managingEditor><ttl>60</ttl><webMaster>Jianxin-AI4S</webMaster><item><title>[Arxiv] s1: Simple test-time scaling</title><link>https://Jianxinnn.github.io/post/%5BArxiv%5D%20s1-%20Simple%20test-time%20scaling.html</link><description># 具有一致性保证的功能蛋白质挖掘
 
-## 背景知识
+## 背景介绍
 
-近年来，大型语言模型（LLMs）的性能提升主要依赖于训练时计算量的增加，通过大规模的自监督预训练实现（Kaplan et al.</description><guid isPermaLink="true">https://Jianxinnn.github.io/post/%5BArxiv%5D%20s1-%20Simple%20test-time%20scaling.html</guid><pubDate>Tue, 11 Feb 2025 03:46:47 +0000</pubDate></item><item><title>[Arxiv] s1: Simple test-time scaling</title><link>https://Jianxinnn.github.io/post/%5BArxiv%5D%20s1-%20Simple%20test-time%20scaling.html</link><description># s1: Simple Test-time Scaling
+在蛋白质结构预测的时代，我们有很多机会去注释蛋白质的功能。蛋白质同源性在功能注释中起着核心作用，它提供了关于蛋白质功能和进化轨迹的重要见解。蛋白质同源物是指具有共同进化起源的蛋白质，由于基因复制或物种形成事件，它们通常在序列、结构或功能上表现出相似性。同源性为预测新发现的蛋白质的功能和理解各种生物过程的分子机制提供了一个有价值的框架。
+
+然而，很少有可靠的方法可以用来内省和评估这些注释的质量，这对于选择哪些蛋白质通过实验或计算机方法进一步表征至关重要。
+
+## 研究内容概述
+
+本文介绍了一种基于一致性预测（conformal prediction）的统计学原理的蛋白质搜索方法。该方法提供了一个框架，可以在用户指定的风险下确保统计保证，并为任何蛋白质搜索模型提供校准的概率（而不是原始机器学习分数）。
+
+本文的方法主要有三个方面的优势：
+
+1.</description><guid isPermaLink="true">https://Jianxinnn.github.io/post/%5BArxiv%5D%20s1-%20Simple%20test-time%20scaling.html</guid><pubDate>Tue, 11 Feb 2025 03:46:47 +0000</pubDate></item><item><title>[Arxiv] s1: Simple test-time scaling</title><link>https://Jianxinnn.github.io/post/%5BArxiv%5D%20s1-%20Simple%20test-time%20scaling.html</link><description># s1: Simple Test-time Scaling
 
 ## 背景知识
 
