@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='https://blog.meekdai.com/Gmeek/plugins/GmeekBSZ.js'></script>
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# s1: Simple Test-time Scaling
+
+## 背景知识
+
+近年来，大型语言模型（LLMs）的性能提升主要依赖于训练时计算量的增加，通过大规模的自监督预训练实现（Kaplan et al.">
+<meta property="og:title" content="[Arxiv] s1: Simple test-time scaling">
+<meta property="og:description" content="# s1: Simple Test-time Scaling
+
+## 背景知识
+
+近年来，大型语言模型（LLMs）的性能提升主要依赖于训练时计算量的增加，通过大规模的自监督预训练实现（Kaplan et al.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://Jianxinnn.github.io/post/%5BArxiv%5D%20s1-%20Simple%20test-time%20scaling.html">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<title>[Arxiv] s1: Simple test-time scaling</title>
+
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">[Arxiv] s1: Simple test-time scaling</h1>
+<div class="title-right">
+    <a href="https://Jianxinnn.github.io" id="buttonHome" class="btn btn-invisible circle" title="home">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/Jianxinnn/Jianxinnn.github.io/issues/6" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="switch theme">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>s1: Simple Test-time Scaling</h1>
+<h2>背景知识</h2>
+<p>近年来，大型语言模型（LLMs）的性能提升主要依赖于训练时计算量的增加，通过大规模的自监督预训练实现（Kaplan et al., 2020; Hoffmann et al., 2022）。这些强大模型的出现为一种新的扩展范式奠定了基础：测试时扩展（test-time scaling）。这种方法的目的是在测试时增加计算量以获得更好的结果。</p>
+<p>最近，OpenAI 的 o1 模型展示了这种能力，但没有公开分享其方法，导致了许多人尝试复现。测试时扩展是一种有前途的新方法，它通过在测试时增加额外计算来提高语言模型的性能。</p>
+<h2>研究概述</h2>
+<p>本文旨在寻找实现测试时扩展和强推理性能的最简单方法。</p>
+<p>首先，作者们策划了一个名为 s1K 的小型数据集，其中包含 1000 个问题，这些问题配有推理过程，这些推理过程基于三个标准：难度、多样性和质量。</p>
+<p>其次，开发了一种名为“预算强制”（budget forcing）的技术，通过强制终止模型的思考过程或通过在模型试图结束时多次附加“Wait”来延长思考过程，从而控制测试时的计算量。这可以引导模型复核其答案，经常修复不正确的推理步骤。</p>
+<p>在 s1K 数据集上对 Qwen2.5-32B-Instruct 语言模型进行监督微调，并结合预算强制技术后，得到的模型 s1-32B 在竞赛数学问题上的表现比 o1-preview 高出 27%（在 MATH 和 AIME24 数据集上）。此外，通过预算强制对 s1-32B 进行扩展，使其性能超越了没有测试时干预的性能：在 AIME24 数据集上从 50% 提升到 57%。</p>
+<h2>方法</h2>
+<h3>数据集</h3>
+<p>s1K 数据集包含 1000 个精心策划的问题，配有推理轨迹和答案。这些问题和答案来自于 Gemini Thinking Experimental (Google, 2024)。作者通过消融实验验证了难度、多样性和质量这三个标准。</p>
+<ul>
+<li><strong>质量</strong>：首先删除任何存在 API 错误的 questions，将数据集减少到 54,116 个样本。然后，通过检查是否存在格式问题的字符串模式（如 ASCII 艺术图、不存在的图像引用或不一致的问题编号）来过滤低质量样本，将数据集减少到 51,581 个样本。</li>
+<li><strong>难度</strong>：使用两个指标：模型性能和推理轨迹长度。在每个问题上评估两个模型：Qwen2.5-7B-Instruct 和 Qwen2.5-32B-Instruct (Qwen et al., 2024)，并由 Claude 3.5 Sonnet 评估其正确性。测量每个推理轨迹的 token 长度，以指示问题的难度。</li>
+<li><strong>多样性</strong>：为了量化多样性，作者使用 Claude 3.5 Sonnet 根据美国数学学会的数学学科分类（MSC）系统将每个问题分类到特定领域。</li>
+</ul>
+<h3>算法：Budget Forcing</h3>
+<p>预算强制是一种简单的解码时干预方法，通过在测试时强制执行最大和/或最小数量的思维 token 来实现。具体来说，通过简单地附加思维结束 token 分隔符和“Final Answer:”来强制执行最大 token 数，以提前退出思维阶段，并使模型提供其当前的最佳答案。为了强制执行最小值，将抑制思维结束 token 分隔符的生成，并可选地将字符串“Wait”附加到模型的当前推理轨迹中，以鼓励模型反思其当前生成。</p>
+<h3>训练过程</h3>
+<p>在 Qwen2.5-32B-Instruct 模型上进行了监督微调（SFT），使用了 s1K 数据集，获得了 s1-32B 模型。微调过程在 16 个 NVIDIA H100 GPU 上进行，使用 PyTorch FSDP，耗时 26 分钟。</p>
+<h2>实验</h2>
+<h3>实验设计</h3>
+<p>为了验证他们的方法，作者在三个具有代表性的推理基准上对s1-32B进行了测试：</p>
+<ul>
+<li><strong>AIME24</strong>：包含2024年美国邀请数学考试（AIME）中的30个问题，测试内容包括算术、代数、计数、几何、数论、概率和其他中学数学知识。</li>
+<li><strong>MATH500</strong>：包含难度各异的竞赛数学题。</li>
+<li><strong>GPQA Diamond</strong>：包含生物、化学和物理领域的198个博士级科学问题。</li>
+</ul>
+<p>作者将s1-32B与其他几个模型进行了比较，包括：</p>
+<ul>
+<li><strong>OpenAI o1系列</strong>：这些模型推广了测试时扩展的理念。</li>
+<li><strong>DeepSeek r1系列</strong>：具有与o1相当性能的推理模型。</li>
+<li><strong>Qwen的QwQ-32B-preview</strong>：一个32B的reasoning模型。</li>
+<li><strong>Google Gemini 2.0 Flash Thinking Experimental</strong>：用于构建s1K数据集的模型。</li>
+</ul>
+<h3>实验结果</h3>
+<ul>
+<li><strong>测试时扩展</strong>：图1显示，s1-32B的性能随着测试时计算的增加而提高。</li>
+<li><strong>样本效率</strong>：图2（右）和表1表明，s1-32B是最具样本效率的reasoning模型。尽管只对额外的1000个样本进行了训练，s1-32B的表现明显优于其基础模型（Qwen2.5-32B-Instruct）。</li>
+<li><strong>消融实验</strong>：通过消融实验证明数据数量、多样性和难度三个标准的重要性。</li>
+</ul>
+<h2>总结与评价</h2>
+<p>总的来说，这篇文章展示了一种简单而有效的方法来实现测试时扩展和强大的推理性能。通过精心策划的小数据集和简单的测试时技术，s1-32B 模型在多个推理基准测试中取得了优异的性能，甚至可以与更大、更复杂的模型相媲美。</p>
+<p>文章的优点在于：</p>
+<ol>
+<li><strong>方法简单有效</strong>：仅需 1000 个样本的监督微调，结合预算强制技术，就实现了强大的推理性能和测试时扩展能力。</li>
+<li><strong>开源</strong>：模型、数据和代码都是开源的，这有助于推动社区对测试时扩展的研究。</li>
+<li><strong>实验充分</strong>：文章进行了大量的消融实验，验证了数据选择标准和测试时扩展方法的有效性。</li>
+</ol>
+<p>文章的不足之处在于：</p>
+<ol>
+<li><strong>依赖 Gemini</strong>：s1K 数据集是通过 Gemini Thinking Experimental API 生成的，这可能限制了数据集的多样性和独立性。</li>
+<li><strong>预算强制的局限性</strong>：虽然预算强制可以有效地控制测试时计算量，但它可能无法充分利用模型的潜力，尤其是在处理更复杂的问题时。</li>
+</ol>
+<p>总之，这是一篇很有意思的文章，它提出了一种简单而有效的方法来增强语言模型的推理能力。它为未来的研究提供了新的思路，并为开发更强大的语言模型提供了有益的参考。</p>
+<h2>Links</h2>
+<p>paper link: <a href="https://arxiv.org/abs/2501.19393" rel="nofollow">https://arxiv.org/abs/2501.19393</a></p>
+<p>github link: <a href="https://github.com/simplescaling/s1">https://github.com/simplescaling/s1</a></p></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">comments</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://Jianxinnn.github.io">Jianxin-AI4S</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="run "+diffDay+" days"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","Jianxinnn/Jianxinnn.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+
+
+</script>
+<script src='https://blog.meekdai.com/Gmeek/plugins/articletoc.js<script src='https://blog.meekdai.com/Gmeek/plugins/lightbox.js'></script>
+
+</html>
