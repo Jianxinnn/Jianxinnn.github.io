@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='https://blog.meekdai.com/Gmeek/plugins/GmeekBSZ.js'></script>
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# 从头设计TLR3蛋白迷你结合激动剂
+
+## 背景介绍
+
+**Toll样受体（Toll-like Receptors, TLRs）** 是先天免疫系统中的关键模式识别受体，它们如同哨兵一样，负责识别病原体相关的分子模式。在人体中，有10种TLRs，每一种都能识别不同的病原体相关分子模式，这些模式是微生物病原体区别于宿主自身的保守结构或化学特征。
+
+TLRs是I型跨膜蛋白，由胞外域、单个跨膜螺旋和胞内Toll/IL-1受体（TIR）结构域组成。胞外域负责配体识别，包含多个富含亮氨酸的重复序列（LRRs），形成马蹄形结构。配体结合驱动TLR二聚化，有时还会进一步组装成多聚体复合物。多聚化导致TIR结构域招募接头分子，激活下游信号通路，如核因子-κB（NF-kB）和干扰素调节因子（IRF）3和7。这些信号通路的激活导致促炎细胞因子、趋化因子和I型干扰素的产生。先天免疫反应的精确性质深刻影响着后续的适应性免疫，因此，靶向调节先天免疫通路是提高疫苗性能的一个有希望的机会。
+
+**TLR3**是其中的一种模式识别受体，它在识别到双链RNA（dsRNA）后启动抗病毒免疫反应。 TLR3 在包括骨髓树突状细胞、巨噬细胞、NK 细胞和上皮细胞在内的多种细胞的内体中表达。它是 I 型干扰素的强诱导剂，也是唯一不依赖 MyD88 的 TLR，通过 TRIF 接头蛋白启动下游信号传导。此外，TLR3 在交叉提呈中起重要作用。
+
+## 研究概述
+
+文章介绍了一个利用计算蛋白质设计方法开发新型迷你蛋白的研究，这些迷你蛋白能够以纳摩尔级别的亲和力结合人类 TLR3。
+
+研究人员首先通过计算机模拟设计了能够与 TLR3 结合的迷你蛋白，随后通过冷冻电镜技术解析了其中两种迷你蛋白与 TLR3 复合物的结构，验证了设计的准确性。
+
+然后通过实验发现：这些迷你Binder的多价形式可以在 TLR3 表达细胞系中诱导 NF-kB 信号传导，显示出它们可能具有治疗相关的生物活性。
+
+## 方法
+
+### 数据集
+
+这项研究没有使用特定的公开数据集，而是通过计算设计和实验筛选产生了新的数据。
+
+### 算法
+
+1.">
+<meta property="og:title" content="[Nature Communication] De novo design of protein minibinder agonists of TLR3">
+<meta property="og:description" content="# 从头设计TLR3蛋白迷你结合激动剂
+
+## 背景介绍
+
+**Toll样受体（Toll-like Receptors, TLRs）** 是先天免疫系统中的关键模式识别受体，它们如同哨兵一样，负责识别病原体相关的分子模式。在人体中，有10种TLRs，每一种都能识别不同的病原体相关分子模式，这些模式是微生物病原体区别于宿主自身的保守结构或化学特征。
+
+TLRs是I型跨膜蛋白，由胞外域、单个跨膜螺旋和胞内Toll/IL-1受体（TIR）结构域组成。胞外域负责配体识别，包含多个富含亮氨酸的重复序列（LRRs），形成马蹄形结构。配体结合驱动TLR二聚化，有时还会进一步组装成多聚体复合物。多聚化导致TIR结构域招募接头分子，激活下游信号通路，如核因子-κB（NF-kB）和干扰素调节因子（IRF）3和7。这些信号通路的激活导致促炎细胞因子、趋化因子和I型干扰素的产生。先天免疫反应的精确性质深刻影响着后续的适应性免疫，因此，靶向调节先天免疫通路是提高疫苗性能的一个有希望的机会。
+
+**TLR3**是其中的一种模式识别受体，它在识别到双链RNA（dsRNA）后启动抗病毒免疫反应。 TLR3 在包括骨髓树突状细胞、巨噬细胞、NK 细胞和上皮细胞在内的多种细胞的内体中表达。它是 I 型干扰素的强诱导剂，也是唯一不依赖 MyD88 的 TLR，通过 TRIF 接头蛋白启动下游信号传导。此外，TLR3 在交叉提呈中起重要作用。
+
+## 研究概述
+
+文章介绍了一个利用计算蛋白质设计方法开发新型迷你蛋白的研究，这些迷你蛋白能够以纳摩尔级别的亲和力结合人类 TLR3。
+
+研究人员首先通过计算机模拟设计了能够与 TLR3 结合的迷你蛋白，随后通过冷冻电镜技术解析了其中两种迷你蛋白与 TLR3 复合物的结构，验证了设计的准确性。
+
+然后通过实验发现：这些迷你Binder的多价形式可以在 TLR3 表达细胞系中诱导 NF-kB 信号传导，显示出它们可能具有治疗相关的生物活性。
+
+## 方法
+
+### 数据集
+
+这项研究没有使用特定的公开数据集，而是通过计算设计和实验筛选产生了新的数据。
+
+### 算法
+
+1.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://Jianxinnn.github.io/post/%5BNature%20Communication%5D%20De%20novo%20design%20of%20protein%20minibinder%20agonists%20of%20TLR3.html">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<title>[Nature Communication] De novo design of protein minibinder agonists of TLR3</title>
+
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">[Nature Communication] De novo design of protein minibinder agonists of TLR3</h1>
+<div class="title-right">
+    <a href="https://Jianxinnn.github.io" id="buttonHome" class="btn btn-invisible circle" title="home">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/Jianxinnn/Jianxinnn.github.io/issues/5" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="switch theme">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>从头设计TLR3蛋白迷你结合激动剂</h1>
+<h2>背景介绍</h2>
+<p><strong>Toll样受体（Toll-like Receptors, TLRs）</strong> 是先天免疫系统中的关键模式识别受体，它们如同哨兵一样，负责识别病原体相关的分子模式。在人体中，有10种TLRs，每一种都能识别不同的病原体相关分子模式，这些模式是微生物病原体区别于宿主自身的保守结构或化学特征。</p>
+<p>TLRs是I型跨膜蛋白，由胞外域、单个跨膜螺旋和胞内Toll/IL-1受体（TIR）结构域组成。胞外域负责配体识别，包含多个富含亮氨酸的重复序列（LRRs），形成马蹄形结构。配体结合驱动TLR二聚化，有时还会进一步组装成多聚体复合物。多聚化导致TIR结构域招募接头分子，激活下游信号通路，如核因子-κB（NF-kB）和干扰素调节因子（IRF）3和7。这些信号通路的激活导致促炎细胞因子、趋化因子和I型干扰素的产生。先天免疫反应的精确性质深刻影响着后续的适应性免疫，因此，靶向调节先天免疫通路是提高疫苗性能的一个有希望的机会。</p>
+<p><strong>TLR3</strong>是其中的一种模式识别受体，它在识别到双链RNA（dsRNA）后启动抗病毒免疫反应。 TLR3 在包括骨髓树突状细胞、巨噬细胞、NK 细胞和上皮细胞在内的多种细胞的内体中表达。它是 I 型干扰素的强诱导剂，也是唯一不依赖 MyD88 的 TLR，通过 TRIF 接头蛋白启动下游信号传导。此外，TLR3 在交叉提呈中起重要作用。</p>
+<h2>研究概述</h2>
+<p>文章介绍了一个利用计算蛋白质设计方法开发新型迷你蛋白的研究，这些迷你蛋白能够以纳摩尔级别的亲和力结合人类 TLR3。</p>
+<p>研究人员首先通过计算机模拟设计了能够与 TLR3 结合的迷你蛋白，随后通过冷冻电镜技术解析了其中两种迷你蛋白与 TLR3 复合物的结构，验证了设计的准确性。</p>
+<p>然后通过实验发现：这些迷你Binder的多价形式可以在 TLR3 表达细胞系中诱导 NF-kB 信号传导，显示出它们可能具有治疗相关的生物活性。</p>
+<h2>方法</h2>
+<h3>数据集</h3>
+<p>这项研究没有使用特定的公开数据集，而是通过计算设计和实验筛选产生了新的数据。</p>
+<h3>算法</h3>
+<ol>
+<li><strong>RifDock</strong>：用于设计候选 TLR3 迷你结合蛋白的Rosetta RifDock 流程。</li>
+<li><strong>RifGen</strong>: 用于将无侧链的氨基酸侧链停靠到TLR3的两个目标位点（Site A和Site B）</li>
+<li><strong>PatchDock</strong>: 并行地将21,402个预先存在的蛋白质骨架（包含多种3-螺旋束）停靠到相同的位点。</li>
+<li><strong>Rosetta FastDesign</strong>: 对RifDock输出的停靠点进行氨基酸序列设计。</li>
+<li><strong>Motif-Graft</strong>: 用于提取最佳评分界面，并进行第二轮FastDesign。</li>
+</ol>
+<h3>评估</h3>
+<p>对设计的迷你蛋白进行了多轮筛选和评估：</p>
+<ol>
+<li><strong>计算评估</strong>：根据预测的结合能（ddG）、接触分子表面与疏水残基的比例以及空间聚集倾向（SAP）对设计进行评估。</li>
+<li><strong>实验筛选</strong>：
+<ul>
+<li><strong>酵母表面展示</strong>：将设计的迷你蛋白展示在酵母表面，利用荧光激活细胞分选（FACS）技术筛选能够结合荧光标记的TLR3胞外域的细胞。</li>
+<li><strong>亲和力测定</strong>：使用生物膜干涉技术（BLI）测定迷你蛋白与hTLR3的结合亲和力。</li>
+<li><strong>位点饱和突变</strong>：对每个迷你蛋白的结合界面进行位点饱和突变，通过深度测序和热图分析确定每个位置上不同氨基酸对结合亲和力的影响。</li>
+<li><strong>结构表征</strong>：利用冷冻电镜技术解析迷你蛋白与TLR3复合物的结构，验证设计的准确性。</li>
+</ul>
+</li>
+</ol>
+<h2>实验设计、过程与结果</h2>
+<h3>TLR3 迷你结合蛋白的计算设计</h3>
+<p>研究人员首先确定了 TLR3 上适合设计迷你结合蛋白的两个潜在位点：Site A 和 Site B。Site A 位于 LRR 19-22 的凹面，包含疏水残基 Ile510、Ile534、Ile566 和 Ile590；Site B 位于 LRR 9-11 的凸面，包含 Leu243、Leu269、Trp273 和 Trp296。</p>
+<p>研究人员利用 Rosetta RifDock 流程，设计了一个包含候选 TLR3 迷你结合蛋白的文库。他们首先使用 RifGen 将无侧链的氨基酸侧链停靠到这两个位点，并同时使用 PatchDock 将预先存在的蛋白质骨架停靠到相同位点。然后，他们使用 Rosetta FastDesign 对 RifDock 输出的停靠点进行氨基酸序列设计，并根据多个指标对设计进行评估和筛选。最终，他们选择了 23,789 个设计进行实验表征。</p>
+<h3>实验筛选与表征</h3>
+<p>研究人员将设计的迷你蛋白基因克隆到酵母表面展示载体中，并通过 FACS 技术筛选能够结合 TLR3 的克隆。经过多轮筛选，他们获得了 11 个能够结合 TLR3 的迷你蛋白，这些蛋白都靶向 Site A。</p>
+<p>为了进一步表征这些迷你蛋白，研究人员将它们在大肠杆菌中表达并纯化，然后使用 BLI 技术测定它们与 hTLR3 的结合亲和力。结果显示，其中 6 个迷你蛋白与 hTLR3 的结合亲和力在 43-1500 nM 之间。</p>
+<h3>亲和力成熟</h3>
+<p>为了提高迷你蛋白的结合亲和力，研究人员对它们进行了位点饱和突变和组合突变。通过深度测序和热图分析，他们确定了能够提高结合亲和力的突变位点，并构建了组合突变文库。经过多轮筛选，他们获得了亲和力显著提高的迷你蛋白变体。</p>
+<h3>结构表征</h3>
+<p>研究人员选择了其中两个亲和力最高的迷你蛋白变体（7.7 和 8.6），利用冷冻电镜技术解析了它们与 TLR3 复合物的结构。结果显示，这两个迷你蛋白都与 TLR3 的 Site A 结合，但结合模式略有不同。Minibinder 8.6 的三个螺旋都与 TLR3 紧密结合，而 minibinder 7.7 的第三个螺旋由于与附近的 N-连接聚糖发生空间冲突而部分解折叠。</p>
+<h3>激活 TLR3 信号通路</h3>
+<p>为了验证这些迷你蛋白是否能够激活 TLR3 信号通路，研究人员构建了它们的多价形式，并在 TLR3 表达细胞系中进行了测试。结果显示，多价形式的迷你蛋白能够显著激活 NF-kB 信号通路，表明它们具有激动剂活性。</p>
+<h2>总结与评价</h2>
+<p>这项研究利用计算蛋白质设计方法成功开发了能够结合并激活 TLR3 的新型迷你蛋白。这些迷你蛋白具有纳摩尔级别的亲和力，并且能够通过多价化形式有效激活 TLR3 信号通路。这项研究为开发基于蛋白质的 TLR 激动剂提供了一个新的思路，也展示了计算蛋白质设计在开发新型生物制剂方面的潜力。</p>
+<p>这篇文章的实验设计比较合理，对数据的分析也比较到位。主要的结果都通过了不同的实验给予了验证。比如，通过计算预测可能的结合模式，通过筛选和突变找到了更优的结合蛋白，又通过冷冻电镜验证了蛋白结合的模式。最后通过细胞实验验证了蛋白的功能。每一步都有很强的证据支持。</p>
+<p>但是，这篇文章的设计的蛋白只结合了 TLR3 的一个区域，而且其中一个 Minibinder (7.7) 会和聚糖有相互作用，这可能会对蛋白的功能有影响。此外，文章中没有提及这些设计的蛋白是否在动物模型中有效，这可能是未来研究的一个方向。</p>
+<p>总之，这是一项有创新性的研究，它为开发新型 TLR3 激动剂提供了一个有希望的起点。</p>
+<h2>文章链接</h2>
+<ul>
+<li><strong>文章链接</strong>: <a href="https://doi.org/10.1038/s41467-025-56369-w" rel="nofollow">https://doi.org/10.1038/s41467-025-56369-w</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">comments</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://Jianxinnn.github.io">Jianxin-AI4S</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="run "+diffDay+" days"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","Jianxinnn/Jianxinnn.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+
+
+</script>
+<script src='https://blog.meekdai.com/Gmeek/plugins/articletoc.js<script src='https://blog.meekdai.com/Gmeek/plugins/lightbox.js'></script>
+
+</html>
