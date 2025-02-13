@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='https://blog.meekdai.com/Gmeek/plugins/GmeekBSZ.js'></script>
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="### 1.">
+<meta property="og:title" content="[AAAI 25] Controllable Protein Sequence Generation with LLM Preference Optimization">
+<meta property="og:description" content="### 1.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://Jianxinnn.github.io/post/%5BAAAI%2025%5D%20Controllable%20Protein%20Sequence%20Generation%20with%20LLM%20Preference%20Optimization.html">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<title>[AAAI 25] Controllable Protein Sequence Generation with LLM Preference Optimization</title>
+
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">[AAAI 25] Controllable Protein Sequence Generation with LLM Preference Optimization</h1>
+<div class="title-right">
+    <a href="https://Jianxinnn.github.io" id="buttonHome" class="btn btn-invisible circle" title="home">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/Jianxinnn/Jianxinnn.github.io/issues/9" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="switch theme">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h3>1. 背景知识</h3>
+<p>蛋白质设计是生物医药领域的一个重要研究方向，旨在创建具有特定生物化学功能的蛋白质。这在药物发现、疫苗设计和酶工程等领域具有广阔的应用前景。近年来，预训练的蛋白质大语言模型（LLMs）在蛋白质序列生成方面表现出巨大潜力。然而，如何有效地控制LLM生成具有特定属性（例如，功能和结构稳定性）的蛋白质序列仍然是一个挑战。现有的方法在功能性和结构稳定性方面表现不佳，尤其是在需要同时控制多个属性时。结构稳定性是指蛋白质能够正确折叠成稳定三维结构的能力，这对于其功能的发挥至关重要。</p>
+<h3>2. 文章概述</h3>
+<p>本文提出了一种名为 <strong>CtrlProt</strong> 的新型可控蛋白质设计方法。该方法通过一种新的多列表偏好优化策略（multi-listwise preference optimization strategy）来微调蛋白质LLM，从而提高生成质量并支持多属性可控生成。实验结果表明，CtrlProt 能够有效地满足功能性和结构稳定性要求，在单属性和多属性蛋白质序列生成方面均实现了最先进的性能。</p>
+<h3>3. 方法详解</h3>
+<ul>
+<li>
+<p><strong>数据集</strong>：</p>
+<ul>
+<li>文章从UniProtKB数据库中提取了带有基因本体论（Gene Ontology, GO）术语的蛋白质序列，并从AlphaFold蛋白质结构数据库中获取了相应的结构。</li>
+<li>选择了六个GO术语作为属性进行研究，这些术语来自三个不同的方面：
+<ul>
+<li>分子功能本体（MFO）：金属离子结合（metal ion binding）和RNA结合（RNA binding）。</li>
+<li>生物过程本体（BPO）：磷酸化（phosphorylation）和翻译（translation）。</li>
+<li>细胞组分本体（CCO）：细胞质（cytoplasm）和细胞核（nucleus）。</li>
+</ul>
+</li>
+<li>每个属性包含1万个蛋白质序列用于训练。</li>
+</ul>
+</li>
+<li>
+<p><strong>算法</strong>：</p>
+<ul>
+<li>
+<p>CtrlProt方法的核心是多列表偏好优化。该方法基于以下几个关键步骤：</p>
+<ol>
+<li>
+<strong>有监督的微调（Supervised Finetuning）</strong>: 使用prefix-tuning（前缀调优）方法在LLM上对每个属性进行微调。Prefix-tuning通过在输入序列前添加可训练的前缀来引导LLM生成具有特定属性的序列。</li>
+<li>
+<strong>DPO数据构建（DPO Data Construction）</strong>: 从微调后的模型中生成大量的候选序列，并使用功能性和稳定性指标对这些序列进行评估。</li>
+<li>
+<strong>多列表偏好优化（Multi-listwise Preference Optimization）</strong>: 利用DPO构建的数据集，使用多列表偏好优化损失函数来进一步微调LLM。</li>
+</ol>
+</li>
+<li>
+<p>文章使用ProtGPT2作为基础LLM。</p>
+</li>
+<li>
+<p>训练过程：</p>
+<ul>
+<li>Prefix-tuning：批量大小为16，学习率为1e-4，前缀令牌数为100。</li>
+<li>偏好优化：每个属性使用5k对序列，学习率为5e-5，β=0.1，α=0.05。</li>
+<li>最大生成长度为400。</li>
+</ul>
+</li>
+<li>
+<p>评估指标：</p>
+<ul>
+<li>CLS-score：使用在评估集上微调的ESM-2模型作为分类器，将分类概率作为分类器得分。</li>
+<li>TM-score和RMSD：使用Foldseek评估与评估集的结构相似性。</li>
+<li>pLDDT：预测的局部距离差异测试，用于评估蛋白质结构预测的置信度。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>损失函数</strong>：</p>
+<ul>
+<li>
+<p><strong>有监督的微调损失</strong>：<br>
+$$<br>
+L_{sft} = - \sum_{i=1}^{k} log , p_{\theta} (a_i | a_{&lt;i}, P_A)<br>
+$$<br>
+其中，$P_A$表示与属性$A$相关的前缀，$a_i$表示蛋白质序列中的第$i$个氨基酸，$a_{&lt;i}$表示$a_i$之前的氨基酸序列，$p_{\theta}$是LLM。</p>
+</li>
+<li>
+<p><strong>多列表偏好优化损失</strong>：<br>
+$$<br>
+L_{MLPO} (\pi_{\theta}; \pi_{ref}) = -E_{(x, y_w, y_l) \sim D} \left[ log , \sigma \left( \beta \left( r^<em>(x, y_w) - r^</em>(x, y_l) \right) - \alpha (\rho(y_w) - \rho(y_l)) \right) \right]<br>
+$$</p>
+<p>其中：</p>
+<ul>
+<li>
+$L_{MLPO}$是多列表偏好优化损失。</li>
+<li>
+$E_{(x, y_w, y_l) \sim D}$表示在数据集$D$上的期望。$x$是输入，$y_w$是preferred序列，$y_l$ 是rejected序列。</li>
+<li>
+$\sigma$是sigmoid函数。</li>
+<li>
+$\beta$是温度参数，控制偏好的强度。</li>
+<li>
+$r^*(x, y)$是奖励函数，使用KL散度计算。</li>
+<li>
+$\alpha$是调整强度。$\alpha (\rho(y_w) - \rho(y_l))$表示偏好优化对之间的差异，并且作为一个正则项影响训练过程。</li>
+<li>
+$\rho(y)$是质量得分函数，用于评估蛋白质序列的质量。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>4. 实验过程与结果</h3>
+<ul>
+<li><strong>实验设计</strong>：
+<ul>
+<li>文章在六个单属性数据集和六个多属性组合数据集上评估了CtrlProt的性能。</li>
+<li>将CtrlProt与六个具有竞争力的基线模型进行了比较，包括ESM-1b、ESM-2、EvoDiff、PrefixProt、ProGen2和ProLLaMA。</li>
+<li>使用了CLS-score、TM-score、RMSD和pLDDT等指标来综合评估序列的质量。</li>
+</ul>
+</li>
+<li><strong>实验结果</strong>：
+<ul>
+<li>CtrlProt在单属性和多属性生成任务中均优于基线模型。</li>
+<li>CtrlProt在pLDDT和TM-score方面表现出显著优势，表明生成的序列具有更高的结构稳定性和与天然蛋白质的结构相似性。</li>
+<li>消融研究表明，功能性和结构稳定性指标对于CtrlProt的性能至关重要。</li>
+<li>多样性分析表明，CtrlProt能够生成高质量且多样化的蛋白质序列，而不会过度拟合训练集。</li>
+</ul>
+</li>
+</ul>
+<h3>5. 总结与评价</h3>
+<p>CtrlProt 是一种很有潜力的可控蛋白质设计方法。通过多列表偏好优化，CtrlProt 能够有效地提高生成蛋白质序列的质量，并在功能性和结构稳定性之间取得良好的平衡。实验结果充分证明了该方法的有效性。</p>
+<ul>
+<li><strong>优点</strong>：
+<ul>
+<li>提出了一种新颖的多列表偏好优化策略，能够有效地提高可控蛋白质序列生成的质量。</li>
+<li>在单属性和多属性生成任务中均取得了最先进的性能。</li>
+<li>通过综合实验验证了方法的有效性和合理性。</li>
+</ul>
+</li>
+<li><strong>不足</strong>：
+<ul>
+<li>对于某些属性组合，实现更精确和可编程的生成仍然是一个挑战。</li>
+<li>该方法依赖于高质量的蛋白质结构数据，这可能会限制其在缺乏结构信息的蛋白质设计中的应用。</li>
+</ul>
+</li>
+</ul>
+<h3>6. Reference</h3>
+<p><a href="https://github.com/nju-websoft/CtrlProt">https://github.com/nju-websoft/CtrlProt</a></p></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">comments</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://Jianxinnn.github.io">Jianxin-AI4S</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="run "+diffDay+" days"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","Jianxinnn/Jianxinnn.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+
+
+</script>
+<script src='https://blog.meekdai.com/Gmeek/plugins/articletoc.js<script src='https://blog.meekdai.com/Gmeek/plugins/lightbox.js'></script><script>MathJax = {tex: {inlineMath: [["$", "$"]]}};</script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</html>
