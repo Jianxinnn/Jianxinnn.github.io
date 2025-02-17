@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='https://blog.meekdai.com/Gmeek/plugins/GmeekBSZ.js'></script>
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# 基于自监督机器学习的蛋白质设计方法改进了抽样，但未改进高适应性变体的识别
+
+## 1.">
+<meta property="og:title" content="[Science Advances] Self-supervised machine learning methods for protein design improve sampling but not the identification of high-fitness variants">
+<meta property="og:description" content="# 基于自监督机器学习的蛋白质设计方法改进了抽样，但未改进高适应性变体的识别
+
+## 1.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://Jianxinnn.github.io/post/%5BScience%20Advances%5D%20Self-supervised%20machine%20learning%20methods%20for%20protein%20design%20improve%20sampling%20but%20not%20the%20identification%20of%20high-fitness%20variants.html">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<title>[Science Advances] Self-supervised machine learning methods for protein design improve sampling but not the identification of high-fitness variants</title>
+
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">[Science Advances] Self-supervised machine learning methods for protein design improve sampling but not the identification of high-fitness variants</h1>
+<div class="title-right">
+    <a href="https://Jianxinnn.github.io" id="buttonHome" class="btn btn-invisible circle" title="home">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/Jianxinnn/Jianxinnn.github.io/issues/13" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="switch theme">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>基于自监督机器学习的蛋白质设计方法改进了抽样，但未改进高适应性变体的识别</h1>
+<h2>1. 背景介绍</h2>
+<p>蛋白质设计是生物学和生物工程领域的一个重要方向，旨在创造具有特定功能和性质的蛋白质分子。传统上，计算蛋白质设计方法依赖于基于物理的能量函数和优化算法，例如 Rosetta 软件。近年来，机器学习（ML）方法，特别是深度学习模型，在蛋白质结构预测、分子对接和序列设计方面取得了显著进展，并在实验中超越了传统的基于生物物理的方法。</p>
+<ul>
+<li><strong>蛋白质设计（Protein Design）</strong>: 利用计算方法创建具有特定功能或性质的蛋白质序列的过程。</li>
+<li><strong>Rosetta</strong>: 一款广泛使用的分子建模和蛋白质设计软件套件，它利用基于物理的能量函数和优化算法来预测和设计蛋白质结构。</li>
+<li><strong>机器学习（Machine Learning, ML）</strong>: 一种人工智能方法，允许计算机从数据中学习而无需明确编程。</li>
+<li><strong>深度学习（Deep Learning）</strong>: 机器学习的一个子领域，使用具有多层的神经网络来分析数据。</li>
+<li><strong>生物物理方法（Biophysical methods）</strong>: 基于物理学原理和分子力学的方法，用于模拟和预测生物分子的行为。</li>
+</ul>
+<h2>2. 核心概述</h2>
+<p>本文研究了自监督机器学习方法在蛋白质设计中的应用，特别是针对蛋白质序列的抽样和评分问题。作者建立了一个在 Rosetta 软件框架内的工具箱，用于预测氨基酸概率，并允许对不同模型进行并排比较。通过使用现有的蛋白质适应性图景（fitness landscapes）作为基准，作者评估了新的 ML 方法在实际蛋白质设计场景中的性能。研究发现，ML 方法在去除有害突变方面表现更好，但在没有模型微调的情况下，对突变进行评分并没有明显优于 Rosetta。结论是，ML 现在是对生物物理方法的补充，而不是替代。</p>
+<h2>3. 方法论和实验细节</h2>
+<h3>3.1 数据集</h3>
+<p>研究使用了四个现有的蛋白质适应性图景数据集来评估不同的蛋白质设计方法。</p>
+<ol>
+<li><strong>GB1 (Immunoglobulin-binding protein G domain B1)</strong>： 包含约150,000个在四个位点上的突变数据。Wu et al.(2016) 收集。</li>
+<li><strong>avGFP ( <em>Aequorea victoria</em> green fluorescent protein)</strong>：包含51,715个序列数据，覆盖了81个残基位点。Sarkisyan et al.(2016)收集。</li>
+<li><strong>Trastuzumab (Herceptin)</strong>：包含38,839个曲妥珠单抗（赫赛汀）的CDR3变异体（10个位置）。Makowski et al.(2022)收集。</li>
+<li><strong>Emibetuzumab</strong>: 包含10,000个序列数据，涵盖8个改造位点。Makowski et al.(2022)收集。</li>
+</ol>
+<p>这些数据集涵盖了不同的蛋白质属性，并且每个序列包含多个突变。对于每种蛋白质，训练集和测试集的划分比例为 90% 和 10%。</p>
+<h3>3.2 算法和模型</h3>
+<ul>
+<li><strong>FastDesign</strong>: 作为基线方法，使用 Rosetta 的 FastDesign 移动器进行设计，Monomer-Relax 设置用于 avGFP，InterfaceRelax 设置用于 GB1、曲妥珠单抗和 Emibetuzumab。</li>
+<li><strong>ESM (Evolutionary Scale Modeling)</strong>：一种基于 Transformer 的蛋白质语言模型，用于预测蛋白质序列中每个位置的氨基酸概率。</li>
+<li><strong>MIF-ST (Masked Inverse Folding with Sequence Transfer)</strong>： 一种掩蔽逆折叠模型，它集成了序列转移，用于蛋白质表示学习。</li>
+<li><strong>ProteinMPNN (Protein Masked Protein sequence Number)</strong>：一种深度学习模型，使用消息传递神经网络来预测蛋白质序列。</li>
+<li><strong>Oracle模型</strong>：使用岭回归（Ridge Regression）或者线性判别分析（Linear Discriminant Analysis, LDA）训练的简单预测模型，用于预测不同蛋白质的适应性。对于GB1和avGFP使用岭回归，而曲妥珠单抗和Emibetuzumab使用LDA。训练 Oracle 模型在GB1上斯皮尔曼相关系数为0.79，在avGFP上的斯皮尔曼相关系数为0.79。</li>
+</ul>
+<h3>3.3 比较方法和实验内容</h3>
+<p>作者主要从以下几个方面比较了不同的蛋白质设计方法:</p>
+<ol>
+<li><strong>序列抽样性能</strong>: 评估不同方法生成多样化序列的能力，包括生成的独特序列的数量，以及与现有序列的差异。使用三个温度设置 (0.3, 1.0, 和 1.5) 来控制抽样的随机性。评估每个模型的 PerResidueProbabilitiesMetric 。</li>
+<li><strong>适应性预测性能</strong>: 使用 Oracle 模型评估抽样序列的适应性，并比较不同方法的预测准确性。主要关注top 10 预测结果，并以随机选择作为对照。</li>
+<li><strong>排序性能</strong>: 评估不同评分指标（Rosetta 能量、ML 模型置信度等）对抽样序列进行排序的能力，以及与 Oracle 模型预测的适应性之间的相关性。使用斯皮尔曼相关系数。</li>
+</ol>
+<p><strong>实验内容包括：</strong></p>
+<ul>
+<li><strong>GB1 突变</strong>: 测试在改进 GB1 适应性方面的采样突变。</li>
+<li><strong>avGFP 荧光</strong>: 测试在提高 avGFP 荧光方面的采样突变。</li>
+<li><strong>Trastuzumab</strong>:  测试在保持 HER2 结合的同时多样化 Trastuzumab 。</li>
+<li><strong>Emibetuzumab</strong>: 测试对 Emibetuzumab 双重适应性进行建模的设计方法。</li>
+</ul>
+<h2>4. 研究过程和结论</h2>
+<h3>4.1 序列抽样</h3>
+<ul>
+<li><strong>GB1</strong>: 增加氨基酸选择的抽样温度导致了更多多样性（更多的独特序列）。对于ProteinMPNN和三个模型的平均值，温度的升高导致了中值预测适应性的降低。相比之下，对于 ESM 和 MIF-ST，温度的升高并没有显著改变中值预测的适应性。 ProteinMPNN 和 FastRelax 的组合创造了具有预测适应性 &gt; 1.5 的最多个候选，同时也采样了三倍于低预测适应性的序列。</li>
+<li><strong>avGFP</strong>: 从平均概率进行采样创造了最多的独特序列，其中 ProteinMPNN 是第二好的。然而，没有一种方法具有大于 7% 的更高适应性候选的比例。</li>
+<li><strong>Trastuzumab</strong>: 除了 (IC-)ESM 和 FastDesign 之外，所有方法对于曲妥珠单抗的预测结合概率都低于 0.6。从平均预测值进行采样导致了最高数量的具有 &gt; 0.9 的预测结合概率的独特序列，同时也创造了五倍数量的具有较低预测结合概率的序列。</li>
+<li><strong>Emibetuzumab</strong>: 所有方法都强烈倾向于采样预测会结合抗原和多特异性试剂的序列，除了 FastDesign，它只采样了预测具有低抗原结合概率的序列。从平均概率（T = 1.0）进行采样创造了最大数量的预测特异性结合剂，具有 45 个独特序列。</li>
+</ul>
+<h3>4.2 适应性预测 &amp; 排序性能</h3>
+<p><strong>斯皮尔曼相关性分析：</strong></p>
+<p>以下是不同数据集和评分指标之间的斯皮尔曼相关系数（ρ）摘要，数值来自论文的 Table 1：</p>
+<ul>
+<li><strong>GB1</strong>: MIF-ST 伪困惑度 (ρ = -0.60) 和总得分 (ρ = -0.55) 显示出最强的负相关性。</li>
+<li><strong>avGFP</strong>: 所有指标的相关性都很弱。Rosetta 总得分 (ρ = -0.33) 表现最佳。</li>
+<li><strong>Trastuzumab</strong>: 所有指标的相关性都很弱。AF2 PAE 交互 (ρ = -0.31) 略有优势。</li>
+<li><strong>Emibetuzumab</strong>: ProteinMPNN 和 ESM (ρ = -0.29) 的伪困惑度略优于其他指标。</li>
+</ul>
+<p><strong>Top 10 候选者分析</strong></p>
+<ul>
+<li>总的来说，根据预测适应性选择前 10 名候选者并没有稳定地优于随机选择。</li>
+<li>在某些情况下（GB1 和 Trastuzumab），使用特定指标进行选择可以产生比随机选择更好的平均或最佳候选者。</li>
+<li>值得注意的是，所有指标在对 Emibetuzumab 预测的特异性结合进行排序时表现都很差。</li>
+</ul>
+<h3>4.3 总结性结论</h3>
+<p>作者得出的主要结论是：</p>
+<ul>
+<li>ML 模型擅长于对可行的序列空间进行采样。</li>
+<li>评分和排序仍然具有挑战性，因为来自 ML 模型的困惑度和 Rosetta 能量的传统生物物理指标与目标蛋白质性质的相关性相对较低。</li>
+</ul>
+<h2>5. 总结和客观评价</h2>
+<p>本文对自监督机器学习方法在蛋白质设计中的应用进行了全面的评估。研究结果表明，ML 方法在序列抽样方面具有优势，但评分和排序仍然是一个挑战。未来的研究可以集中在开发更精确的评分函数、结合生物物理信息的 ML 模型以及针对特定任务进行微调的方法。总的来说，本文为蛋白质设计领域的 ML 应用提供了有价值的见解。</p>
+<h2>6. 参考文献和链接</h2>
+<ul>
+<li>论文链接: <a href="https://www.science.org/doi/10.1126/sciadv.adr7338" rel="nofollow">https://www.science.org/doi/10.1126/sciadv.adr7338</a></li>
+<li>代码仓库: (在找到代码仓库的实际链接后补充)</li>
+<li>数据集链接: (paper 中已经详细描述了数据集的出处)</li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">comments</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://Jianxinnn.github.io">Jianxin-AI4S</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="run "+diffDay+" days"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","Jianxinnn/Jianxinnn.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+
+
+</script>
+<script src='https://blog.meekdai.com/Gmeek/plugins/articletoc.js<script src='https://blog.meekdai.com/Gmeek/plugins/lightbox.js'></script>
+
+</html>
