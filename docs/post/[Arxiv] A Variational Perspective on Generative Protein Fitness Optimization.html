@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='https://blog.meekdai.com/Gmeek/plugins/GmeekBSZ.js'></script>
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="## 论文报告：变分视角下的生成式蛋白质适应性优化
+
+### 1.">
+<meta property="og:title" content="[Arxiv] A Variational Perspective on Generative Protein Fitness Optimization">
+<meta property="og:description" content="## 论文报告：变分视角下的生成式蛋白质适应性优化
+
+### 1.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://Jianxinnn.github.io/post/%5BArxiv%5D%20A%20Variational%20Perspective%20on%20Generative%20Protein%20Fitness%20Optimization.html">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<title>[Arxiv] A Variational Perspective on Generative Protein Fitness Optimization</title>
+
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">[Arxiv] A Variational Perspective on Generative Protein Fitness Optimization</h1>
+<div class="title-right">
+    <a href="https://Jianxinnn.github.io" id="buttonHome" class="btn btn-invisible circle" title="home">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/Jianxinnn/Jianxinnn.github.io/issues/14" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="switch theme">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h2>论文报告：变分视角下的生成式蛋白质适应性优化</h2>
+<h3>1. 背景介绍</h3>
+<p>蛋白质适应性优化（Protein Fitness Optimization）是生物工程和药物发现领域中的一项关键任务，其目标是设计或改造蛋白质，使其在特定功能（如稳定性、结合亲和力、催化效率等）方面表现更优。这是一个极具挑战性的问题，主要原因在于：</p>
+<ul>
+<li>
+<strong>巨大的搜索空间</strong>：蛋白质序列的组合可能性随序列长度呈指数增长，形成一个巨大的“适应性景观”（Fitness Landscape）。 假设蛋白质由d个氨基酸组成，每个位置有20种氨基酸选择，那么搜索空间的大小为 $20^d$。</li>
+<li>
+<strong>稀疏的有效序列</strong>：在如此庞大的搜索空间中，只有极少数序列具有实际的生物学功能。</li>
+<li>
+<strong>蛋白质序列的离散性</strong>：蛋白质序列由离散的氨基酸组成，使得传统的基于梯度的方法难以应用。</li>
+<li>
+<strong>Epistasis（上位性）</strong>：不同位点的氨基酸之间存在相互作用，一个位点的突变可能影响其他位点突变的效果，使适应性景观变得复杂和崎岖不平(Ruggedness)。</li>
+</ul>
+<p><strong>关键术语解释</strong>：</p>
+<ul>
+<li><strong>适应性（Fitness）</strong>：蛋白质的某种生物学特性，例如稳定性、结合亲和力或催化效率。</li>
+<li><strong>适应性景观（Fitness Landscape）</strong>：描述蛋白质序列空间中，序列与其适应性之间关系的图景。</li>
+<li><strong>从头设计 (In-silico)</strong>：通过计算机模拟和计算方法进行的蛋白质设计。</li>
+<li><strong>定向进化（Directed Evolution）</strong>：在实验室中模拟自然进化过程，通过多轮突变和筛选来优化蛋白质功能。</li>
+<li><strong>上位性 (Epistasis)</strong>:  一个基因的表达受到另一个基因影响的现象。在蛋白质中，指一个氨基酸位点的突变影响其他位点突变效果的现象。</li>
+</ul>
+<p>传统的蛋白质适应性优化方法主要依赖于定向进化，这种方法虽然有效，但耗时且探索范围有限。因此，需要开发更高效的计算方法（in-silico方法），以便在潜在序列空间中进行更广泛的探索，从而筛选出有希望的候选序列进行实验验证。</p>
+<h3>2. 核心概述</h3>
+<p>本文提出了一种名为变分隐变量生成蛋白质优化（Variational Latent Generative Protein Optimization, VLGPO）的新方法，它是一种基于变分推断的蛋白质适应性优化框架。该方法将蛋白质序列嵌入到一个连续的隐空间中，从而能够在该空间中高效地采样适应性分布。VLGPO结合了一个（学习得到的）序列突变流动匹配先验(flow matching prior)和一个适应性预测器，以指导优化过程朝着具有高适应性的序列方向发展。在两个不同复杂度的蛋白质基准测试中，VLGPO取得了目前最好的结果。此外，VLGPO的设计具有模块化和灵活性，可以根据不同的蛋白质设计任务进行定制。</p>
+<h3>3. 方法论和实验细节</h3>
+<h4>3.1 数据集</h4>
+<p>论文使用了两个公共的蛋白质优化基准数据集：</p>
+<ul>
+<li><strong>腺相关病毒 (AAV)</strong>：用于基因治疗的病毒载体。任务目标是优化AAV衣壳蛋白，以提高其在特定细胞中的递送效率。</li>
+<li><strong>绿色荧光蛋白 (GFP)</strong>：一种广泛使用的生物标记物。任务目标是优化GFP的荧光强度。</li>
+</ul>
+<p>每个数据集都分为Medium和Hard两个难度级别，难度由以下因素决定：</p>
+<ul>
+<li><strong>序列适应性百分比范围</strong>：考虑的序列的适应性百分比范围（20-40%为Medium，&lt;30%为Hard）。</li>
+<li><strong>突变间隙</strong>：达到S*的第99个适应性百分位数的任何序列所需的突变差距（Medium为6个突变，Hard为7个突变），其中S*是完整数据集。</li>
+</ul>
+<p>数据集的详细信息如下表所示：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>任务</th>
+<th>N</th>
+<th>Fitness↑</th>
+<th>Fitness Range</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GFP Medium</td>
+<td>2828</td>
+<td>0.09</td>
+<td>[0.01, 0.62]</td>
+</tr>
+<tr>
+<td>GFP Hard</td>
+<td>2426</td>
+<td>0.01</td>
+<td>[0.0, 0.1]</td>
+</tr>
+<tr>
+<td>AAV Medium</td>
+<td>2139</td>
+<td>0.32</td>
+<td>[0.29, 0.38]</td>
+</tr>
+<tr>
+<td>AAV Hard</td>
+<td>3448</td>
+<td>0.27</td>
+<td>[0.0, 0.33]</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>其中，N表示数据集中序列的数量，Fitness↑ 表示中位数归一化适应度分数，Fitness Range表示适应度范围。数据集划分未明确说明，但提到使用部分数据训练预测器，完整数据集用于评估。</p>
+<h4>3.2 算法和模型</h4>
+<p>VLGPO 框架主要由以下几个核心组件构成：</p>
+<ol>
+<li>
+<p><strong>变分自编码器（VAE）</strong>：</p>
+<ul>
+<li>
+<strong>作用</strong>：将离散的蛋白质序列编码为连续的隐空间向量，并从隐空间解码回序列。</li>
+<li>
+<strong>编码器（Encoder）</strong> $E: V^d \rightarrow \mathbb{R}^l$：将蛋白质序列 $x \in V^d$ 映射到隐空间向量 $z \in \mathbb{R}^l$，其中 $V$ 是氨基酸词汇表，$d$ 是序列长度，$l$ 是隐空间的维度。</li>
+<li>
+<strong>解码器（Decoder）</strong> $D: \mathbb{R}^l \rightarrow \mathbb{R}^{d \times |V|}$：将隐空间向量 $z$ 映射回蛋白质序列空间，输出每个位置上氨基酸的logits。</li>
+<li>
+<strong>目标函数</strong>：使用$\beta$-VAE，最小化以下加权证据下界（ELBO）：</li>
+</ul>
+<p>$$<br>
+\min_{q_\mu, p_\nu} \mathbb{E}<em>{z \sim q</em>\mu(z|x)} [- \log p_\nu(x|z)] + \beta KL(q_\mu(z|x) || p(z))<br>
+$$</p>
+<p>其中：</p>
+<ul>
+<li>
+$q_\mu(z|x)$ 是编码器，$p_\nu(x|z)$ 是解码器。</li>
+<li>
+$KL(q_\mu(z|x) || p(z))$ 是 $q_\mu(z|x)$ 和先验分布 $p(z)$ 之间的KL散度。</li>
+<li>
+$\beta$ 是一个超参数，用于平衡重构损失和KL散度。</li>
+<li>由于离散的氨基酸tokens， $−\log p_\nu(x|z)$ 简化为交叉熵损失。</li>
+</ul>
+</li>
+<li>
+<p><strong>流动匹配模型（Flow Matching Model）</strong>：</p>
+<ul>
+<li>
+<p><strong>作用</strong>：学习隐空间中蛋白质序列突变的分布，用于生成新的隐空间向量。</p>
+</li>
+<li>
+<p><strong>原理</strong>：流动匹配模型旨在模拟概率流 $\Psi_t$ 的速度，该概率流控制着一个概率分布如何随时间演变成另一个分布的动态。 通过学习速度场 $u_t$，模型 $v_{\theta,t}$ 捕捉从时间 $t = 0$ 时的简单基础分布到时间 $t = 1$ 时的更复杂目标分布 $p(x)$ 的演变。</p>
+</li>
+<li>
+<p><strong>目标函数</strong>：最小化条件流动匹配目标函数：<br>
+$$<br>
+\min_\theta \mathbb{E}<em>{t, x_1, x_0} [||v</em>{\theta,t}(l_t(x_0)) - (x_1 - x_0)||^2]<br>
+$$<br>
+其中：</p>
+<ul>
+<li>
+$t \sim U[0,1]$, $x_1 \sim p(x)$, 并且$x_0 \sim N(0, I)$。</li>
+<li>条件流由$l_t(x_0) = (1-t)x_0+tx_1$给出。</li>
+<li>一旦经过训练，就可以通过时间 $t \in [0, 1]$ 的相应神经常微分方程 (ODE) 的数值积分来生成样本：<br>
+$$<br>
+\frac{d}{dt}\Psi_t(x) = v_{\theta,t}(\Psi_t(x))<br>
+$$</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>适应性预测器（Fitness Predictor）</strong>：</p>
+<ul>
+<li>
+<strong>作用</strong>：预测给定蛋白质序列的适应性，用于指导优化过程。</li>
+<li>
+<strong>模型</strong>：卷积神经网络（CNN），参数化CNN $g_\phi : V^d \rightarrow \mathbb{R}$用于推断给定序列的适应性。具体来说，使用$g_\phi$和$g_{\phi'}$作为预测器，它们分别在有和没有基于图的平滑的情况下在小的数据子集上进行训练。此外，使用在整个配对数据集S*上训练的$g_y$作为最终评估的in-silico oracle。</li>
+</ul>
+</li>
+<li>
+<p><strong>分类器指导（Classifier Guidance）</strong>：</p>
+<ul>
+<li>
+<strong>作用</strong>：通过将适应性预测器的梯度融入到流动匹配模型的采样过程中，从而引导采样朝着具有更高适应性的序列方向发展。</li>
+<li>
+<strong>公式</strong>：修改生成框架中的速度场 $v_{\theta,t}$ 以结合此指导，从而产生以下变分更新：</li>
+</ul>
+<p>$$<br>
+v_{\theta,t}(x|y) = v_{\theta,t}(x) + \alpha_t \nabla_x \log p(y|x)<br>
+$$</p>
+<p>其中：</p>
+<ul>
+<li>
+$\nabla_x \log p(y|x) \approx -\nabla_x ||g_\phi(x) - y||^2$ 表示序列 x 具有所需适应性 y 的对数似然的梯度。</li>
+<li>
+$\alpha_t$ 是一个调度器相关的常数。</li>
+<li>为了将该过程导向最高适应性，简单地将 y 设置为 1，这表示标准化适应性频谱中的最高适应性。</li>
+</ul>
+</li>
+</ol>
+<h4>3.3 训练和评估过程</h4>
+<ul>
+<li>
+<strong>VAE 训练</strong>：使用Adam优化器，学习率为0.001，对AAV和GFP，卷积架构的$\beta \in {0.01, 0.001}$训练编码器$\varepsilon$和解码器$D$。</li>
+<li>
+<strong>流动匹配模型训练</strong>：使用用于降噪扩散概率模型 (DDPM) 的常用1D CNN。使用 5e-5 的学习率和 1024 的批量大小训练 $v_{\theta,t}$ 1000 个epoch。</li>
+<li>
+<strong>推理过程</strong>：
+<ol>
+<li>从标准正态分布 $z_0 \sim N(0, I)$ 中采样一个隐空间向量。</li>
+<li>使用 K = 32 个 ODE 步骤整合学习到的流动，直到获得 $z_1$。</li>
+<li>为了优化序列适应性，为所有样本选择条件 $y = 1$。 通过超参数搜索确定参数 $\alpha_t$ 和 $J$。</li>
+<li>生成 512 个样本 $z_1$ 以鼓励从整个学习分布中采样，然后使用 $x = D(z_1)$ 对它们进行解码。</li>
+<li>过滤掉潜在的重复数据，并选择由预测器（分别为 $g_\phi$ 或 $g_{\phi'}$）排名的前 k (k = 128) 个样本。</li>
+</ol>
+</li>
+<li>
+<strong>评估指标</strong>：
+<ul>
+<li><strong>中位数归一化适应性 (Median Normalized Fitness)</strong></li>
+<li><strong>多样性 (Diversity)</strong></li>
+<li>
+<strong>新颖性 (Novelty)</strong><br>
+如附录A.2中所述，用于评估生成序列的指标。使用oracle $g_y$进行评估。</li>
+</ul>
+</li>
+</ul>
+<h3>4. 研究过程和结论</h3>
+<p>论文的主要研究过程和结论如下：</p>
+<ol>
+<li><strong>VLGPO 框架的有效性</strong>：实验结果表明，VLGPO在AAV和GFP数据集的Medium和Hard难度任务上，都取得了优于其他基线方法的结果。这证明了VLGPO框架的有效性。</li>
+<li><strong>分类器指导的重要性</strong>：通过消融实验，论文证明了分类器指导对于提高生成序列的适应性至关重要。</li>
+<li><strong>流动匹配先验的优势</strong>：VLGPO 能够学习到一个有效的流动匹配先验，从而能够在隐空间中进行高效的采样。</li>
+<li><strong>与同类方法的比较</strong>：VLGPO优于 GWG（使用相同的预测器）和 GGS（使用相同的平滑预测器），突出了该方法在有限数据状态下的鲁棒性，并支持潜空间中引导式流动匹配先验的优势。gg-dWJS 虽然在概念上与 VLGPO 相似，但在 GFP 和 AAV（困难）方面的表现与研究结果并不完全一致。</li>
+<li><strong>对超参数选择的敏感性</strong>：对于更具挑战性的任务（如GFP（hard）），超参数选择变得更加关键，这表明，微调VLGPO能够进一步提升性能。</li>
+<li><strong>oracle的重要性</strong>: 作者使用了更大的数据集训练了一个oracle模型用于评估，保证评估结果的可靠性。</li>
+</ol>
+<p><strong>实验结果分析</strong>：</p>
+<ul>
+<li>VLGPO在所有任务中都优于其他基线方法，表明了其优越的性能。</li>
+<li>VLGPO在使用非平滑预测器 gφ 和使用平滑预测器 gφ' 时的性能差异表明，平滑化可以提高生成序列的多样性，但可能会牺牲一定的适应性。</li>
+<li>消融实验表明，移除分类器指导会导致性能显著下降，这强调了分类器指导在 VLGPO 框架中的重要性。</li>
+<li>论文还分析了 VLGPO 的生成序列在适应性景观中的分布情况，发现 VLGPO 能够生成具有更高适应性的序列，并且这些序列在新颖性和多样性方面也具有良好的表现。</li>
+</ul>
+<h3>5. 总结和客观评价</h3>
+<p>本文提出了一种新颖的蛋白质适应性优化框架 VLGPO，该框架结合了变分自编码器、流动匹配模型和分类器指导。VLGPO 能够在有限的数据条件下，生成具有高适应性的蛋白质序列。实验结果表明，VLGPO 在多个蛋白质基准数据集上取得了优于其他基线方法的结果，证明了其有效性。</p>
+<p><strong>客观评价</strong>：</p>
+<ul>
+<li><strong>优点</strong>：
+<ul>
+<li>VLGPO 框架具有模块化和灵活性，可以根据不同的蛋白质设计任务进行定制。</li>
+<li>VLGPO 能够学习到一个有效的流动匹配先验，从而能够在隐空间中进行高效的采样。</li>
+<li>VLGPO 在多个蛋白质基准数据集上取得了优于其他基线方法的结果。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>：
+<ul>
+<li>VLGPO 的性能对超参数的选择比较敏感，需要进行仔细的调整。</li>
+<li>VLGPO 的评估主要依赖于 in-silico 方法，缺乏实验验证。</li>
+</ul>
+</li>
+</ul>
+<p>总的来说，VLGPO 是一种有前景的蛋白质适应性优化方法，具有较高的研究价值和应用潜力。未来的研究可以集中在以下几个方面：</p>
+<ul>
+<li>探索 VLGPO 在更多蛋白质设计任务中的应用。</li>
+<li>开发更高效的超参数优化方法。</li>
+<li>进行更多的实验验证，以评估 VLGPO 在实际应用中的性能。</li>
+<li>探索使用预训练蛋白质语言模型的嵌入来代替 VAE，因为这种嵌入提供了更具表现力的潜在表示。 然而，这将需要微调解码器以确保忠实的序列重建，这可能容易过度拟合，因为所使用的数据集大小有限。</li>
+</ul>
+<h3>6. 参考文献和链接</h3>
+<ul>
+<li>论文链接：文中未提供论文链接，请补充。</li>
+<li>代码仓库：文中未提供代码仓库链接，请补充。</li>
+<li>数据集链接：使用了AAV和GFP公共数据集，具体链接请参考论文中引用的 (Kirjner et al., 2023)。</li>
+</ul>
+<p>希望这份报告对您有所帮助！</p></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">comments</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://Jianxinnn.github.io">Jianxin-AI4S</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="run "+diffDay+" days"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","Jianxinnn/Jianxinnn.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+
+
+</script>
+<script src='https://blog.meekdai.com/Gmeek/plugins/articletoc.js<script src='https://blog.meekdai.com/Gmeek/plugins/lightbox.js'></script><script>MathJax = {tex: {inlineMath: [["$", "$"]]}};</script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</html>
