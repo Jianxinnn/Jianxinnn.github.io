@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='https://blog.meekdai.com/Gmeek/plugins/GmeekBSZ.js'></script>
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="## Mask Prior引导的去噪扩散模型提升逆向蛋白质折叠的性能
+
+### 1.">
+<meta property="og:title" content="[Arxiv] Mask prior-guided denoising diffusion improves inverse protein folding">
+<meta property="og:description" content="## Mask Prior引导的去噪扩散模型提升逆向蛋白质折叠的性能
+
+### 1.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://Jianxinnn.github.io/post/%5BArxiv%5D%20Mask%20prior-guided%20denoising%20diffusion%20improves%20inverse%20protein%20folding.html">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<title>[Arxiv] Mask prior-guided denoising diffusion improves inverse protein folding</title>
+
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">[Arxiv] Mask prior-guided denoising diffusion improves inverse protein folding</h1>
+<div class="title-right">
+    <a href="https://Jianxinnn.github.io" id="buttonHome" class="btn btn-invisible circle" title="home">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/Jianxinnn/Jianxinnn.github.io/issues/17" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="switch theme">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h2>Mask Prior引导的去噪扩散模型提升逆向蛋白质折叠的性能</h2>
+<h3>1. 背景介绍</h3>
+<p>蛋白质是生命活动中至关重要的生物大分子，由氨基酸线性序列折叠形成复杂的三维（3D）结构。理解蛋白质的结构与功能关系是生物学和医学领域的核心挑战。<strong>逆向蛋白质折叠 (Inverse Protein Folding, IPF)</strong>，也称为蛋白质序列设计，是一个 фундаментальный 的结构导向的蛋白质设计问题。它的目标是根据给定的目标 3D 骨架结构，生成能够折叠成该结构的有效氨基酸序列。这项技术在治疗性蛋白质工程、先导化合物优化和抗体设计等领域具有巨大的应用潜力。</p>
+<p>传统的基于物理的方法将 IPF 视为一个能量优化问题，但计算成本高昂且精度有限。近年来，深度学习方法凭借其强大的非线性模式学习能力，已成为解决蛋白质结构问题的首选范式。早期的基于卷积神经网络的模型通常将每个蛋白质残基视为孤立单元或将整个蛋白质视为点云数据，对结构信息和残基间相互作用的考虑不足。最近，基于图的方法将 3D 蛋白质结构表示为邻近图，并使用图神经网络 (Graph Neural Networks, GNNs) 来建模残基表示并整合结构约束。GNNs 可以聚合和交换图结构数据内的局部信息，从而显著提升了基于图的方法的性能。</p>
+<p>尽管基于图的方法取得了进展，但仅靠结构信息不足以确定某些挑战性区域（如环区和固有无序区）的残基类型。在这些不确定性高、置信度低的情况下，与其他准确预测的残基的相互作用可以为减轻这些区域的不确定性提供更可靠的指导。此外，现有的基于深度学习的 IPF 方法通常采用自回归解码或均匀随机解码来生成氨基酸序列，容易累积预测误差，并且难以捕捉蛋白质进化中的全局和长程依赖关系。最近，一些非自回归方法显示出在相关背景下超越自回归范式的潜力。</p>
+<p><strong>关键词解释:</strong></p>
+<ul>
+<li><strong>逆向蛋白质折叠 (Inverse Protein Folding, IPF)</strong>:  根据给定的蛋白质三维结构设计氨基酸序列的过程，也称为蛋白质序列设计。</li>
+<li><strong>图神经网络 (Graph Neural Networks, GNNs)</strong>:  一种用于处理图结构数据的神经网络，能够学习节点和边之间的关系，并进行信息传递和聚合。</li>
+<li><strong>自回归解码 (Autoregressive Decoding)</strong>:  一种序列生成方法，其中当前步的输出依赖于先前步骤的输出。在蛋白质序列设计中，意味着逐个氨基酸生成序列，当前氨基酸的生成依赖于之前生成的氨基酸。</li>
+<li><strong>非自回归解码 (Non-autoregressive Decoding)</strong>:  一种序列生成方法，可以并行生成序列的每个部分，不依赖于先前步骤的输出。在蛋白质序列设计中，可以一次性预测整个蛋白质序列。</li>
+<li><strong>去噪扩散模型 (Denoising Diffusion Models)</strong>:  一种生成模型，通过逐步向数据添加噪声，然后再反向逐步去噪来学习数据分布，从而生成新的数据样本。</li>
+</ul>
+<h3>2. 核心概述</h3>
+<p>本文提出了一种名为 <strong>Mask prior-guided denoising Diffusion (MapDiff)</strong> 的框架，用于改进逆向蛋白质折叠任务。MapDiff 采用离散去噪扩散概率模型，迭代地生成氨基酸序列，并在生成过程中结合了结构信息和残基相互作用。该框架使用图神经网络构建去噪网络，并引入掩码先验预训练策略来处理低置信度区域的预测不确定性。此外，在生成过程中，MapDiff 结合了去噪扩散隐式模型 (DDIM) 与 Monte-Carlo dropout，以提升不确定性估计和加速生成过程。在四个具有挑战性的序列设计基准数据集上的评估结果表明，MapDiff 显著优于现有最先进的方法。更重要的是，MapDiff 生成的序列在体外实验中展现出与天然蛋白质相似的物理化学和结构特征。</p>
+<h3>3. 方法论和实验细节</h3>
+<h4>3.1 数据集</h4>
+<p>本文使用了以下几个数据集来评估 MapDiff 的性能：</p>
+<ul>
+<li><strong>CATH 4.2 和 CATH 4.3</strong>: 两个常用的蛋白质结构域分类数据库。根据蛋白质拓扑结构进行划分，CATH 4.2 数据集包含 18,024 个训练蛋白质结构，608 个验证结构和 1,120 个测试结构；CATH 4.3 数据集包含 16,630 个训练结构，1,516 个验证结构和 1,864 个测试结构。训练集、验证集和测试集之间蛋白质拓扑结构代码无重叠。</li>
+<li><strong>TS50</strong>:  一个常用的蛋白质序列设计基准数据集，包含 50 个独立的蛋白质链。</li>
+<li><strong>PDB2022</strong>:  一个包含最近发布的来自蛋白质数据库 (Protein Data Bank, PDB) 的单链结构的集合，蛋白质长度小于 500 个氨基酸，分辨率优于 2.5 Å。该数据集包含 1,975 个蛋白质结构，与其他实验数据集无重叠。</li>
+</ul>
+<p>对于 CATH 4.2 和 CATH 4.3 数据集，除了完整的测试集外，作者还研究了两个子类别：短蛋白（长度不超过 100 个残基）和单链蛋白（在 CATH 中标记为单链）。</p>
+<h4>3.2 算法和模型</h4>
+<p>MapDiff 框架的核心是一个 <strong>Mask prior-guided denoising network</strong>，其结构如图 1b 所示，包含以下三个关键组件：</p>
+<ol>
+<li>
+<strong>Structure-based sequence predictor (基于结构的序列预测器)</strong>:  使用<strong>等变图神经网络 (Equivariant Graph Neural Network, EGNN)</strong> 作为核心架构。EGNN 接收带噪氨基酸序列和 3D 骨架结构作为输入，通过消息传递机制学习残基之间的相互作用和结构信息，并预测去噪后的氨基酸序列。为了增强模型对全局信息的感知能力，EGNN 中引入了 <strong>global-aware module (全局感知模块)</strong>，在消息传递过程中整合全局池化向量。</li>
+<li>
+<strong>Mask ratio adapter (掩码比例适配器)</strong>:  动态调整掩码比例。掩码比例与去噪步骤 <code class="notranslate">t</code> 相关的噪声权重 <code class="notranslate">βt</code> 成正比，通过正弦函数和预定义的偏差和最小掩码比例参数进行计算。公式为：<br>
+$$m_r^t = \sin\left(\frac{\pi}{2}\beta_t \cdot \sigma\right) + m$$<br>
+其中，<code class="notranslate">βt</code> 是噪声调度中的噪声权重， <code class="notranslate">σ</code> 和 <code class="notranslate">m</code> 分别是预定义的偏差和最小掩码比例。</li>
+<li>
+<strong>Masked sequence designer (掩码序列设计器)</strong>:  使用 <strong>不变点注意力 (Invariant Point Attention, IPA)</strong> 网络，用于细化低置信度残基的预测。IPA 网络接收掩码后的氨基酸序列和 3D 骨架结构作为输入，利用几何感知注意力机制融合残基表示和空间关系，预测被掩码残基的类型。<strong>预训练 (Pre-training)</strong>  阶段，Masked sequence designer  通过 BERT 类似的掩码语言建模目标进行训练，学习结构和序列的先验知识。</li>
+</ol>
+<p><strong>损失函数:</strong></p>
+<ul>
+<li>
+<strong>Base cross-entropy loss (基础交叉熵损失)</strong>:  用于训练 Structure-based sequence predictor，计算预测的氨基酸概率分布与真实氨基酸类型的交叉熵损失。公式为:<br>
+$$L_b = L_{CE}(p^b(X^{aa}), X^{aa})$$
+</li>
+<li>
+<strong>Mask cross-entropy loss (掩码交叉熵损失)</strong>:  用于训练 Masked sequence designer，计算预测的掩码残基概率分布与真实掩码残基类型的交叉熵损失。公式为：<br>
+$$L_m = L_{CE}(p^m({X^{aa}}<em>{mask}), {X^{aa}}</em>{mask})$$</li>
+<li>
+<strong>Total loss (总损失)</strong>:  基础交叉熵损失和掩码交叉熵损失之和。公式为：<br>
+$$L = L_b + L_m$$
+</li>
+</ul>
+<p><strong>扩散过程和去噪过程:</strong></p>
+<ul>
+<li>
+<strong>扩散过程 (Diffusion process)</strong>:  如图 1c 所示，逐步向原始氨基酸序列 $X_0^{aa}$ 添加离散噪声，使其逐渐趋于均匀分布。噪声添加过程由转移概率矩阵 $Q_t$ 控制。</li>
+<li>
+<strong>去噪过程 (Denoising process)</strong>:  迭代地从带噪氨基酸序列 $X_t^{aa}$ 中去除噪声，逐步恢复原始序列 $X_0^{aa}$。去噪过程使用 Mask prior-guided denoising network $φ_θ$，学习从 $X_t^{aa}$ 预测 $X_{t-1}^{aa}$ 的分布。为了加速生成过程和提高不确定性估计，MapDiff 结合了 <strong>DDIM (Denoising Diffusion Implicit Model)</strong> 和 <strong>Monte-Carlo dropout</strong>。DDIM 允许跳过部分去噪步骤，Monte-Carlo dropout 通过多次前向传播并平均预测结果来提高不确定性估计。</li>
+</ul>
+<h4>3.3 训练和评估过程</h4>
+<p><strong>训练过程:</strong></p>
+<ol>
+<li><strong>Mask prior pre-training (掩码先验预训练)</strong>:  首先对 Masked sequence designer 进行预训练。随机掩码氨基酸序列中的部分残基，然后使用 IPA 网络预测被掩码的残基类型。预训练目标是最小化掩码交叉熵损失。</li>
+<li><strong>Denoising diffusion model training (去噪扩散模型训练)</strong>:  训练 Mask prior-guided denoising network。在每个训练步骤中，模型接收带噪氨基酸序列和对应的 3D 骨架结构作为输入，预测去噪后的氨基酸序列。训练目标是最小化总损失（基础交叉熵损失 + 掩码交叉熵损失）。</li>
+</ol>
+<p><strong>评估过程:</strong></p>
+<ul>
+<li><strong>序列恢复性能评估</strong>:  使用以下指标评估生成序列的准确性：
+<ul>
+<li><strong>Perplexity (困惑度)</strong>:  衡量模型预测的氨基酸概率分布与真实氨基酸类型之间的对齐程度，困惑度越低表示模型预测越准确。</li>
+<li><strong>Recovery rate (回复率)</strong>:  准确预测的氨基酸残基在蛋白质序列中所占的比例，回复率越高表示模型预测越准确。</li>
+<li><strong>Native Sequence Similarity Recovery (NSSR) (天然序列相似性回复)</strong>:  使用 BLOSUM 矩阵评估预测序列与天然序列之间的相似性，考虑氨基酸的相似替换。本文使用了 BLOSUM42, BLOSUM62, BLOSUM80 和 BLOSUM90 四种不同的 cutoff level。</li>
+</ul>
+</li>
+<li><strong>Foldability evaluation (可折叠性评估)</strong>: 使用 AlphaFold2 预测生成序列的 3D 结构，并与天然晶体结构进行比较，评估生成序列的可折叠性和预测结构的质量。评估指标包括：
+<ul>
+<li><strong>predicted Local Distance Difference Test (pLDDT)</strong></li>
+<li><strong>predicted Aligned Error (PAE)</strong></li>
+<li><strong>predicted Template Modeling (pTM)</strong></li>
+<li><strong>Template Modeling score (TM-score)</strong></li>
+<li><strong>Root Mean Square Deviation (RMSD)</strong></li>
+<li><strong>Global Distance Test-Total Score (GDT-TS)</strong></li>
+</ul>
+</li>
+</ul>
+<p>实验在单个 Tesla A100 GPU 上进行。Adam 优化器和 one-cycle scheduler 用于参数优化，峰值学习率设置为 5e-4。</p>
+<h3>4. 研究过程和结论</h3>
+<p>文章首先在 CATH 4.2 和 CATH 4.3 数据集上评估了 MapDiff 的序列回复性能，并与多个最先进的基线模型进行了比较，包括 StructGNN, GraphTrans, GVP, AlphaDesign, ProteinMPNN, PiFold, LM-Design 和 GRADE-IF。结果表明，MapDiff 在不同的评估指标和数据集子集上均取得了最佳性能，在 CATH 4.2 和 CATH 4.3 完整测试集上，分别实现了 60.93% 和 60.68% 的回复率，显著优于现有方法。MapDiff 还展现出最低的困惑度，表明其生成了高置信度的概率分布，有利于准确预测。值得注意的是，MapDiff 在不依赖外部知识的情况下，依然取得了优异的性能，表明其模型架构和基于扩散的生成机制能够有效利用有限的训练数据捕捉相关模式，实现卓越的泛化能力。</p>
+<p>为了进一步验证 MapDiff 的泛化能力，作者在 TS50 和 PDB2022 两个独立的测试数据集上进行了零样本迁移测试。结果表明，MapDiff 在这两个数据集上依然取得了最高的回复率和 NSSR 分数，表明其模型具有良好的零样本迁移能力。</p>
+<p>为了评估生成蛋白质序列的可折叠性，作者使用 AlphaFold2 对 MapDiff 等模型生成的序列进行了结构预测，并将预测结构与天然晶体结构进行比较。结果表明，MapDiff 生成的蛋白质序列展现出卓越的可折叠性，预测结构具有最高的置信度和最小的偏差。尤其在 CATH 4.2 测试集上，MapDiff 的 pLDDT, PTM, TM-Score 和 GDT-TS 指标均为最高，RMSD 指标为最低，表明 MapDiff 生成的序列能够折叠成与天然结构高度相似的 3D 结构。</p>
+<p>为了深入分析 MapDiff 各个模块的有效性，作者进行了消融研究，分别移除了 EGNN 中的 EdgeUpdate, CoordinateUpdate, GlobalContext 模块，以及 Refinement 模块中的 MaskAdapter 和 IPA network。结果表明，每个模块都对序列回复性能的提升有积极贡献，其中基于 IPA 的 Refinement 机制 (variant 5) 带来的提升最为显著，回复率提升了 7.9%。</p>
+<p>为了评估 Monte-Carlo 采样和 DDIM 跳步对性能的影响，作者进行了敏感性分析。结果表明，增加 Monte-Carlo 样本数量和调整 DDIM 跳步步数可以进一步提升 MapDiff 的性能，表明结合 DDIM 和 Monte-Carlo dropout 能够有效加速生成过程并提高不确定性估计。</p>
+<p>综上所述，实验结果充分证明了 MapDiff 框架在逆向蛋白质折叠任务中的有效性和优越性。MapDiff 不仅在序列回复性能上超越了现有最先进的方法，而且生成的蛋白质序列具有良好的可折叠性和结构质量。</p>
+<h3>5. 总结和客观评价</h3>
+<p>本文提出的 MapDiff 框架，利用掩码先验引导的去噪扩散模型，有效地提升了逆向蛋白质折叠的性能。该方法创新性地将 IPF 问题建模为离散去噪扩散过程，并设计了 Mask prior-guided denoising network 来捕捉结构信息和残基相互作用。通过结合 EGNN, IPA, DDIM 和 Monte-Carlo dropout 等技术，MapDiff 在生成准确率、泛化能力和不确定性估计方面都取得了显著的提升。实验结果表明，MapDiff 在多个基准数据集上超越了现有方法，并生成了高质量的蛋白质序列。</p>
+<p><strong>客观评价:</strong></p>
+<p>MapDiff 框架的创新性在于将掩码先验预训练策略与去噪扩散模型相结合，有效解决了逆向蛋白质折叠中低置信度区域预测不确定性的问题。模型设计精巧，充分利用了结构信息和残基相互作用，并在多个数据集上进行了全面的评估，实验结果扎实可靠。文章结构清晰，逻辑严谨，方法描述详细，结果分析深入。</p>
+<p><strong>优点:</strong></p>
+<ul>
+<li>提出了新颖的 Mask prior-guided denoising Diffusion 框架，有效提升了 IPF 性能。</li>
+<li>模型设计巧妙，融合了 EGNN, IPA, DDIM 和 Monte-Carlo dropout 等先进技术。</li>
+<li>实验评估全面，在多个数据集和评估指标上均取得了优异的性能。</li>
+<li>消融研究和敏感性分析深入，验证了模型各组件的有效性。</li>
+</ul>
+<p><strong>不足:</strong></p>
+<ul>
+<li>模型参数量相对较大 (14.7M)，模型复杂度较高。</li>
+<li>虽然使用了 DDIM 加速生成过程，但去噪扩散模型的迭代生成方式依然存在计算成本较高的局限性。</li>
+</ul>
+<p><strong>总体而言，MapDiff 是一项具有重要意义的工作，为逆向蛋白质折叠领域带来了新的突破，并为未来蛋白质设计方法的研究提供了新的思路。</strong></p>
+<h3>6. 参考文献和链接</h3>
+<ul>
+<li><strong>论文链接:</strong> arXiv:2412.07815v1 [q-bio.BM]</li>
+<li><strong>代码仓库:</strong> <a href="https://github.com/peizhenbai/MapDiff">https://github.com/peizhenbai/MapDiff</a> (根据论文描述，代码将在 GitHub 仓库提供)</li>
+</ul>
+<p><strong>请注意</strong>:  论文中没有明确提供数据集的下载链接，但提到了数据集来源和相关论文，可以根据描述在相关资源中查找。</p></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">comments</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://Jianxinnn.github.io">Jianxin-AI4S</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="run "+diffDay+" days"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","Jianxinnn/Jianxinnn.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+
+
+</script>
+<script src='https://blog.meekdai.com/Gmeek/plugins/articletoc.js<script src='https://blog.meekdai.com/Gmeek/plugins/lightbox.js'></script><script>MathJax = {tex: {inlineMath: [["$", "$"]]}};</script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</html>
