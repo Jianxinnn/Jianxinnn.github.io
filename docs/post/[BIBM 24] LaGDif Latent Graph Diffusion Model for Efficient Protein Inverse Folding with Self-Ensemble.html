@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='https://blog.meekdai.com/Gmeek/plugins/GmeekBSZ.js'></script>
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="## LaGDif: 用于高效蛋白质反向折叠的潜在图扩散模型与自集成方法
+
+**论文报告**
+
+### 1.">
+<meta property="og:title" content="[BIBM 24] LaGDif Latent Graph Diffusion Model for Efficient Protein Inverse Folding with Self-Ensemble">
+<meta property="og:description" content="## LaGDif: 用于高效蛋白质反向折叠的潜在图扩散模型与自集成方法
+
+**论文报告**
+
+### 1.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://Jianxinnn.github.io/post/%5BBIBM%2024%5D%20LaGDif%20Latent%20Graph%20Diffusion%20Model%20for%20Efficient%20Protein%20Inverse%20Folding%20with%20Self-Ensemble.html">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<title>[BIBM 24] LaGDif Latent Graph Diffusion Model for Efficient Protein Inverse Folding with Self-Ensemble</title>
+
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">[BIBM 24] LaGDif Latent Graph Diffusion Model for Efficient Protein Inverse Folding with Self-Ensemble</h1>
+<div class="title-right">
+    <a href="https://Jianxinnn.github.io" id="buttonHome" class="btn btn-invisible circle" title="home">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/Jianxinnn/Jianxinnn.github.io/issues/18" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="switch theme">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h2>LaGDif: 用于高效蛋白质反向折叠的潜在图扩散模型与自集成方法</h2>
+<p><strong>论文报告</strong></p>
+<h3>1. 背景介绍</h3>
+<p>蛋白质反向折叠 (Protein Inverse Folding) 是计算生物学中的一个核心挑战，其目标是确定能够折叠成给定蛋白质结构的可行的氨基酸序列。这项技术在药物发现、酶工程和生物材料开发等领域具有巨大的应用潜力。理解几个关键术语至关重要：</p>
+<ul>
+<li><strong>蛋白质反向折叠 (Protein Inverse Folding):</strong>  也称为蛋白质序列设计，是从给定的蛋白质三维结构反向预测可能的氨基酸序列的过程。这与蛋白质结构预测相反，后者是从氨基酸序列预测三维结构。</li>
+<li><strong>氨基酸序列 (Amino Acid Sequence):</strong>  蛋白质的基本组成单元是氨基酸，氨基酸序列是指蛋白质中氨基酸的线性排列顺序。自然界中常见的氨基酸有20种。</li>
+<li><strong>蛋白质结构 (Protein Structure):</strong>  蛋白质的三维空间构象。蛋白质结构通常分为四个层次：一级结构（氨基酸序列）、二级结构（局部结构如α螺旋和β折叠）、三级结构（完整的多肽链的三维结构）和四级结构（多个多肽链的组装结构）。</li>
+<li><strong>扩散概率模型 (Diffusion Probabilistic Models):</strong>  一种生成模型，灵感来源于非平衡热力学。扩散模型通过逐步向数据中添加噪声（前向扩散过程），然后再学习逆向去除噪声的过程（反向扩散过程），从而实现数据生成。近年来，扩散模型在图像生成、音频合成和分子生成等领域取得了显著的成功。</li>
+</ul>
+<p>传统的蛋白质反向折叠方法主要基于能量函数，依赖于物理学原理和经验规则，但往往难以生成多样化的序列。近年来，基于蛋白质语言模型的深度学习方法开始兴起，将反向折叠任务视为类似于自然语言处理的序列生成问题。这些模型通常分为掩码模型和自回归模型，但它们在捕捉蛋白质结构与序列之间复杂的一对多关系方面存在局限性，并且确定性较强，难以充分探索序列空间的多样性。</p>
+<p>扩散概率模型作为一种新兴方法，为蛋白质序列生成提供了新的思路。扩散模型通过从噪声到结构化数据的逆向过程生成数据，天然地适合处理不确定性和探索复杂的多模态输出空间。然而，现有的蛋白质反向折叠扩散模型大多在离散数据空间中操作，需要预先定义转移矩阵，限制了连续空间中固有的平滑过渡和梯度，可能导致次优性能。</p>
+<p>本文提出的 LaGDif (Latent Graph Diffusion Model for Protein Inverse Folding) 模型，旨在克服现有离散扩散模型的局限性，并充分利用连续扩散模型的优势。</p>
+<h3>2. 核心概述</h3>
+<p>本文提出了一种用于蛋白质反向折叠的<strong>潜在图扩散模型 LaGDif</strong>。该模型通过<strong>编码器-解码器架构</strong>桥接了离散和连续空间，将蛋白质图数据分布转换为连续潜在空间中的随机噪声。然后，LaGDif 模型通过考虑每个节点的空间配置、生化属性和环境因素，重构蛋白质序列。此外，作者还提出了一种新颖的<strong>反向折叠自集成方法</strong>，通过聚合多个去噪后的蛋白质序列输出来稳定预测结果并进一步提高性能。在 CATH 数据集上的实验结果表明，LaGDif 模型优于现有的最先进技术，在单链蛋白质的序列恢复率方面提高了高达 45.55%，并保持了生成结构与天然结构之间平均 RMSD 为 1.96 Å。LaGDif 在蛋白质反向折叠方面的进步，有望加速治疗和工业应用新型蛋白质的开发。</p>
+<h3>3. 方法与实验细节</h3>
+<h4>3.1 数据集</h4>
+<p>本文使用了 <strong>CATH 数据集 version 4.2.0</strong>。这是一个广泛使用的蛋白质结构分类数据库。数据集按照之前的工作 [10] 进行了划分：</p>
+<ul>
+<li><strong>训练集:</strong> 18,024 个样本</li>
+<li><strong>验证集:</strong> 608 个样本</li>
+<li><strong>测试集:</strong> 1,120 个样本</li>
+</ul>
+<p>为了评估模型处理不同复杂程度蛋白质的能力，测试集进一步分为三个子集：</p>
+<ul>
+<li><strong>短蛋白质子集 (Short):</strong>  链长小于 100 个氨基酸的蛋白质。</li>
+<li><strong>单链蛋白质子集 (Single-chain):</strong>  仅包含单条多肽链的蛋白质。</li>
+<li><strong>所有蛋白质子集 (All):</strong>  测试集中的所有蛋白质，包括多链和更长的蛋白质结构。</li>
+</ul>
+<p>数据集的统计信息如图 3 所示，展示了节点（氨基酸）和边（空间连接）的分布情况，体现了数据集结构的多样性。</p>
+<h4>3.2 算法和模型</h4>
+<p>LaGDif 模型的核心架构是一个<strong>编码器-解码器的潜在图扩散模型</strong>，并使用了 <strong>自集成 (Self-Ensemble)</strong> 方法。</p>
+<p><strong>模型架构:</strong></p>
+<ul>
+<li><strong>编码器 (Encoder):</strong> 基于 <strong>ESM2 (Evolutionary Scale Model 2)</strong> 预训练的蛋白质语言模型。ESM2 能够捕捉氨基酸之间的关系和蛋白质结构信息，将离散的氨基酸序列编码到高维连续潜在空间中。</li>
+<li><strong>解码器 (Decoder):</strong>  一个可学习的线性层，将高维连续潜在表示映射回离散的氨基酸序列空间。</li>
+<li><strong>扩散模型 (Diffusion Model):</strong>  在潜在空间中操作的扩散模型。前向扩散过程逐步向蛋白质图的潜在表示添加高斯噪声，反向扩散过程学习从噪声中恢复原始的蛋白质序列。</li>
+<li><strong>去噪网络 (Denoising Network):</strong>  使用 <strong>等变图神经网络 (Equivariant Graph Neural Network, EGNN)</strong>。EGNN 能够有效捕捉和利用蛋白质三维结构的<strong>空间等变性 (Spatial Equivariance)</strong>，即蛋白质分子的性质应保持一致，不受其空间位置或方向变化的影响。EGNN 通过一系列<strong>等变图卷积层 (Equivariant Graph Convolution Layers, EGCL)</strong> 处理蛋白质图。</li>
+</ul>
+<p><strong>EGCL 的更新过程 (公式 2 和 3):</strong></p>
+<p>每个 EGCL 层接收节点隐藏状态 $H^l = {h_1, h_2, ..., h_m}$，互连节点 i 和 j 的边嵌入 $m_{ij}$，以及节点的空间坐标 $X_{pos} = {x_{1}^{pos}, x_{2}^{pos}, ..., x_{m}^{pos}}$ 作为输入，并更新节点状态 $H^{l+1}$ 和节点位置 $X_{pos}^{l+1}$。 具体更新公式如下：</p>
+<p>$H^{l+1}, X_{pos}^{l+1} = EGCL(H^l, X_{pos}, M)$  (公式 2)</p>
+<p>其中，在每个 EGCL 内部，更新过程定义如下：</p>
+<p>$m_{ij} = \phi_e (h_i^l, h_j^l, ||x_i^l - x_j^l||^2, m_{ij})$</p>
+<p>$x_i^{l+1} = x_i^l + \frac{1}{n_i} \sum_{j \neq i} (x_i^l - x_j^l) \phi_x (m_{ij})$</p>
+<p>$h_i^{l+1} = \phi_h (h_i^l, \sum_{j \neq i} h_j^l m_{ij})$   (公式 3)</p>
+<ul>
+<li>
+$\phi_e$, $\phi_x$, 和 $\phi_h$ 是可学习的神经网络函数。</li>
+<li>
+$\frac{1}{n_i}$ 项用于归一化坐标更新，以确保稳定性。</li>
+<li>
+$m_{ij}$ 基于节点特征、节点间距离和先前的边特征进行更新。</li>
+<li>
+$x_i$ 使用相对位置和边特征的可学习函数进行更新。</li>
+<li>
+$h_i$ 基于先前的值和聚合的边信息进行更新。</li>
+</ul>
+<p><strong>先验知识的融入:</strong></p>
+<p>模型还利用了蛋白质的<strong>二级结构信息 (Secondary Structure Information)</strong>。通过 <strong>DSSP (Definition of Secondary Structure of Proteins) 方法 [17]</strong> 分析蛋白质的三维结构，将每个氨基酸分类为八种不同的二级结构类型。这些信息通过 one-hot 编码和嵌入层处理后，与扩散模型的其他输入特征集成。</p>
+<p><strong>引导噪声控制和自集成 (Guided Noise Control and Self-Ensemble):</strong></p>
+<ul>
+<li>
+<p><strong>引导采样 (Guided Sampling) (公式 4):</strong>  为了平衡序列多样性和结构完整性，模型采用了引导采样方法。引导采样过程定义为：</p>
+<p>$\hat{x} = \alpha x + (1 - \alpha) \epsilon$   (公式 4)</p>
+<p>其中，$\hat{x}$ 是初始噪声节点特征，$x$ 是模型输入的蛋白质特征，$\alpha \in [0, 1]$ 是可控参数，$\epsilon \sim \mathcal{N}(0, I)$ 是高斯噪声。 通过调整 $\alpha$，可以控制噪声的强度和方向，从而实现更有效和稳定的去噪过程。</p>
+</li>
+<li>
+<p><strong>自集成 (Self-Ensemble) (公式 5):</strong> 为了提高预测的鲁棒性和准确性，模型在采样过程中使用了自集成方法。在每个去噪步骤 $t$，模型生成 $K$ 个候选图，并对它们的节点特征进行平均：</p>
+<p>$X_t = \frac{1}{K} \sum_{k=1}^{K} f_\theta (x_{t+1}^k, E, t)$   (公式 5)</p>
+<p>其中，$f_\theta$ 是参数为 $\theta$ 的 EGNN 去噪网络，$x_{t+1}^k$ 是步骤 $t+1$ 的第 $k$ 个采样图节点特征。本文实验中 $K$ 设置为 5。</p>
+</li>
+</ul>
+<h4>3.3 训练和评估过程</h4>
+<ul>
+<li>
+<p><strong>训练细节:</strong> LaGDif 使用 4 层 EGNN 作为去噪网络，扩散时间步长 $T$ 设置为 1000。模型训练了 20 个 epochs。在采样阶段，在 980 个时间步长引入引导噪声。使用了自集成方法，集成 5 个独立的预测结果。模型实现基于 PyTorch 和 PyTorch-Geometric，在 NVIDIA® 4090 GPU 上运行。</p>
+</li>
+<li>
+<p><strong>评估指标:</strong></p>
+<ul>
+<li>
+<strong>困惑度 (Perplexity):</strong>  衡量模型预测氨基酸序列不确定性的指标，值越低表示预测置信度越高，准确性越高。</li>
+<li>
+<strong>序列恢复率 (Recovery Rate):</strong>  直接衡量模型从给定三维结构重建正确氨基酸序列的能力。</li>
+<li>
+<strong>TM-score (Template Modeling score):</strong>  评估预测结构与目标结构拓扑相似性的指标，取值范围为 0 到 1，值越高表示结构相似性越高。</li>
+<li>
+<strong>平均 pLDDT (predicted Local Distance Difference Test):</strong>  评估局部结构准确性的指标，值越高表示局部结构预测越准确。</li>
+<li>
+<strong>平均 RMSD (Root Mean Square Deviation):</strong>  衡量预测结构和目标结构对应原子之间平均距离的指标，值越低表示结构差异越小。</li>
+</ul>
+</li>
+</ul>
+<h3>4. 研究过程与结论</h3>
+<p>本文的研究过程围绕 LaGDif 模型的提出、实验验证和性能分析展开。</p>
+<p><strong>研究过程:</strong></p>
+<ol>
+<li>
+<strong>模型设计:</strong>  提出了 LaGDif 模型，结合了潜在空间扩散模型、EGNN 去噪网络、ESM2 编码器、二级结构信息以及引导采样和自集成方法。</li>
+<li>
+<strong>实验设置:</strong>  在 CATH 数据集上进行了蛋白质反向折叠实验，并将测试集分为短蛋白质、单链蛋白质和所有蛋白质三个子集。</li>
+<li>
+<strong>性能评估:</strong>  将 LaGDif 模型与现有的最先进的反向折叠模型（如 StructGNN, GraphTrans, GCA, GVP, AlphaDesign, ESM-IF1, ProteinMPNN, PIFold, Grade-IF）在序列恢复率、困惑度、TM-score, pLDDT 和 RMSD 等指标上进行了比较。</li>
+<li>
+<strong>消融研究:</strong>  进行了消融实验，评估了自集成方法中集成样本数量 $K$ 和引导噪声对模型性能的影响。</li>
+<li>
+<strong>案例研究:</strong>  对两个具体的蛋白质案例 (2EBO 和 3OUS) 进行了深入分析，可视化了预测结构，并对比了 LaGDif 与其他模型的性能。</li>
+<li>
+<strong>模型复杂度分析:</strong>  比较了 LaGDif 与其他模型的参数量、推理时间和内存使用情况。</li>
+</ol>
+<p><strong>实验结果与结论:</strong></p>
+<ul>
+<li>
+<strong>性能超越现有方法:</strong>  在 CATH 数据集上，LaGDif 模型在所有蛋白质类别上都显著优于现有最先进的反向折叠方法 (Table I)。例如，在短链蛋白质上，序列恢复率从 Grade-IF 的 45.27% 提高到 LaGDif 的 86.97%，提高了 41.7%。单链蛋白质和所有蛋白质类别上，LaGDif 也取得了类似的显著提升。LaGDif 的困惑度也显著低于其他模型，表明其预测具有更高的置信度。</li>
+<li>
+<strong>结构质量保持:</strong>  LaGDif 在保持生成蛋白质结构完整性方面表现出色 (Table II)。其平均 TM-score 为 0.82，接近 ProteinMPNN (0.84)，远高于其他模型。平均 RMSD 为 1.96 Å，仅次于 ProteinMPNN (1.76 Å)。对于高分辨率晶体结构，RMSD 小于 2 Å 被认为是高度接近，表明 LaGDif 生成的结构与天然结构高度相似。</li>
+<li>
+<strong>自集成有效性:</strong>  消融研究表明，自集成方法显著提高了模型性能 (Table III, Figure 4)。随着集成样本数量 $K$ 的增加，序列恢复率持续提升，并在 $K=5$ 之后趋于稳定。所有自集成配置都优于基线模型，验证了自集成方法的鲁棒性。</li>
+<li>
+<strong>案例研究突出优势:</strong>  案例研究 (Figure 5) 表明，对于不同复杂程度的蛋白质 (2EBO 和 3OUS)，LaGDif 始终优于其他模型，在序列恢复率、TM-score 和 RMSD 等指标上都取得了最佳结果，突显了 LaGDif 的鲁棒性和通用性。</li>
+<li>
+<strong>模型复杂度适中:</strong>  模型复杂度分析 (Table IV) 表明，LaGDif 在模型参数量、推理时间和内存使用方面取得了良好的平衡。其参数量适中，能够捕捉复杂蛋白质结构，同时避免了过高的计算开销。推理时间虽然略长于 ProteinMPNN 和 Grade-IF，但远快于 GVP，且性能优势显著。</li>
+</ul>
+<p><strong>总体结论:</strong> LaGDif 模型通过潜在空间扩散、EGNN 去噪、ESM2 编码和自集成等技术，有效提升了蛋白质反向折叠的性能，在序列恢复率和结构质量方面都取得了显著的进步，超越了现有最先进的方法。</p>
+<h3>5. 总结与客观评价</h3>
+<p>本文提出的 LaGDif 模型是一种新颖的蛋白质反向折叠方法，它巧妙地利用了连续空间扩散模型的优势，克服了离散扩散模型和传统蛋白质语言模型的局限性。通过在 CATH 数据集上的充分实验验证，LaGDif 展现了卓越的性能，并在序列恢复率和结构质量上均取得了显著提升。自集成方法的引入进一步提高了模型的鲁棒性和准确性。模型复杂度分析表明，LaGDif 在性能和效率之间取得了良好的平衡。</p>
+<p>从客观角度评价，LaGDif 模型在蛋白质反向折叠领域做出了重要的贡献。其提出的潜在空间扩散框架和自集成方法为未来的研究提供了新的思路。实验结果充分支持了论文的结论，方法描述清晰，实验设计合理，评估指标全面。代码和模型公开，方便了后续研究的复现和应用。</p>
+<p>然而，本文也存在一些可以进一步研究的方向。例如，可以探索 LaGDif 模型在更具挑战性的蛋白质设计任务中的应用，例如从头蛋白质设计或蛋白质-蛋白质相互作用预测。此外，可以进一步优化模型结构和训练策略，以提升推理速度，并降低内存消耗。</p>
+<p>总体而言，LaGDif 是一项高质量的研究工作，其提出的模型和方法具有重要的理论意义和应用价值，有望推动蛋白质设计和工程领域的进步。</p>
+<h3>6. 参考文献与链接</h3>
+<ul>
+<li><strong>代码链接:</strong> <a href="https://github.com/TaoyuW/LaGDif">https://github.com/TaoyuW/LaGDif</a></li>
+<li><strong>CATH 数据库:</strong> <a href="https://www.cathdb.info" rel="nofollow">https://www.cathdb.info</a></li>
+<li><strong>ESMFold:</strong> 论文中使用了 ESMFold [5] 来生成 3D 结构，相关论文可查阅 [5] 的参考文献。</li>
+<li><strong>DSSP 方法:</strong> 参考文献 [17]。</li>
+<li><strong>EGNN:</strong> 参考文献 [14]。</li>
+<li><strong>Grade-IF:</strong> 参考文献 [10]。</li>
+<li><strong>ProteinMPNN:</strong> 参考文献 [22]。</li>
+</ul>
+<p><strong>其他参考文献:</strong></p>
+<p>[1] X. Zhou et al., "Prorefiner: an entropy-based refining strategy for inverse protein folding with global graph attention," Nature Communications, vol. 14, no. 1, p. 7434, 2023.<br>
+[2] J. Jänes and P. Beltrao, "Deep learning for protein structure prediction and design-progress and applications,” Molecular Systems Biology, vol. 20, no. 3, pp. 162-169, 2024.<br>
+[3] N. Ferruz, S. Schmidt, and B. Höcker, "Protgpt2 is a deep unsupervised language model for protein design," Nature communications, vol. 13, no. 1, p. 4348, 2022.<br>
+[4] F. A. Lategan, C. Schreiber, and H. G. Patterton, "Seqprednn: a neural network that generates protein sequences that fold into specified tertiary structures," BMC bioinformatics, vol. 24, no. 1, p. 373, 2023.<br>
+[5] Z. Lin et al., "Evolutionary-scale prediction of atomic-level protein structure with a language model," Science, vol. 379, no. 6637, pp. 1123-1130, 2023.<br>
+[6] C. Hsu et al., "Learning inverse folding from millions of predicted structures," in International conference on machine learning. PMLR, 2022, pp. 8946-8970.<br>
+[7] M. McPartlon, B. Lai, and J. Xu, "A deep se (3)-equivariant model for learning inverse protein folding," BioRxiv, pp. 2022-04, 2022.<br>
+[8] T. Bepler and B. Berger, "Learning the protein language: Evolution, structure, and function," Cell systems, vol. 12, no. 6, pp. 654-669, 2021.<br>
+[9] N. Anand and T. Achim, "Protein structure and sequence generation with equivariant denoising diffusion probabilistic models," arXiv preprint arXiv:2205.15019, 2022.<br>
+[10] K. Yi, B. Zhou, Y. Shen, P. Liò, and Y. Wang, "Graph denoising diffusion for inverse protein folding," Advances in Neural Information Processing Systems, vol. 36, 2024.<br>
+[11] J. L. Watson et al., "De novo design of protein structure and function with rfdiffusion," Nature, vol. 620, no. 7976, pp. 1089-1100, 2023.<br>
+[12] J. J. Yang, J. Yim, R. Barzilay, and T. Jaakkola, "Fast non-autoregressive inverse folding with discrete diffusion," arXiv preprint arXiv:2312.02447, 2023.<br>
+[13] Y. Shen and J. Ke, "Staindiff: Transfer stain styles of histology images with denoising diffusion probabilistic models and self-ensemble," in International Conference on Medical Image Computing and Computer-Assisted Intervention. Springer, 2023, pp. 549-559.<br>
+[14] V. G. Satorras, E. Hoogeboom, and M. Welling, "E (n) equivariant graph neural networks," in International conference on machine learning. PMLR, 2021, pp. 9323-9332.<br>
+[15] Z. Lin et al., "Language models of protein sequences at the scale of evolution enable accurate structure prediction," BioRxiv, vol. 2022, p. 500902, 2022.<br>
+[16] R. Roche et al., "E (3) equivariant graph neural networks for robust and accurate protein-protein interaction site prediction," PLoS Computational Biology, vol. 19, no. 8, p. e1011435, 2023.<br>
+[17] W. Kabsch and C. Sander, "Dictionary of protein secondary structure: pattern recognition of hydrogen-bonded and geometrical features," Biopolymers: Original Research on Biomolecules, vol. 22, no. 12, pp. 2577-2637, 1983.<br>
+[18] J. Ingraham et al., "Generative models for graph-based protein design," Advances in neural information processing systems, vol. 32, 2019.<br>
+[19] C. Tan, Z. Gao, J. Xia, B. Hu, and S. Z. Li, “Generative de novo protein design with global context," arXiv preprint arXiv:2204.10673, 2022.<br>
+[20] B. Jing et al., "Learning from protein structure with geometric vector perceptrons," in International Conference on Learning Representations, 2020.<br>
+[21] Z. Gao, C. Tan, and S. Z. Li, "Alphadesign: A graph protein design method and benchmark on alphafolddb," arXiv preprint arXiv:2202.01079, 2022.<br>
+[22] J. Dauparas et al., “Robust deep learning-based protein sequence design using proteinmpnn," Science, vol. 378, no. 6615, pp. 49–56, 2022.<br>
+[23] Z. Gao, C. Tan, P. Chacón, and S. Z. Li, "Pifold: Toward effective and efficient protein inverse folding," arXiv preprint arXiv:2209.12643, 2022.</p></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">comments</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://Jianxinnn.github.io">Jianxin-AI4S</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="run "+diffDay+" days"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","Jianxinnn/Jianxinnn.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+
+
+</script>
+<script src='https://blog.meekdai.com/Gmeek/plugins/articletoc.js<script src='https://blog.meekdai.com/Gmeek/plugins/lightbox.js'></script><script>MathJax = {tex: {inlineMath: [["$", "$"]]}};</script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</html>
