@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='https://blog.meekdai.com/Gmeek/plugins/GmeekBSZ.js'></script>
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# 论文解读：基于结构条件类别扩散的蛋白质反向折叠强化学习
+
+**论文标题:** REINFORCEMENT LEARNING ON STRUCTURE-CONDITIONED CATEGORICAL DIFFUSION FOR PROTEIN INVERSE FOLDING
+
+**论文链接:** arXiv:2410.">
+<meta property="og:title" content="[Arxiv] Reinforcement learning on structure-conditioned categorical diffusion for protein inverse folding">
+<meta property="og:description" content="# 论文解读：基于结构条件类别扩散的蛋白质反向折叠强化学习
+
+**论文标题:** REINFORCEMENT LEARNING ON STRUCTURE-CONDITIONED CATEGORICAL DIFFUSION FOR PROTEIN INVERSE FOLDING
+
+**论文链接:** arXiv:2410.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://Jianxinnn.github.io/post/%5BArxiv%5D%20Reinforcement%20learning%20on%20structure-conditioned%20categorical%20diffusion%20for%20protein%20inverse%20folding.html">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<title>[Arxiv] Reinforcement learning on structure-conditioned categorical diffusion for protein inverse folding</title>
+
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">[Arxiv] Reinforcement learning on structure-conditioned categorical diffusion for protein inverse folding</h1>
+<div class="title-right">
+    <a href="https://Jianxinnn.github.io" id="buttonHome" class="btn btn-invisible circle" title="home">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/Jianxinnn/Jianxinnn.github.io/issues/16" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="switch theme">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>论文解读：基于结构条件类别扩散的蛋白质反向折叠强化学习</h1>
+<p><strong>论文标题:</strong> REINFORCEMENT LEARNING ON STRUCTURE-CONDITIONED CATEGORICAL DIFFUSION FOR PROTEIN INVERSE FOLDING</p>
+<p><strong>论文链接:</strong> arXiv:2410.17173v1 [cs.AI]</p>
+<p><strong>代码链接:</strong> <a href="https://github.com/flagshippioneering/pi-rldif">https://github.com/flagshippioneering/pi-rldif</a></p>
+<h2>1. 背景介绍</h2>
+<p>蛋白质反向折叠 (Protein Inverse Folding, IF)  是生物信息学和蛋白质工程领域中的一个核心问题。它的目标是：给定一个目标蛋白质的三维 (3D) 结构，预测能够折叠成该结构的氨基酸序列。 这与蛋白质结构预测问题相反，结构预测是从氨基酸序列预测蛋白质结构。</p>
+<p><strong>专业术语解释:</strong></p>
+<ul>
+<li><strong>蛋白质反向折叠 (Protein Inverse Folding, IF):</strong>  也称为蛋白质序列设计，是指根据给定的蛋白质骨架结构，设计出能够折叠成该结构的氨基酸序列的过程。关键词：<code class="notranslate">蛋白质序列设计</code>，<code class="notranslate">结构到序列</code>。</li>
+<li><strong>氨基酸序列 (Amino acid sequence):</strong>  蛋白质的基本组成单元 - 氨基酸 - 线性连接排列而成的链条。蛋白质的序列决定了其结构和功能。关键词：<code class="notranslate">蛋白质序列</code>，<code class="notranslate">序列</code>。</li>
+<li><strong>蛋白质三维结构 (3D structure):</strong>  氨基酸序列在空间中折叠形成的特定三维构象。蛋白质的结构与其功能密切相关。关键词：<code class="notranslate">蛋白质结构</code>，<code class="notranslate">3D结构</code>，<code class="notranslate">构象</code>。</li>
+<li><strong>序列回复率 (Sequence Recovery):</strong> 在反向折叠任务中，模型预测的序列与天然蛋白质序列的相似程度。通常使用相同位置氨基酸残基的比例来衡量。关键词：<code class="notranslate">序列相似性</code>，<code class="notranslate">准确率</code>。</li>
+<li><strong>结构一致性 (Structural Consistency):</strong>  模型预测的氨基酸序列经过结构预测算法 (如AlphaFold2)  预测出的结构，与目标结构的相似程度。通常使用 TM-score (Template Modeling score)  来衡量。TM-score 越接近 1，结构相似度越高。关键词：<code class="notranslate">结构相似度</code>，<code class="notranslate">TM-score</code>。</li>
+<li><strong>序列多样性 (Sequence Diversity):</strong>  模型生成的多条氨基酸序列彼此之间的差异程度。多样性越高，表示模型能够生成更多样的序列空间。关键词：<code class="notranslate">序列差异</code>，<code class="notranslate">多样性</code>。</li>
+<li><strong>可折叠多样性 (Foldable Diversity):</strong>  在保证结构一致性的前提下，模型生成的多条氨基酸序列彼此之间的多样性。这是一个更实用的指标，因为实际应用中通常需要多种可行的序列。关键词：<code class="notranslate">结构保证的多样性</code>，<code class="notranslate">实用性</code>。</li>
+<li><strong>扩散模型 (Diffusion Model):</strong>  一种生成模型，通过逐步添加噪声到数据，再学习反向去噪过程来生成新数据。在此论文中，扩散模型用于生成氨基酸序列。关键词：<code class="notranslate">生成模型</code>，<code class="notranslate">去噪</code>。</li>
+<li><strong>强化学习 (Reinforcement Learning, RL):</strong>  一种机器学习方法，通过智能体与环境的交互，学习最大化累积奖励的策略。在此论文中，强化学习用于优化扩散模型的结构一致性。关键词：<code class="notranslate">策略优化</code>，<code class="notranslate">奖励</code>。</li>
+<li><strong>类别扩散模型 (Categorical Diffusion Model):</strong>  扩散模型的一种变体，特别适用于离散数据的生成，例如氨基酸序列 (每个位置的氨基酸是离散的选择)。关键词：<code class="notranslate">离散数据</code>，<code class="notranslate">类别数据</code>。</li>
+</ul>
+<p>传统的蛋白质反向折叠方法通常以序列回复率为优化目标，即模型试图尽可能还原天然蛋白质的氨基酸序列。然而，反向折叠问题本质上是“一对多”的映射，即一个给定的蛋白质结构可以由多个不同的氨基酸序列折叠而成。在许多实际应用中，例如药物设计、生物材料和合成生物学等领域，拥有多样化的、能够折叠成目标结构的序列集合是非常有益的。这样可以为后续的优化步骤 (如提高稳定性、防止聚集、降低免疫原性等) 提供更广泛的选择空间。</p>
+<p>然而，提高序列多样性的方法 (例如，提高自回归模型的采样温度) 可能会降低生成序列的结构一致性。因此，一个有用的蛋白质反向折叠模型的关键特性是其 “可折叠多样性”，即在保证结构一致性的前提下，生成多样化序列的能力。</p>
+<h2>2. 核心概述</h2>
+<p>本文提出了一种新的蛋白质反向折叠模型 <strong>RL-DIF</strong> (Reinforcement Learning on Structure-Conditioned Categorical Diffusion)。该模型基于类别扩散模型，首先通过序列回复率进行预训练，然后通过强化学习 (Reinforcement Learning, RL)  进行微调，以优化结构一致性。实验结果表明，RL-DIF 在保持与现有最佳模型相当的序列回复率和结构一致性的同时，显著提高了可折叠多样性。在 CATH 4.2 数据集上的实验显示，RL-DIF 的可折叠多样性达到了 29%，而基于相同数据集训练的其他模型仅为 23%。该研究强调了可折叠多样性作为评估反向折叠模型性能的新指标的重要性，并证明了通过强化学习微调扩散模型可以有效提高蛋白质序列设计的质量和多样性。</p>
+<h2>3. 方法与实验细节</h2>
+<h3>3.1 数据集</h3>
+<p>本文使用了以下数据集进行模型训练和评估：</p>
+<ul>
+<li>
+<p><strong>CATH 4.2:</strong>  这是一个蛋白质结构分类数据库，论文使用了 CATH 4.2 数据集及其 Ingraham 等人 (2019) 预先划分的训练集、验证集和测试集。该数据集共包含 18025 个训练样本，1637 个验证样本和 1911 个测试样本。 该数据集的划分方式基于 CATH 拓扑分类，被广泛用于蛋白质反向折叠模型的训练和评估。</p>
+</li>
+<li>
+<p><strong>TS50, TS500, CASP15:</strong>  为了更全面地评估模型的性能，论文还使用了 TS50, TS500 和 CASP15 这三个基准数据集。TS50 和 TS500 是分别包含长度为 50 和 500 的蛋白质列表，来源于 PISCES 服务器。 CASP15 数据集包含 45 个蛋白质结构，用于评估前向折叠模型的质量。</p>
+</li>
+</ul>
+<p>文章在附录 A.2 中分析了这些基准数据集与 CATH 4.2 训练集的结构和序列相似性，发现 TS50, TS500 和 CASP15 与训练集存在一定程度的重叠 (42%-84%)。尽管如此，为了与先前的工作保持一致，论文仍然使用了这些数据集进行评估，并将重点放在 CATH 4.2 数据集上的比较。</p>
+<h3>3.2 算法和模型</h3>
+<p><strong>3.2.1 RL-DIF 模型架构</strong></p>
+<p>RL-DIF 模型的核心是类别扩散模型，其灵感来源于 GradeIF 和 PiFold 模型。 模型架构基于改进的 PiFold 结构，并添加了多层感知器 (MLP) 来处理部分加噪的氨基酸序列和扩散时间步长。</p>
+<p>具体来说，给定蛋白质骨架坐标 $X \in R^{4N \times 3}$，首先构建 kNN 图 (k=30)，然后使用 PiFold 的特征提取器提取节点和边的特征 $h_V$ 和 $h_E$。 这些特征包括原子之间的距离、二面角和方向向量。去噪模型是一个关于 $h_V$, $h_E$，部分去噪的序列 $s_t$ 和时间步长 $t$ 的函数。 模型架构如下:</p>
+<ul>
+<li>
+$h'_V, h'_E = MLP(h_V), MLP(h_E)$  (MLP 用于处理节点和边特征)</li>
+<li>
+$h_o = MLP([s_t, t])$  (MLP 用于处理部分去噪序列和时间步长,  <code class="notranslate">[]</code> 表示连接操作)</li>
+<li>
+$h_{VS} = [h'_V, h_o]$  (连接节点特征和时间步长特征)</li>
+<li>$h^{out}_V, h^{out}<em>E = (10 \times PiGNN)(h</em>{VS}, h'_E)$  (使用 10 层 PiGNN 更新节点和边特征，PiGNN 是 PiFold 中引入的图神经网络层)</li>
+<li>$p(S_{t+1}|S_t) = MLP([h^{out}<em>V, h</em>{VS}])$  (MLP 预测从 $S_t$ 到 $S_{t+1}$ 的概率分布)</li>
+</ul>
+<p>其中 $p(S_{t+1}|S_t)$ 代表在给定当前去噪步骤 $S_t$ 的情况下，预测下一步 $S_{t+1}$ 的概率分布。  [a, b] 表示连接操作， PiGNN 是 PiFold 模型中引入的图神经网络层。</p>
+<p><strong>3.2.2 训练损失函数和强化学习</strong></p>
+<p><strong>预训练阶段 (Diffusion Model Pre-training):</strong></p>
+<p>RL-DIF 模型首先使用离散去噪扩散概率模型 (D3PM)  进行预训练，目标是序列回复率。 论文使用了 GradeIF  提出的条件离散去噪扩散模型，将蛋白质反向折叠过程建模为马尔可夫扩散过程。前向扩散过程定义如下：</p>
+<p>$S_t \sim q(S_t|S_{t-1}, S_0) = Cat(S_t; p = S_{t-1}Q_t)$  (公式 1)</p>
+<p>其中 $Q_1, ..., Q_T$ 是一系列 $|V| \times |V|$ 的转移矩阵， $S_0 = S$ 是天然序列， $Cat$ 表示类别分布。 反向扩散过程需要学习一个模型 $p_\theta(S_{t-1}|S_t; X)$  来逐步去噪，从而生成新的氨基酸序列。 论文使用了 D3PM 混合损失函数进行训练，并使用了均匀转移矩阵。</p>
+<p><strong>强化学习微调阶段 (Reinforcement Learning Fine-tuning):</strong></p>
+<p>预训练后的扩散模型通过强化学习进行微调，目标是优化结构一致性。 论文使用了去噪扩散策略优化 (DDPO) 算法。DDPO 将反向去噪过程视为一个 T 步马尔可夫决策过程，并定义策略梯度来最大化期望奖励 $J(\theta)$:</p>
+<p>$J(\theta) = E_{X \sim p(X), \hat{S} \sim p_\theta(\hat{S}|X)} [R(\hat{S})]$   (公式 3)</p>
+<p>其中 $R(\hat{S})$ 是奖励函数，本文中使用的是自洽 TM-score (sc-TM)。策略梯度 $\nabla_\theta J(\theta)$  的计算公式如下：</p>
+<p>$\nabla_\theta J(\theta) = E_{X \sim p(X), \hat{S}<em>0, ..., \hat{S}<em>T \sim p</em>{old}} [\sum</em>{t=1}^T \frac{p_\theta(S_{t-1}|S_t, X)}{p_{old}(S_{t-1}|S_t, X)} \nabla_\theta log p_\theta(S_{t-1}|S_t, X) R(\hat{S}_0, X)]$  (公式 4)</p>
+<p>其中 $\frac{p_\theta(S_{t-1}|S_t, X)}{p_{old}(S_{t-1}|S_t, X)}$ 是重要性采样比率，允许每个样本进行多次优化迭代。</p>
+<h3>3.3 训练和评估过程</h3>
+<p><strong>预训练阶段:</strong></p>
+<ul>
+<li>模型在 CATH 4.2 数据集的训练集上进行训练。</li>
+<li>使用 Adam 优化器，学习率为 $10^{-3}$，有效批大小为 64 (分布在 4 个 Nvidia A10 GPU 上)。</li>
+<li>扩散时间步长为 150 步。</li>
+<li>训练 200 个 epoch。</li>
+</ul>
+<p><strong>强化学习微调阶段:</strong></p>
+<ul>
+<li>使用与预训练阶段相同的训练数据集。</li>
+<li>每个训练步骤输入一批 32 个蛋白质骨架结构。</li>
+<li>对每个结构，从扩散模型中采样 4 条序列。</li>
+<li>使用 ESMFold  预测采样序列的结构，并计算自洽 TM-score (sc-TM) 作为奖励。</li>
+<li>对原始奖励 (sc-TM) 进行标准化 (均值为 0，标准差为 1)，分别对每个结构的 4 条序列进行标准化。</li>
+<li>使用 minibatch 梯度下降优化 DDPO 目标函数，批大小为 32。</li>
+<li>RL 模型训练 1000 步，使用 Adam 优化器，学习率为 $10^{-5}$，有效批大小为 32。</li>
+<li>使用梯度裁剪来限制策略更新的幅度，裁剪值为 0.2。</li>
+</ul>
+<p><strong>蛋白质结构预测:</strong></p>
+<p>在强化学习微调阶段，以及模型评估过程中，需要预测氨基酸序列的 3D 结构。为了平衡速度和精度，论文使用了 ESMFold  而不是 AlphaFold2  进行结构预测。 使用 Huggingface Transformers 库中的 ESMFold 实现，并在 Kubernetes 集群上部署，包含 20 个 Nvidia A10 GPU 和负载均衡器，以实现高效的在线策略训练。</p>
+<p><strong>模型评估指标:</strong></p>
+<ul>
+<li>
+<strong>序列回复率 (Sequence Recovery):</strong>  公式 (5)</li>
+<li>
+<strong>自洽 TM-score (sc-TM):</strong> 公式 (6), 使用 ESMFold  作为结构预测算法 FOLD。</li>
+<li>
+<strong>序列多样性 (Sequence Diversity):</strong> 公式 (7), 使用 Hamming 距离 $d_H$  衡量序列之间的差异。</li>
+<li>
+<strong>可折叠多样性 (Foldable Diversity, FD):</strong> 公式 (8),  考虑结构一致性的序列多样性。设定 TMmin = 0.7。</li>
+</ul>
+<p><strong>模型采样策略:</strong></p>
+<ul>
+<li>
+<strong>DIF-Only 和 RL-DIF:</strong>  从均匀分布 $p(S_T)$ 中采样，并迭代去噪生成序列。</li>
+</ul>
+<h2>4. 研究过程与结论</h2>
+<p>本文的研究过程主要包括以下几个方面：</p>
+<ol>
+<li>
+<p><strong>可折叠多样性指标的提出:</strong>  论文首先分析了现有蛋白质反向折叠模型在序列多样性和结构一致性之间的权衡，并提出了 “可折叠多样性” (Foldable Diversity, FD)  这一新的评估指标。 FD  指标能够更有效地衡量在保证结构正确性的前提下，模型生成多样化序列的能力，更符合实际应用的需求。</p>
+</li>
+<li>
+<p><strong>RL-DIF 模型的构建与训练:</strong>  为了提高可折叠多样性，论文提出了 RL-DIF 模型。该模型结合了类别扩散模型和强化学习，通过两阶段训练策略：</p>
+<ul>
+<li><strong>预训练阶段:</strong> 使用扩散模型进行序列回复率预训练，学习生成氨基酸序列的基本能力。</li>
+<li><strong>强化学习微调阶段:</strong>  使用 DDPO 算法，以结构一致性 (自洽 TM-score) 为奖励信号，对预训练的扩散模型进行微调，优化模型生成具有正确结构的序列的能力。</li>
+</ul>
+</li>
+<li>
+<p><strong>实验评估与结果分析:</strong>  论文在 CATH 4.2, TS50, TS500 和 CASP15  数据集上对 RL-DIF  模型进行了全面的实验评估，并与现有的 SOTA 模型 (ProteinMPNN, PiFold, KWDesign, DIF-Only, ESM-IF)  进行了比较。 实验结果主要体现在 Table 1, Table 2 和 Figure 2 中:</p>
+<ul>
+<li>
+<p><strong>可折叠多样性显著提升:</strong>  实验结果表明，RL-DIF  模型在所有基准数据集上都实现了最高的或接近最高的<strong>可折叠多样性</strong>。尤其在 CATH-all 数据集 (包含多蛋白复合物) 上，RL-DIF 的可折叠多样性达到了 29%，显著高于其他模型 (最高 23%)。 这表明 RL-DIF  模型能够有效生成更多样化的、同时保持结构正确的蛋白质序列。</p>
+</li>
+<li>
+<p><strong>结构一致性保持竞争力:</strong>  尽管侧重于提高可折叠多样性，RL-DIF  模型在<strong>结构一致性</strong> (sc-TM)  方面仍然保持了与 SOTA  模型相当的水平。在大多数数据集上，RL-DIF 的 sc-TM  略低于一些模型，但差距不大，且可折叠多样性的提升幅度远大于结构一致性的轻微下降。</p>
+</li>
+<li>
+<p><strong>序列回复率适中:</strong>  RL-DIF  的<strong>序列回复率</strong> 相对较低，但作者认为序列回复率并非评估反向折叠模型性能的最佳指标，因为它倾向于生成与天然序列高度相似的序列，限制了设计空间的多样性。论文更强调可折叠多样性和结构一致性。</p>
+</li>
+<li>
+<p><strong>消融实验:</strong> Table 3 展示了强化学习微调对 RL-DIF  性能的影响。结果表明，RL  微调能够有效提高结构一致性，但在一定程度上会降低可折叠多样性。论文选择 RL 训练 1000 步，以平衡结构一致性和可折叠多样性。 Figure 2  展示了可折叠多样性指标对 TMmin  阈值的敏感性分析，结果表明 RL-DIF  在不同的 TMmin  阈值下都表现出最佳的可折叠多样性。</p>
+</li>
+<li>
+<p><strong>与 ESM-IF  的对比:</strong>  Table 2  对比了 RL-DIF-100K (使用更大规模数据集预训练的 RL-DIF) 和 ESM-IF  的性能。 结果表明，RL-DIF-100K  在 TS50  数据集上超越了 ESM-IF，在其他数据集上也接近 ESM-IF  的性能，尽管 RL-DIF-100K  使用的训练数据量和参数量远小于 ESM-IF。 这表明 RL-DIF  模型具有更高的数据效率。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>示例序列展示:</strong> Figure 1  展示了 RL-DIF, ProteinMPNN 和 PiFold  模型在相同蛋白质骨架上生成的示例序列。 颜色编码显示了每个位置氨基酸的多样性，结果表明 RL-DIF  生成的序列具有最高的氨基酸多样性，同时保持了良好的结构一致性。</p>
+</li>
+</ol>
+<p><strong>结论:</strong>  本文提出的 RL-DIF  模型通过结合类别扩散模型和强化学习，有效地提高了蛋白质反向折叠模型的可折叠多样性，同时保持了良好的结构一致性。  可折叠多样性被证明是一个更符合实际应用需求的评估指标。 强化学习微调是提高结构一致性的有效手段，但需要在多样性和一致性之间进行权衡。 RL-DIF  模型为蛋白质序列设计提供了一种新的有效方法，能够生成更多样化的、高质量的候选序列。</p>
+<h2>5. 总结与客观评价</h2>
+<p><strong>总结:</strong> 本文创新性地提出了 RL-DIF 模型，该模型巧妙地融合了类别扩散模型和强化学习，用于解决蛋白质反向折叠问题。通过两阶段训练策略，RL-DIF 模型在保证结构一致性的前提下，显著提升了生成蛋白质序列的可折叠多样性。 论文还强调了可折叠多样性作为评估反向折叠模型的新指标的价值，并进行了全面的实验验证，证明了 RL-DIF 模型在性能上的优势。</p>
+<p><strong>客观评价:</strong></p>
+<ul>
+<li>
+<p><strong>优点:</strong></p>
+<ul>
+<li><strong>创新性地提出了 RL-DIF 模型:</strong> 将扩散模型和强化学习相结合，为蛋白质反向折叠问题提供了新的思路。</li>
+<li><strong>可折叠多样性显著提升:</strong>  实验证明 RL-DIF 模型在可折叠多样性方面取得了显著的提升，更符合实际应用需求。</li>
+<li><strong>结构一致性保持竞争力:</strong>  在提高多样性的同时，模型的结构一致性仍然保持在较高水平。</li>
+<li><strong>实验验证充分:</strong>  在多个数据集上进行了全面的实验评估，并与 SOTA 模型进行了对比，结果可信度高。</li>
+<li><strong>可扩展性:</strong>  RL-DIF 模型可以进一步与其他先进的结构预测算法和强化学习技术结合，提升性能。</li>
+</ul>
+</li>
+<li>
+<p><strong>不足与未来方向:</strong></p>
+<ul>
+<li><strong>ESMFold 作为结构预测模型的局限性:</strong>  论文使用了 ESMFold  进行结构预测，虽然速度快，但精度可能不如 AlphaFold2 等模型。 未来可以考虑使用更精确的结构预测模型或模型集成。</li>
+<li><strong>RL 微调可能降低多样性:</strong>  强化学习微调虽然提高了结构一致性，但也可能降低序列多样性。  未来可以探索更有效的探索策略，以在 RL 微调过程中更好地保持多样性。</li>
+<li><strong>计算资源需求:</strong>  强化学习微调阶段的计算资源需求较高，特别是需要进行大量的结构预测。</li>
+</ul>
+</li>
+</ul>
+<p>总而言之，本文工作具有重要的学术价值和应用前景。RL-DIF 模型代表了蛋白质反向折叠领域的一个重要进展，为生物医药、生物材料等领域的蛋白质设计提供了更有力的工具。  可折叠多样性指标的提出也为未来评估和改进反向折叠模型提供了新的视角。</p>
+<h2>6. 参考文献与链接</h2>
+<ul>
+<li>
+<p><strong>论文链接:</strong> arXiv:2410.17173v1 [cs.AI]</p>
+</li>
+<li>
+<p><strong>代码链接:</strong> <a href="https://github.com/flagshippioneering/pi-rldif">https://github.com/flagshippioneering/pi-rldif</a></p>
+</li>
+<li>
+<p><strong>文中引用的关键参考文献 (部分):</strong></p>
+<ul>
+<li>Yue, K., &amp; Dill, K. A. (1992). Inverse protein folding problem: designing polymer sequences. <em>Proceedings of the National Academy of Sciences</em>, <em>89</em>(9), 4163–4167.</li>
+<li>Ingraham, J., Riesselman, A., Sander, C., &amp; Marks, D. (2019). Learning protein structure with a differentiable simulator. In <em>International Conference on Learning Representations</em>.</li>
+<li>Black, K., Janner, M., Du, Y., Kostrikov, I., &amp; Levine, S. (2024). Training diffusion models with reinforcement learning.</li>
+<li>Gao, Z., Tan, C., Chacón, P., &amp; Li, S. Z. (2022). Pifold: Toward effective and efficient protein inverse folding.</li>
+<li>Yi, K., Zhou, B., Shen, Y., Lio, P., &amp; Wang, Y. G. (2023a). Graph denoising diffusion for inverse protein folding.</li>
+</ul>
+</li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">comments</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://Jianxinnn.github.io">Jianxin-AI4S</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="run "+diffDay+" days"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","Jianxinnn/Jianxinnn.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+
+
+</script>
+<script src='https://blog.meekdai.com/Gmeek/plugins/articletoc.js<script src='https://blog.meekdai.com/Gmeek/plugins/lightbox.js'></script><script>MathJax = {tex: {inlineMath: [["$", "$"]]}};</script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</html>
