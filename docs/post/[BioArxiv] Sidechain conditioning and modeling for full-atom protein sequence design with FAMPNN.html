@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='https://blog.meekdai.com/Gmeek/plugins/GmeekBSZ.js'></script>
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# 侧链条件化和建模用于全原子蛋白质序列设计 - FAMPNN 
+
+## 1.">
+<meta property="og:title" content="[BioArxiv] Sidechain conditioning and modeling for full-atom protein sequence design with FAMPNN">
+<meta property="og:description" content="# 侧链条件化和建模用于全原子蛋白质序列设计 - FAMPNN 
+
+## 1.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://Jianxinnn.github.io/post/%5BBioArxiv%5D%20Sidechain%20conditioning%20and%20modeling%20for%20full-atom%20protein%20sequence%20design%20with%20FAMPNN.html">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<title>[BioArxiv] Sidechain conditioning and modeling for full-atom protein sequence design with FAMPNN</title>
+
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">[BioArxiv] Sidechain conditioning and modeling for full-atom protein sequence design with FAMPNN</h1>
+<div class="title-right">
+    <a href="https://Jianxinnn.github.io" id="buttonHome" class="btn btn-invisible circle" title="home">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/Jianxinnn/Jianxinnn.github.io/issues/19" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="switch theme">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>侧链条件化和建模用于全原子蛋白质序列设计 - FAMPNN</h1>
+<h2>1. 背景介绍</h2>
+<p>蛋白质是生命活动的重要承担者，其三维结构决定了其生物学功能。蛋白质序列设计的目标是为给定的蛋白质骨架结构设计出能够稳定折叠并具有特定功能的氨基酸序列。传统的蛋白质序列设计方法，如基于物理的方法，通常依赖于能量函数来优化序列和侧链构象，以找到能量最低的配置。近年来，深度学习方法在蛋白质序列设计领域取得了显著的成功，尤其是基于固定骨架的序列设计。</p>
+<p><strong>关键术语解释:</strong></p>
+<ul>
+<li><strong>蛋白质序列设计 (Protein Sequence Design)</strong>:  在给定的蛋白质骨架结构下，设计出具有特定功能或稳定性的氨基酸序列的过程。</li>
+<li><strong>固定骨架序列设计 (Fixed-backbone Sequence Design)</strong>:  蛋白质序列设计的一种特定形式，其中蛋白质的骨架结构是预先确定的，而目标是优化氨基酸序列。</li>
+<li><strong>侧链 (Sidechain)</strong>:  氨基酸分子中，除了主链 (backbone) 之外的部分，也称为 R 基团。侧链的种类决定了氨基酸的类型，并且侧链原子的三维排列对于蛋白质的构象、稳定性和功能至关重要。</li>
+<li><strong>骨架 (Backbone)</strong>:  蛋白质多肽链中重复的原子组分 (-N-Cα-C-)。骨架结构主要由 φ 和 ψ 二面角决定。</li>
+<li><strong>构象 (Conformation)</strong>:  分子由于原子基团绕化学键旋转而呈现出的不同空间排列。对于蛋白质而言，构象通常指其三维结构。</li>
+<li><strong>能量函数 (Energy Function)</strong>:  用于评估蛋白质构象稳定性的数学函数，通常基于物理化学原理，例如范德华力、静电相互作用等。</li>
+<li><strong>深度学习 (Deep Learning)</strong>:  机器学习的一个分支，使用具有多层结构的神经网络进行数据建模和分析。在蛋白质科学中，深度学习被广泛应用于结构预测、序列设计、功能预测等任务。</li>
+<li><strong>图神经网络 (Graph Neural Network, GNN)</strong>:  一种用于处理图结构数据的神经网络。在蛋白质领域，蛋白质可以被表示为图，其中氨基酸残基是节点，残基之间的相互作用是边。GNN 可以有效地学习蛋白质的结构特征。</li>
+<li><strong>掩码语言模型 (Masked Language Model)</strong>:  一种自然语言处理中的模型训练方法，通过随机掩盖输入文本中的部分词语，并让模型预测被掩盖的词语，从而学习语言的上下文信息。在蛋白质序列设计中，可以借鉴掩码语言模型的思想来训练模型。</li>
+<li><strong>扩散模型 (Diffusion Model)</strong>:  一类生成模型，通过逐步向数据中添加噪声，然后再学习逆向去噪过程来生成数据。在蛋白质领域，扩散模型可以用于生成蛋白质的构象和序列。</li>
+<li><strong>交叉熵损失 (Cross-entropy Loss)</strong>:  一种用于分类任务的损失函数，衡量模型预测的概率分布与真实概率分布之间的差异。</li>
+<li><strong>扩散损失 (Diffusion Loss)</strong>:  用于训练扩散模型的损失函数，通常基于均方误差 (MSE) 或其他距离度量，衡量模型去噪能力。</li>
+</ul>
+<h2>2. 核心概述</h2>
+<p>本文提出了 FAMPNN (Full-Atom MPNN)，一种用于蛋白质序列设计的新方法，该方法显式地建模了每个残基的序列身份和侧链构象。FAMPNN 模型学习残基离散的氨基酸身份和连续的侧链构象的联合分布，并使用结合了分类交叉熵损失和扩散损失的目标函数进行训练。论文证明了联合学习这两个分布是高度协同的任务，能够提高序列恢复率并实现最先进的侧链堆积性能。此外，显式全原子建模的优势可以推广到序列恢复之外的实际蛋白质设计应用，例如零样本预测实验结合亲和力和稳定性测量。该方法通过图神经网络 (GNN) 编码骨架结构，并迭代地生成序列和侧链，最终实现全原子蛋白质序列设计。</p>
+<h2>3. 方法论和实验细节</h2>
+<h3>3.1. 数据集</h3>
+<p>论文中使用了以下数据集进行模型训练和评估：</p>
+<ul>
+<li><strong>CATH 4.2 S40 数据集</strong>: 用于训练和评估序列恢复性能。该数据集是 CATH 数据库 4.2 版本的 S40 子集，包含冗余度低于 40% 的蛋白质结构域，并划分了训练集、验证集和测试集。数据集的划分方式与 Ingraham 等人 (2019) 的工作相同。</li>
+<li><strong>PDB 数据集</strong>:  用于训练能够处理更复杂蛋白质结构的 FAMPNN 模型。该数据集基于整个蛋白质数据库 (PDB)，截至日期为 2021 年 9 月 30 日。数据集在链级别上进行聚类，保证了蛋白质结构的多样性，并移除了单链蛋白质在多链结构中的情况，确保模型学习到正确的上下文信息。</li>
+<li><strong>CASP 数据集 (CASP13, CASP14, CASP15)</strong>: 用于评估侧链堆积性能。论文使用了 MMseqs2 easy-search 工具从训练集和验证集中移除了与 CASP13-15 同源的序列（相似度cutoff为40%）。CASP13 和 CASP14 的测试集从 AttnPacker 的 GitHub 仓库获得，CASP15 的目标从 CASP 数据档案下载。</li>
+<li><strong>RFdiffusion 生成的 <em>de novo</em> 骨架</strong>: 用于评估自洽性 (self-consistency)。论文使用了 RFdiffusion 生成了长度为 100 到 500 的 <em>de novo</em> 骨架，每个长度生成 100 个骨架。</li>
+<li><strong>SKEMPIv2, Megascale, FireProtDB, S669, 抗体-抗原结合亲和力数据集</strong>:  用于评估蛋白质适应性 (fitness) 预测能力。这些数据集包含了实验测量的蛋白质突变体结合亲和力或稳定性变化的数据。详细的数据集处理过程在附录 G.2 中描述。</li>
+</ul>
+<h3>3.2. 算法和模型</h3>
+<p>FAMPNN 模型的核心架构是混合了 MPNN (Message Passing Neural Network) 和 GVP (Geometric Vector Perceptron) 的图神经网络。模型主要由以下三个组件构成：</p>
+<ol>
+<li><strong>不变骨架编码器 (Invariant Backbone Encoder)</strong>:  与 ProteinMPNN 的编码器相同，用于编码蛋白质的骨架结构。输入是蛋白质的骨架原子坐标，输出是节点的表示和边的表示。</li>
+<li><strong>不变全原子编码器 (Invariant Full-Atom Encoder)</strong>:  替换了 ProteinMPNN 的序列解码器，与骨架编码器结构相同，但扩展了特征表示，能够处理所有原子。输入除了骨架结构外，还包括序列信息。</li>
+<li><strong>等变全原子编码器 (Equivariant Full-Atom Encoder)</strong>:  使用几何向量感知器 (GVP) 层，学习向量特征和标量特征。GVP 层包含等变轨道 (equivariant track) 和不变轨道 (invariant track)。等变轨道用于学习向量特征，不变轨道用于学习标量特征。FAMPNN 使用等变轨道编码 Cα 到残基 i 中所有其他原子的单位向量，以及 Cαi 到残基 j 中所有原子的单位向量作为边特征。不变轨道则结合了全原子编码器中的距离信息。</li>
+</ol>
+<p><strong>训练损失函数:</strong></p>
+<p>FAMPNN 的训练目标是联合预测序列身份和侧链构象。因此，总损失函数由两部分组成：</p>
+<ul>
+<li><strong>序列预测的交叉熵损失 (L<sub>MLM</sub>)</strong>:  标准的掩码语言模型损失，用于训练模型预测被掩盖的氨基酸序列。</li>
+<li><strong>侧链构象预测的扩散损失 (L<sub>diff</sub>)</strong>:  使用欧几里得扩散损失，用于训练模型生成侧链构象。扩散过程基于方差爆炸 EDM 方案，模型学习一个噪声条件化的去噪器 D<sub>θ</sub>，以最小化高斯噪声版本侧链坐标的 L2 误差。</li>
+</ul>
+<p>总损失函数为两者的简单加和：</p>
+<p><code class="notranslate">L&lt;sub&gt;total&lt;/sub&gt; = L&lt;sub&gt;MLM&lt;/sub&gt; + L&lt;sub&gt;diff&lt;/sub&gt;</code></p>
+<p><strong>侧链扩散过程</strong>:</p>
+<p>FAMPNN 使用扩散模型生成侧链坐标。扩散过程基于 EDM (Equilibrium Diffusion Model) 框架，并使用了方差爆炸 (variance-exploding) 策略。</p>
+<ul>
+<li><strong>噪声添加</strong>:  逐步向真实的侧链坐标  <code class="notranslate">x&lt;sub&gt;0&lt;/sub&gt;</code>  添加高斯噪声，得到加噪后的坐标  <code class="notranslate">x&lt;sub&gt;t&lt;/sub&gt;</code>。噪声水平由时间步长  <code class="notranslate">t</code>  控制，  <code class="notranslate">t</code>  越大，噪声越大。</li>
+<li><strong>去噪</strong>:  训练一个神经网络 (去噪器 D<sub>θ</sub>) 来预测给定加噪坐标  <code class="notranslate">x&lt;sub&gt;t&lt;/sub&gt;</code> 和噪声水平  <code class="notranslate">σ&lt;sub&gt;t&lt;/sub&gt;</code>  的原始坐标  <code class="notranslate">x&lt;sub&gt;0&lt;/sub&gt;</code>。</li>
+<li><strong>损失函数</strong>:  使用均方误差 (MSE) 损失函数，衡量去噪器预测的坐标与真实坐标之间的差异。</li>
+</ul>
+<p><strong>采样过程</strong>:</p>
+<p>采样过程是一个迭代的去噪过程。从完全噪声的侧链坐标开始，逐步使用训练好的去噪器 D<sub>θ</sub> 进行去噪，最终得到生成的侧链坐标。FAMPNN 使用迭代掩码采样方法，在每个步骤中，模型并行预测所有残基的 token (序列和侧链)，然后解屏蔽一部分 token，重复此过程直到所有 token 都被解屏蔽。</p>
+<h3>3.3. 训练和评估过程</h3>
+<ul>
+<li><strong>训练细节</strong>:  使用 AdamW 优化器，学习率设置为 1e-4。在 CATH 数据集上训练的模型，batch size 为 64，训练步数为 100k。在 PDB 数据集上训练的模型，使用 4 块 NVIDIA H100 GPU，effective batch size 为 128，训练步数为 300k。</li>
+<li><strong>自洽性评估 (Self-Consistency)</strong>: 使用 RFdiffusion 生成的 <em>de novo</em> 骨架评估序列设计模型的自洽性。对于每个骨架，使用序列设计模型生成序列，然后使用 AlphaFold2 预测生成序列的结构，并计算预测结构与原始骨架之间的 TM-score 和 RMSD。</li>
+<li><strong>侧链堆积评估 (Sidechain Packing)</strong>:  在 CASP13, CASP14, CASP15 数据集上评估侧链堆积性能。使用 RMSD (Root Mean Square Deviation) 和 chi 角的平均绝对误差 (MAE) 作为评估指标。</li>
+<li><strong>蛋白质适应性预测评估 (Protein Fitness Prediction)</strong>:  在 SKEMPIv2, Megascale, FireProtDB, S669 和抗体-抗原结合亲和力数据集上评估蛋白质适应性预测能力。使用 Spearman 相关系数评估模型预测结果与实验测量值之间的相关性。</li>
+</ul>
+<h2>4. 研究过程和结论</h2>
+<p>论文的核心研究过程围绕着验证全原子建模和侧链条件化对于蛋白质序列设计和适应性预测的有效性展开。</p>
+<p><strong>研究过程:</strong></p>
+<ol>
+<li><strong>模型构建</strong>:  设计并实现了 FAMPNN 模型，该模型显式地建模了氨基酸序列和侧链构象，并采用联合训练策略。</li>
+<li><strong>序列恢复和自洽性评估</strong>:  在 CATH 4.2 数据集和 <em>de novo</em> 骨架上评估 FAMPNN 的序列恢复率和自洽性。实验结果表明，FAMPNN 在序列恢复方面具有竞争力，在自洽性方面与 ProteinMPNN 相当。</li>
+<li><strong>侧链堆积评估</strong>:  在 CASP 数据集上评估 FAMPNN 的侧链堆积性能。结果表明，FAMPNN 在侧链堆积方面取得了最先进的性能，尤其是在 RMSD 指标上优于其他方法。</li>
+<li><strong>蛋白质适应性预测评估</strong>:  在多个蛋白质适应性数据集上评估 FAMPNN 的预测能力。结果表明，FAMPNN 在蛋白质稳定性预测和蛋白质-蛋白质结合亲和力预测方面优于其他无监督模型，甚至在某些情况下优于有监督模型。</li>
+<li><strong>消融实验</strong>:  通过消融实验研究了全原子条件化和侧链堆积目标对模型性能的影响。结果表明，全原子条件化和侧链堆积目标都能够提高序列设计性能，并且全原子条件化在蛋白质适应性预测方面尤为重要。</li>
+</ol>
+<p><strong>结论:</strong></p>
+<p>论文的主要结论是：</p>
+<ul>
+<li>显式地建模侧链构象能够提高蛋白质序列设计的性能，尤其是在侧链堆积方面。</li>
+<li>全原子条件化能够显著提高蛋白质适应性预测的准确性，表明全原子结构信息对于理解蛋白质的功能至关重要。</li>
+<li>FAMPNN 模型通过联合学习序列和侧链分布，实现了在序列设计和侧链堆积方面的最先进性能，并展示了在蛋白质适应性预测方面的潜力。</li>
+</ul>
+<h2>5. 总结和客观评价</h2>
+<p>FAMPNN 是一种新颖的全原子蛋白质序列设计方法，它通过显式地建模侧链构象，并在训练过程中结合序列预测和侧链扩散，实现了优异的性能。论文的实验结果充分证明了全原子建模和侧链条件化对于蛋白质序列设计的重要性。FAMPNN 在序列恢复、侧链堆积和蛋白质适应性预测方面都取得了具有竞争力的结果，表明该方法具有广阔的应用前景。</p>
+<p><strong>客观评价:</strong></p>
+<ul>
+<li><strong>优点</strong>:
+<ul>
+<li>提出了新颖的全原子蛋白质序列设计方法 FAMPNN。</li>
+<li>显式建模侧链构象，提高了侧链堆积性能。</li>
+<li>全原子条件化显著提高了蛋白质适应性预测能力。</li>
+<li>模型设计和实验验证充分，结果可靠。</li>
+</ul>
+</li>
+<li><strong>不足</strong>:
+<ul>
+<li>模型在抗体-抗原结合亲和力预测方面的提升不明显，可能受限于数据集的质量和输入结构的准确性。</li>
+<li>模型训练和推理的计算成本较高，需要进一步优化。</li>
+</ul>
+</li>
+</ul>
+<p>总的来说，FAMPNN 是一项重要的研究工作，它为蛋白质序列设计领域提供了一种新的思路和方法，并为未来的研究方向提供了有益的启示。</p>
+<h2>6. 参考文献和链接</h2>
+<ul>
+<li><strong>论文链接</strong>: <a href="https://doi.org/10.1101/2025.02.13.637498" rel="nofollow">https://doi.org/10.1101/2025.02.13.637498</a></li>
+<li><strong>代码仓库</strong>: <a href="https://github.com/richardshuai/fampnn">https://github.com/richardshuai/fampnn</a></li>
+</ul>
+<p><strong>参考文献列表 (部分)</strong>:</p>
+<ul>
+<li>Dauparas, J., et al. (2022). Robust deep learning-based protein sequence design using ProteinMPNN. <em>Science</em>, <em>378</em>(6615), 49-56.</li>
+<li>Jing, B., et al. (2020). Learning from protein structure with geometric vector perceptrons. <em>arXiv preprint arXiv:2009.01411</em>.</li>
+<li>Karras, T., et al. (2022). Elucidating the design space of diffusion-based generative models. <em>Advances in neural information processing systems</em>, <em>35</em>, 26565-26577.</li>
+<li>Lee, J. S., &amp; Kim, P. M. (2024). Flowpacker: Protein side-chain packing with torsional flow matching. <em>bioRxiv</em>, pp. 2024-07.</li>
+<li>McPartlon, M., &amp; Xu, J. (2023). An end-to-end deep learning method for protein side-chain packing and inverse folding. <em>Proceedings of the National Academy of Sciences</em>, <em>120</em>(23), e2216438120.</li>
+</ul>
+<p><strong>注意</strong>:  由于 bioRxiv 是预印本平台，该论文尚未经过同行评审，请读者注意甄别。</p></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">comments</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://Jianxinnn.github.io">Jianxin-AI4S</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="run "+diffDay+" days"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","Jianxinnn/Jianxinnn.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+
+
+</script>
+<script src='https://blog.meekdai.com/Gmeek/plugins/articletoc.js<script src='https://blog.meekdai.com/Gmeek/plugins/lightbox.js'></script>
+
+</html>
