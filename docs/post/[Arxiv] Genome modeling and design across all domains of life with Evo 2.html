@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='https://blog.meekdai.com/Gmeek/plugins/GmeekBSZ.js'></script>
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="1.">
+<meta property="og:title" content="[Arxiv] Genome modeling and design across all domains of life with Evo 2">
+<meta property="og:description" content="1.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://Jianxinnn.github.io/post/%5BArxiv%5D%20Genome%20modeling%20and%20design%20across%20all%20domains%20of%20life%20with%20Evo%202.html">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<title>[Arxiv] Genome modeling and design across all domains of life with Evo 2</title>
+
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">[Arxiv] Genome modeling and design across all domains of life with Evo 2</h1>
+<div class="title-right">
+    <a href="https://Jianxinnn.github.io" id="buttonHome" class="btn btn-invisible circle" title="home">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/Jianxinnn/Jianxinnn.github.io/issues/20" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="switch theme">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><ol>
+<li>背景介绍</li>
+</ol>
+<p>生命体将所有信息都编码在DNA中。随着基因组测序、合成和编辑技术的革新，生物学研究已经发生了巨大的变革。然而，要智能地构建新的生物系统，还需要对基因组中蕴含的复杂性有深入的理解。基因组的复杂性远远超出了人类直观理解的范围，但人工智能领域的进步为我们提供了一个通用的框架，能够利用大规模数据和计算能力来揭示高阶模式。</p>
+<p>专业术语解释:</p>
+<p>基因组 (Genome): 一个生物体或病毒包含的全部遗传物质，包括DNA或RNA (对于某些病毒)。在细胞生物中，基因组主要由DNA构成，包含了编码蛋白质、RNA以及调控序列的所有遗传信息。</p>
+<p>DNA碱基对 (DNA base pairs): DNA分子是由两条链相互缠绕形成双螺旋结构，链上的碱基通过氢键相互配对。腺嘌呤（A）总是与胸腺嘧啶（T）配对，鸟嘌呤（G）总是与胞嘧啶（C）配对。碱基对是DNA信息存储的基本单位。</p>
+<p>生物系统 (Biological systems): 生物体内相互作用的组分集合，这些组分协同工作以执行特定的生物功能。生物系统可以涵盖从分子水平（如蛋白质复合物）到细胞、组织、器官乃至整个生物体的各个层面。</p>
+<p>人工智能 (Artificial Intelligence, AI): 研究、开发用于模拟、延伸和扩展人类智能的理论、方法、技术及应用系统的一门新的技术科学。人工智能旨在使计算机能够执行通常需要人类智能才能完成的任务，例如学习、推理、问题解决、感知、语言理解和创造力。</p>
+<p>高阶模式 (Higher-order patterns): 数据中复杂且不易察觉的模式，这些模式超越了简单的线性关系，通常需要复杂的模型和算法才能识别和理解。在基因组数据中，高阶模式可能涉及基因之间的复杂相互作用、调控元件的精细调控机制以及基因组结构与功能之间的非线性关系。</p>
+<p>论文作者认为，为了让机器能够设计生命功能，需要使其学习对生物复杂性的深入且通用的表征。为了实现这一目标，需要使用跨越生物多样性全谱的数据来训练模型，以发现类似于其他领域中涌现的特性。</p>
+<ol start="2">
+<li>核心概述</li>
+</ol>
+<p>本文介绍了Evo 2，这是一个生物学基础模型，它在来自生命所有领域的、经过高度整理的基因组图谱中的9.3万亿DNA碱基对上进行了训练。Evo 2模型拥有70亿和400亿参数两种版本，并具有前所未有的100万token上下文窗口和单核苷酸分辨率。研究表明，Evo 2仅从DNA序列中学习，就能准确预测遗传变异的功能影响，无需针对特定任务进行微调，例如预测非编码致病突变和临床上重要的BRCA1变异。通过应用机制可解释性分析，研究者揭示了Evo 2自主学习了广泛的生物学特征，包括外显子-内含子边界、转录因子结合位点、蛋白质结构元件和前噬菌体基因组区域。除了预测能力，Evo 2还能生成线粒体、原核生物和真核生物基因组尺度的序列，其自然性和连贯性优于以前的方法。通过推理时搜索引导Evo 2，可以实现对表观基因组结构的可控生成，并展示了生物学中首个推理时扩展的结果。为了加速生物复杂性的探索和设计，作者完全开源了Evo 2，包括模型参数、训练代码、推理代码和OpenGenome2数据集。</p>
+<ol start="3">
+<li>方法与实验细节</li>
+</ol>
+<p>本文提出的Evo 2模型涉及训练过程，以下将详细介绍数据集、算法模型、训练和评估过程。</p>
+<p>数据集 (Dataset):</p>
+<p>名称: OpenGenome2</p>
+<p>大小: 9.3万亿 DNA 碱基对 (训练数据), 数据集总计超过8.8万亿核苷酸</p>
+<p>构建方法:</p>
+<p>高度整理的基因组图谱，跨越生命的所有领域。</p>
+<p>数据来源包括细菌、古细菌、真核生物和噬菌体。</p>
+<p>数据集来源于精心策划的非冗余核苷酸序列数据。</p>
+<p>数据来自GTDB, NCBI genomes, Metagenomics (IMG/VR), EPDnew 等数据库。</p>
+<p>强调数据的多样性和代表性，涵盖了广泛的生物类群和基因组类型。</p>
+<p>数据集划分: 论文中没有明确划分训练集、测试集和验证集，但提到了验证集用于超参数调整和模型选择，测试集用于评估模型性能。数据集主要用于模型的预训练和中途训练。</p>
+<p>算法和模型 (Algorithms and Models):</p>
+<p>算法: 基于Transformer架构的生物学基础模型。</p>
+<p>模型架构: Evo 2 使用 StripedHyena 2 架构，这是一种卷积多混合架构。</p>
+<p>基础模型: StripedHyena 2</p>
+<p>关键组件:</p>
+<p>多混合架构 (Multi-hybrid architecture): 结合了多种不同类型的算子，包括输入相关的卷积算子和注意力机制，旨在平衡模型质量与训练和推理效率。</p>
+<p>Striped pattern: 将不同类型的算子以条纹模式排列，利用它们之间的协同作用。</p>
+<p>Hyena 算子: 使用三种不同变体的输入依赖卷积算子 (Short Explicit (SE), Medium Regularized (MR), and Long Implicit (LI) hyena operators)。</p>
+<p>注意力机制 (Attention): 模型中也包含注意力层，用于捕捉序列中的长程依赖关系。</p>
+<p>Rotary Positional Embeddings (RoPE): 使用旋转位置编码，以便有效地扩展上下文长度。</p>
+<p>模型参数: 提供 7B 和 40B 两种参数规模的模型。</p>
+<p>上下文窗口 (Context Window): 100万 tokens (单核苷酸分辨率)。</p>
+<p>训练损失函数 (Training Loss): 重加权交叉熵损失 (Reweighted Cross Entropy Loss, IWCE)。</p>
+<h1>公式:<br>
+L<br>
+I<br>
+W<br>
+C<br>
+E</h1>
+<h1>1<br>
+Z<br>
+∑<br>
+t<br>
+w<br>
+t<br>
+ℓ<br>
+C<br>
+E<br>
+(<br>
+t<br>
+)<br>
+L<br>
+IWCE<br>
+​</h1>
+<p>Z<br>
+1<br>
+​<br>
+∑<br>
+t<br>
+​<br>
+w<br>
+t<br>
+​<br>
+ℓ<br>
+CE<br>
+​<br>
+(t)</p>
+<p>ℓ<br>
+C<br>
+E<br>
+(<br>
+t<br>
+)<br>
+ℓ<br>
+CE<br>
+​<br>
+(t)<br>
+: 在位置 t 的交叉熵损失。</p>
+<p>w<br>
+t<br>
+w<br>
+t<br>
+​</p>
+<h1>: 位置 t 的权重，如果位置 t 在重复区域，则<br>
+w<br>
+t</h1>
+<h1>0.1<br>
+w<br>
+t<br>
+​<br>
+=0.1<br>
+，否则<br>
+w<br>
+t</h1>
+<p>1.0<br>
+w<br>
+t<br>
+​<br>
+=1.0<br>
+。</p>
+<h1>Z</h1>
+<p>0.1<br>
+×<br>
+N<br>
+r<br>
+e<br>
+p<br>
+e<br>
+a<br>
+t<br>
++<br>
+N<br>
+n<br>
+o<br>
+n<br>
+_<br>
+r<br>
+e<br>
+p<br>
+e<br>
+a<br>
+t<br>
+Z=0.1×N<br>
+repeat<br>
+​<br>
++N<br>
+non_repeat<br>
+​</p>
+<p>: 归一化因子，确保损失缩放的一致性。</p>
+<p>损失函数推导和逻辑: 该损失函数旨在降低重复DNA序列区域对损失函数的贡献，从而提高模型在非重复区域和下游任务上的性能。这种方法可以更好地校准重复序列和非重复序列之间的可能性，已被证明在其他DNA模型中可以提高下游任务的性能。</p>
+<p>训练和评估过程 (Training and Evaluation Process):</p>
+<p>训练过程: 两阶段训练策略</p>
+<p>预训练 (Pretraining):</p>
+<p>上下文长度: 8192 tokens</p>
+<p>数据加权: 侧重于基因窗口，学习功能性遗传元件。</p>
+<p>使用前 3T tokens 的小写 tokens 来标识重复区域。</p>
+<p>中途训练 (Midtraining):</p>
+<p>多阶段中途训练，逐步扩展上下文长度至 100 万 tokens。</p>
+<p>数据组成调整：包含更多完整基因组和更长的平均序列长度。</p>
+<p>使用旋转位置编码的变体来适应更长的序列。</p>
+<p>实验设计:</p>
+<p>消融实验: 对比不同数据组成和损失函数的模型性能，验证数据加权和上下文扩展策略的有效性。</p>
+<p>模型扩展: 训练 7B 和 40B 两种参数规模的模型，研究模型规模对性能的影响。</p>
+<p>长上下文评估: 设计 "needle-in-a-haystack" 合成评估任务，评估模型在长上下文中的信息检索能力。</p>
+<p>下游任务评估: 在多种生物学任务上评估 Evo 2 的性能，包括变异效应预测、基因必要性预测、mRNA 衰减预测、外显子/内含子分类等。</p>
+<p>评估指标:</p>
+<p>困惑度 (Perplexity): 评估语言模型的训练效果。</p>
+<p>AUROC, AUPRC: 评估分类任务的性能，例如变异致病性预测和外显子分类。</p>
+<p>Spearman 相关系数: 评估模型预测与实验数据之间的相关性，例如 DMS 实验。</p>
+<p>序列恢复率 (Sequence Recovery): 评估基因序列生成任务的性能。</p>
+<p>TM-score, pLDDT: 评估蛋白质结构预测的质量。</p>
+<p>中间过程:</p>
+<p>预训练阶段使用 8192 上下文长度。</p>
+<p>中途训练阶段逐步扩展上下文长度至 100 万 tokens。</p>
+<p>在不同生物学任务上进行零样本和微调评估。</p>
+<p>使用稀疏自编码器 (SAE) 进行机制可解释性分析。</p>
+<p>利用推理时搜索进行可控的表观基因组生成。</p>
+<ol start="4">
+<li>研究过程与结论</li>
+</ol>
+<p>本文的研究过程围绕Evo 2模型的训练、评估和分析展开，旨在验证其在生物序列建模和设计方面的通用能力。</p>
+<p>变异效应预测:</p>
+<p>实验设计: 作者评估了Evo 2在预测不同类型遗传变异（包括SNV和non-SNV，编码区和非编码区变异）功能影响方面的能力，使用了ClinVar, SpliceVarDB, BRCA1/2 变异数据集。</p>
+<p>研究过程: 使用 Evo 2 的零样本可能性评分来预测变异的致病性。还训练了基于 Evo 2 embeddings 的监督分类器来预测 BRCA1 变异的影响。</p>
+<p>实验结果: Evo 2 在多种变异效应预测任务上表现出色，尤其是在非编码变异和剪接变异预测方面，取得了领先水平。监督模型在 BRCA1 变异分类任务上超越了零样本方法和其他基线模型。</p>
+<p>结论: Evo 2 能够准确预测人类临床变异的效应，证明了其在理解人类疾病遗传基础方面的潜力。</p>
+<p>机制可解释性分析:</p>
+<p>实验设计: 使用稀疏自编码器 (SAE) 来解释 Evo 2 模型学习到的表征，旨在揭示模型内部与生物学概念相关的潜在维度。</p>
+<p>研究过程: 在 Evo 2 的中间层训练 SAE，并使用对比特征搜索方法将 SAE 特征与已知的生物学概念对齐。</p>
+<p>实验结果: SAE 揭示了 Evo 2 学到了一系列与关键生物学特征相对应的潜在维度，包括外显子-内含子边界、转录因子结合位点、蛋白质二级结构和前噬菌体区域。</p>
+<p>结论: Evo 2 能够自主学习广泛的生物学特征，这些特征可以用于基因组注释和生物学发现。</p>
+<p>基因组生成:</p>
+<p>实验设计: 评估 Evo 2 在生成不同类型基因组序列方面的能力，包括线粒体基因组、最小细菌基因组和酵母染色体。还探索了使用推理时搜索引导 Evo 2 生成具有特定表观基因组特征的序列。</p>
+<p>研究过程: 使用 Evo 2 进行无约束的自回归生成，并评估生成序列的自然性和生物学相关性。使用 Enformer 和 Borzoi 模型作为评分函数，通过 beam search 引导 Evo 2 生成具有可控染色质可及性的 DNA 序列。</p>
+<p>实验结果: Evo 2 能够生成自然且连贯的基因组尺度序列，包括完整的线粒体基因组、最小细菌基因组和酵母染色体。通过推理时搜索，Evo 2 实现了对表观基因组结构的可控生成，并成功编码了 Morse 代码信息。</p>
+<p>结论: Evo 2 具备强大的基因组设计能力，可以用于生成具有特定功能和表观基因组特征的新型生物序列。</p>
+<p>总的来说，论文的结论是 Evo 2 作为一个生物学基础模型，在生物序列的预测和生成方面都展现了强大的通用能力，为计算生物学领域的下游应用提供了坚实的基础。</p>
+<ol start="5">
+<li>总结与客观评价</li>
+</ol>
+<p>本文深入研究了生物学基础模型 Evo 2，并对其在基因组建模和设计方面的能力进行了全面的评估。Evo 2 模型通过在大规模、多样化的基因组数据集上进行训练，有效地学习了生物序列的复杂规律，并在变异效应预测、机制可解释性和基因组生成等多个方面取得了显著的成果。</p>
+<p>客观评价:</p>
+<p>优点:</p>
+<p>通用性: Evo 2 展现了跨生命领域和生物学尺度的通用建模能力，能够处理 DNA、RNA 和蛋白质序列，并应用于多种生物学任务。</p>
+<p>高性能: 在变异效应预测、基因组生成等任务上，Evo 2 取得了与或超越现有专门模型的性能。尤其在非编码变异和长序列生成方面，优势显著。</p>
+<p>可解释性: 通过 SAE 分析，揭示了模型学习到的可解释生物学特征，为理解模型的工作机制提供了 insights。</p>
+<p>可控生成: 通过推理时搜索，实现了对基因组特性的可控设计，展示了生成式生物学的潜力。</p>
+<p>开源: 模型、代码和数据集的完全开源，极大地促进了研究的可重复性和社区的进一步发展。</p>
+<p>不足与局限性:</p>
+<p>病毒序列预测性能较弱，这与训练数据排除了真核病毒序列有关，但也反映了模型在病毒领域泛化能力的不足。</p>
+<p>生成的真核基因组序列在 tRNA 和基因特征密度方面略低于天然基因组，表明生成序列的自然性仍有提升空间。</p>
+<p>机制可解释性分析虽然揭示了模型学习到的一些生物学特征，但对更复杂生物学模式的理解仍需深入探索。</p>
+<p>总而言之，Evo 2 是一项重要的研究成果，代表了生物学基础模型领域的重大进展。它为生物学研究提供了强大的计算工具，有望加速基因组功能解析和生物系统设计，但也需要在特定领域和应用中持续改进和完善。</p>
+<ol start="6">
+<li>参考文献与链接</li>
+</ol>
+<p>论文链接: 用户未提供论文链接，请补充论文的DOI或URL以便添加。</p>
+<p>代码仓库: <a href="https://www.google.com/url?sa=E&amp;q=https%3A%2F%2Fgithub.com%2Farcinstitute%2Fevo2" rel="nofollow">https://github.com/arcinstitute/evo2</a>, <a href="https://www.google.com/url?sa=E&amp;q=https%3A%2F%2Fgithub.com%2Fzymrael%2Fsavanna" rel="nofollow">https://github.com/zymrael/savanna</a>, <a href="https://www.google.com/url?sa=E&amp;q=https%3A%2F%2Fgithub.com%2Fzymrael%2Fvortex" rel="nofollow">https://github.com/zymrael/vortex</a></p>
+<p>数据集链接: <a href="https://www.google.com/url?sa=E&amp;q=https%3A%2F%2Fhuggingface.co%2Fdatasets%2Farcinstitute%2Fopengenome2" rel="nofollow">https://huggingface.co/datasets/arcinstitute/opengenome2</a></p>
+<p>Evo Designer: <a href="https://www.google.com/url?sa=E&amp;q=https%3A%2F%2Farcinstitute.org%2Ftools%2Fevo%2Fevo-designer" rel="nofollow">https://arcinstitute.org/tools/evo/evo-designer</a></p>
+<p>Evo Mech Interp Visualizer: <a href="https://www.google.com/url?sa=E&amp;q=https%3A%2F%2Farcinstitute.org%2Ftools%2Fevo%2Fevo-mech-interp" rel="nofollow">https://arcinstitute.org/tools/evo/evo-mech-interp</a></p>
+<p>NVIDIA Evo 2 NIM (generation): <a href="https://www.google.com/url?sa=E&amp;q=https%3A%2F%2Fbuild.nvidia.com%2Fnvidia%2Fevo2-protein-design" rel="nofollow">https://build.nvidia.com/nvidia/evo2-protein-design</a></p>
+<p>NVIDIA Evo 2 NIM (forward): <a href="https://www.google.com/url?sa=E&amp;q=https%3A%2F%2Fbuild.nvidia.com%2Farc%2Fevo2-40b" rel="nofollow">https://build.nvidia.com/arc/evo2-40b</a></p>
+<p>NVIDIA BioNeMo version of Evo 2 code: <a href="https://www.google.com/url?sa=E&amp;q=https%3A%2F%2Fgithub.com%2FNVIDIA%2Fbionemo-framework" rel="nofollow">https://github.com/NVIDIA/bionemo-framework</a></p></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">comments</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://Jianxinnn.github.io">Jianxin-AI4S</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="run "+diffDay+" days"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","Jianxinnn/Jianxinnn.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+
+
+</script>
+<script src='https://blog.meekdai.com/Gmeek/plugins/articletoc.js<script src='https://blog.meekdai.com/Gmeek/plugins/lightbox.js'></script>
+
+</html>
