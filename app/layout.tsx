@@ -1,0 +1,29 @@
+import type { Metadata } from "next";
+import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
+import { profile } from "@/content/profile";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: {
+    default: `${profile.name} | Personal Profile`,
+    template: `%s | ${profile.name}`
+  },
+  description: profile.intro
+};
+
+export default function RootLayout({
+  children
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body>
+        <SiteHeader />
+        <main>{children}</main>
+        <SiteFooter />
+      </body>
+    </html>
+  );
+}
