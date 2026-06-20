@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { entries } from "@/content/entries";
 import { formatDate, groupEntriesByMonth } from "@/lib/content";
 
@@ -15,7 +16,13 @@ export default function ArchivePage() {
           {index > 0 ? <h2>{group.label}</h2> : null}
           {group.entries.map((entry) => (
             <article className="archive-entry" id={entry.slug} key={entry.slug}>
-              <h3>{entry.title}</h3>
+              <h3>
+                {entry.href ? (
+                  <Link href={entry.href}>{entry.title}</Link>
+                ) : (
+                  entry.title
+                )}
+              </h3>
               <p>{entry.summary}</p>
               <div className="entry-meta">
                 <time dateTime={entry.date}>{formatDate(entry.date)}</time>

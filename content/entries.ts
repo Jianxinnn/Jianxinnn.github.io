@@ -14,6 +14,17 @@ export type Entry = {
 
 export const entries: Entry[] = [
   {
+    slug: "alphafold3-illustrated-cn",
+    title: "图解 AlphaFold",
+    summary:
+      "一篇 AlphaFold3 架构的中文可视化导览，梳理输入准备、表征学习、结构预测与置信度评估等模块。",
+    date: "2026-06-20",
+    type: "writing",
+    collaborators: "AlphaFold3 / illustrated note",
+    image: "/assets/visuals/notes-field.png",
+    href: "/blog/alphafold3-illustrated-cn/"
+  },
+  {
     slug: "agentic-research-workbench",
     title: "Agentic Research Workbench",
     summary:

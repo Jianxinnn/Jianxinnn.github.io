@@ -32,14 +32,27 @@ export default function HomePage() {
             {currentWork.map((entry, index) => (
               <article className="current-work-item" key={entry.slug}>
                 {entry.image ? (
-                  <Image
-                    alt=""
-                    className="current-work-image"
-                    height={214}
-                    priority={index === 0}
-                    src={entry.image}
-                    width={320}
-                  />
+                  entry.href ? (
+                    <Link aria-label={entry.title} className="current-work-image-link" href={entry.href}>
+                      <Image
+                        alt=""
+                        className="current-work-image"
+                        height={214}
+                        priority={index === 0}
+                        src={entry.image}
+                        width={320}
+                      />
+                    </Link>
+                  ) : (
+                    <Image
+                      alt=""
+                      className="current-work-image"
+                      height={214}
+                      priority={index === 0}
+                      src={entry.image}
+                      width={320}
+                    />
+                  )
                 ) : null}
                 <div className="current-work-copy">
                   <div className="entry-meta">
@@ -47,7 +60,13 @@ export default function HomePage() {
                     <span aria-hidden="true">·</span>
                     <span>{entry.collaborators}</span>
                   </div>
-                  <h2>{entry.title}</h2>
+                  <h2>
+                    {entry.href ? (
+                      <Link href={entry.href}>{entry.title}</Link>
+                    ) : (
+                      entry.title
+                    )}
+                  </h2>
                   <p>{entry.summary}</p>
                 </div>
               </article>
