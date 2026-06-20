@@ -7,7 +7,7 @@ export const metadata = {
 };
 
 export default function AboutPage() {
-  const scholarLink = profile.links.find((link) => link.label === "Google Scholar");
+  const contactLinks = profile.links.filter((link) => link.label !== "Google Scholar");
 
   return (
     <div className="about-page">
@@ -48,7 +48,6 @@ export default function AboutPage() {
           <h2>Papers</h2>
           <div className="section-links">
             <Link href="/papers">Full index</Link>
-            {scholarLink ? <a href={scholarLink.href}>Scholar</a> : null}
           </div>
         </div>
         <PaperIndex papers={profile.papers.slice(0, 3)} />
@@ -74,7 +73,7 @@ export default function AboutPage() {
         <h2>Contact</h2>
         <div className="contact-links">
           <a href={`mailto:${profile.email}`}>{profile.email}</a>
-          {profile.links.map((link) => (
+          {contactLinks.map((link) => (
             <a href={link.href} key={link.label}>
               {link.label}
             </a>

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Mail } from "lucide-react";
 import { EntryList } from "@/components/entry-list";
 import { entries } from "@/content/entries";
 import { profile } from "@/content/profile";
@@ -7,88 +8,87 @@ import { formatDate, sortEntries } from "@/lib/content";
 
 export default function HomePage() {
   const sorted = sortEntries(entries);
-  const pinned = sorted.filter((entry) => entry.pinned).slice(0, 3);
-  const recent = sorted.filter((entry) => !pinned.some((item) => item.slug === entry.slug));
-  const scholarLink = profile.links.find((link) => link.label === "Google Scholar");
+  const currentWork = sorted.slice(0, 2);
+  const history = sorted.slice(2);
 
   return (
     <div className="page-shell">
       <section className="home-hero">
-        <div className="home-copy">
-          <p className="eyebrow">{profile.shortRole}</p>
-          <h1>{profile.name}</h1>
-          <p>{profile.intro}</p>
-          <div className="home-actions">
-            <Link className="primary-button" href="/about">
-              About
-            </Link>
-            {scholarLink ? (
-              <a className="secondary-button" href={scholarLink.href}>
-                Google Scholar
-              </a>
-            ) : null}
+        <section className="current-panel" aria-labelledby="current-work-heading">
+          <div className="current-heading">
+            <div>
+              <p className="eyebrow">Current work</p>
+              <h1 id="current-work-heading">Research systems and working notes</h1>
+            </div>
+            <Link href="/archive">Archive</Link>
           </div>
-        </div>
-        <aside className="identity-panel" aria-label="Profile summary">
+
+          <div className="current-work-list">
+            {currentWork.map((entry, index) => (
+              <article className="current-work-item" key={entry.slug}>
+                {entry.image ? (
+                  <Image
+                    alt=""
+                    className="current-work-image"
+                    height={214}
+                    priority={index === 0}
+                    src={entry.image}
+                    width={320}
+                  />
+                ) : null}
+                <div className="current-work-copy">
+                  <div className="entry-meta">
+                    <time dateTime={entry.date}>{formatDate(entry.date)}</time>
+                    <span aria-hidden="true">·</span>
+                    <span>{entry.collaborators}</span>
+                  </div>
+                  <h2>{entry.title}</h2>
+                  <p>{entry.summary}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <aside className="profile-card" aria-label="Profile summary">
           <img
             alt={`${profile.name} avatar`}
-            className="identity-photo"
-            height="144"
+            className="profile-card-photo"
+            height="320"
             src={profile.assets.avatar}
-            width="112"
+            width="240"
           />
-          <dl className="identity-list">
-            {profile.facts.map((fact) => (
-              <div key={fact.label}>
-                <dt>{fact.label}</dt>
-                <dd>{fact.value}</dd>
-              </div>
-            ))}
-          </dl>
+          <div className="profile-card-body">
+            <h2>{profile.name}</h2>
+            <p>{profile.shortRole}</p>
+            <Link href="/about">About</Link>
+          </div>
         </aside>
       </section>
 
-      <section className="work-ledger">
-        <div className="ledger-heading">
-          <div>
-            <p className="eyebrow">Current work</p>
-            <h2>Research systems and working notes</h2>
+      <section className="home-log-layout">
+        <div className="recent-log">
+          <div className="section-heading">
+            <h2>Recent log</h2>
+            <Link href="/notes">Notes</Link>
           </div>
-          <Link href="/archive">Archive</Link>
+          <EntryList entries={history} />
         </div>
 
-        <div className="ledger-grid">
-          {pinned.map((entry) => (
-            <article className="work-card" key={entry.slug}>
-              {entry.image ? (
-                <Image
-                  alt=""
-                  className="work-card-image"
-                  height={214}
-                  src={entry.image}
-                  width={320}
-                />
-              ) : null}
-              <div>
-                <div className="entry-meta">
-                  <time dateTime={entry.date}>{formatDate(entry.date)}</time>
-                  <span aria-hidden="true">·</span>
-                  <span>{entry.collaborators}</span>
-                </div>
-                <h3>{entry.title}</h3>
-                <p>{entry.summary}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="recent-log">
-        <div className="section-heading">
-          <h2>Recent log</h2>
-          <Link href="/notes">Notes</Link>
-        </div>
-        <EntryList entries={recent} />
+        <aside className="mail-panel" aria-label="Email updates">
+          <div className="mail-panel-icon" aria-hidden="true">
+            <Mail size={20} strokeWidth={2} />
+          </div>
+          <h2>Mail</h2>
+          <p>Occasional updates on research systems, paper notes, and project logs.</p>
+          <form action={`mailto:${profile.email}`} className="mail-form">
+            <input aria-label="Email address" name="email" placeholder="Email address" type="email" />
+            <button type="submit">Subscribe</button>
+          </form>
+          <a className="mail-link" href={`mailto:${profile.email}`}>
+            {profile.email}
+          </a>
+        </aside>
       </section>
     </div>
   );

@@ -52,12 +52,14 @@ main {
 main,
 .page-shell,
 .home-hero,
-.home-copy,
-.identity-panel,
-.work-ledger,
-.ledger-grid,
-.work-card,
+.current-panel,
+.current-work-list,
+.current-work-item,
+.current-work-copy,
+.profile-card,
+.home-log-layout,
 .recent-log,
+.mail-panel,
 .entry-row,
 .entry-copy {
   min-width: 0;
@@ -75,10 +77,10 @@ main,
 .topbar {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(180px, auto) minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   gap: 22px;
-  min-height: 72px;
+  min-height: 64px;
   padding: 0 28px;
 }
 
@@ -96,89 +98,9 @@ main,
   height: 36px;
 }
 
-.brand-wordmark {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  gap: 2px;
-}
-
-.brand-name {
-  color: var(--text);
-  font-family: var(--heading-font);
-  font-size: 19px;
-  font-weight: 800;
-  line-height: 1.05;
-}
-
-.brand-kicker {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.2;
-  text-transform: uppercase;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.icon-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--text);
-  cursor: pointer;
-}
-
-.icon-button:hover {
-  background: var(--soft);
-}
-
-.primary-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-width: 104px;
-  height: 40px;
-  padding: 0 18px;
-  border-radius: 8px;
-  background: var(--accent);
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.secondary-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 92px;
-  height: 40px;
-  padding: 0 15px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.secondary-button:hover {
-  border-color: var(--text);
-}
-
 .section-tabs {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 4px;
   min-width: 0;
 }
@@ -205,115 +127,45 @@ main,
 .page-shell {
   width: min(1120px, calc(100vw - 48px));
   margin: 0 auto;
-  padding: 40px 0 72px;
+  padding: 36px 0 72px;
 }
 
 .home-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
-  gap: 56px;
+  grid-template-columns: minmax(0, 3fr) minmax(240px, 1fr);
+  gap: 24px;
   align-items: stretch;
-  padding: 46px 0 56px;
+  padding: 32px 0 44px;
   border-bottom: 1px solid var(--line);
 }
 
-.home-copy {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.home-copy h1 {
-  margin: 0;
-  color: var(--text);
-  font-family: var(--heading-font);
-  font-size: 72px;
-  font-weight: 850;
-  line-height: 0.98;
-}
-
-.home-copy > p:not(.eyebrow) {
-  max-width: 690px;
-  margin: 28px 0 0;
-  color: var(--text);
-  font-family: var(--serif-font);
-  font-size: 23px;
-  line-height: 1.55;
-}
-
-.home-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 30px;
-}
-
-.identity-panel {
-  display: grid;
-  grid-template-columns: 112px minmax(0, 1fr);
-  gap: 20px;
-  align-self: end;
-  padding: 22px;
+.current-panel,
+.profile-card,
+.mail-panel {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fbfbfb;
 }
 
-.identity-photo {
-  width: 112px;
-  height: 144px;
-  border-radius: 6px;
-  object-fit: cover;
-  object-position: center top;
-}
-
-.identity-list {
+.current-panel {
   display: grid;
-  align-content: center;
-  gap: 16px;
-  margin: 0;
+  align-content: start;
+  gap: 20px;
+  padding: 22px;
 }
 
-.identity-list div {
-  min-width: 0;
-}
-
-.identity-list dt {
-  margin: 0 0 5px;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 800;
-  line-height: 1.25;
-  text-transform: uppercase;
-}
-
-.identity-list dd {
-  margin: 0;
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.4;
-  overflow-wrap: anywhere;
-}
-
-.work-ledger {
-  padding: 44px 0 50px;
-  border-bottom: 1px solid var(--line);
-}
-
-.ledger-heading {
+.current-heading {
   display: flex;
-  align-items: end;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 22px;
 }
 
-.ledger-heading .eyebrow {
+.current-heading .eyebrow {
   margin-bottom: 10px;
 }
 
-.ledger-heading h2 {
+.current-heading h1 {
   max-width: 620px;
   margin: 0;
   font-family: var(--heading-font);
@@ -322,7 +174,9 @@ main,
   line-height: 1.12;
 }
 
-.ledger-heading a {
+.current-heading a,
+.profile-card-body a,
+.mail-link {
   color: var(--accent);
   font-size: 14px;
   font-weight: 800;
@@ -330,23 +184,26 @@ main,
   text-underline-offset: 4px;
 }
 
-.ledger-grid {
+.current-work-list {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  gap: 0;
+  border-top: 1px solid var(--line);
 }
 
-.work-card {
+.current-work-item {
   display: grid;
-  align-content: start;
-  gap: 16px;
-  min-height: 100%;
-  padding: 16px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
 }
 
-.work-card-image {
+.current-work-item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.current-work-image {
   width: 100%;
   aspect-ratio: 3 / 2;
   height: auto;
@@ -354,8 +211,8 @@ main,
   background: var(--soft);
 }
 
-.work-card h3 {
-  margin: 10px 0 0;
+.current-work-copy h2 {
+  margin: 8px 0 0;
   color: var(--text);
   font-family: var(--heading-font);
   font-size: 20px;
@@ -363,16 +220,125 @@ main,
   line-height: 1.22;
 }
 
-.work-card p {
+.current-work-copy p {
   margin: 10px 0 0;
   color: var(--text);
   font-size: 15px;
   line-height: 1.48;
 }
 
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.profile-card-photo {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  height: auto;
+  object-fit: cover;
+  object-position: center top;
+  background: var(--soft);
+}
+
+.profile-card-body {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+}
+
+.profile-card-body h2 {
+  margin: 0;
+  font-family: var(--heading-font);
+  font-size: 22px;
+  font-weight: 850;
+  line-height: 1.15;
+}
+
+.profile-card-body p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.home-log-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(240px, 1fr);
+  gap: 32px;
+  align-items: start;
+  padding-top: 40px;
+}
+
 .recent-log {
-  width: min(760px, 100%);
-  padding-top: 44px;
+  width: 100%;
+}
+
+.mail-panel {
+  position: sticky;
+  top: 88px;
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+}
+
+.mail-panel-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--accent);
+}
+
+.mail-panel h2 {
+  margin: 0;
+  font-family: var(--heading-font);
+  font-size: 21px;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+.mail-panel p {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.48;
+}
+
+.mail-form {
+  display: grid;
+  gap: 8px;
+}
+
+.mail-form input,
+.mail-form button {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+}
+
+.mail-form input {
+  min-width: 0;
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: var(--text);
+  padding: 0 12px;
+}
+
+.mail-form button {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 800;
 }
 
 .eyebrow {
@@ -854,10 +820,10 @@ main,
   }
 
   .topbar {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: 1fr;
     grid-template-areas:
-      "brand actions"
-      "nav nav";
+      "brand"
+      "nav";
     gap: 10px 12px;
     min-height: 112px;
     padding: 0 16px;
@@ -867,37 +833,11 @@ main,
     grid-area: brand;
   }
 
-  .brand-name {
-    font-size: 18px;
-  }
-
-  .brand-kicker {
-    display: none;
-  }
-
   .section-tabs {
     grid-area: nav;
     justify-content: flex-start;
     overflow-x: auto;
     padding-bottom: 10px;
-  }
-
-  .header-actions {
-    grid-area: actions;
-  }
-
-  .secondary-button {
-    display: none;
-  }
-
-  .header-actions .primary-button {
-    min-width: 44px;
-    width: 44px;
-    padding: 0;
-  }
-
-  .header-actions .primary-button span {
-    display: none;
   }
 
   .page-shell {
@@ -907,35 +847,23 @@ main,
 
   .home-hero {
     grid-template-columns: 1fr;
-    gap: 26px;
+    gap: 18px;
     padding: 28px 0 40px;
   }
 
-  .home-copy h1 {
-    font-size: 50px;
-  }
-
-  .home-copy > p:not(.eyebrow) {
-    font-size: 20px;
-  }
-
-  .identity-panel {
-    width: min(100%, 440px);
-    align-self: start;
-  }
-
-  .ledger-heading {
+  .current-heading {
     align-items: start;
     flex-direction: column;
     gap: 12px;
   }
 
-  .ledger-heading h2 {
+  .current-heading h1 {
     font-size: 26px;
   }
 
-  .ledger-grid {
+  .home-log-layout {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
 
   .entry-row {
@@ -992,47 +920,36 @@ main,
     height: 32px;
   }
 
-  .brand-name {
-    font-size: 17px;
-  }
-
   .tab {
     height: 34px;
     padding: 0 12px;
     font-size: 13px;
   }
 
-  .home-copy h1 {
-    font-size: 42px;
-  }
-
-  .home-copy > p:not(.eyebrow) {
-    font-size: 19px;
-  }
-
-  .home-actions {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .home-actions .primary-button,
-  .home-actions .secondary-button {
-    width: 100%;
-  }
-
-  .home-actions .secondary-button {
-    display: inline-flex;
-  }
-
-  .identity-panel {
-    grid-template-columns: 96px minmax(0, 1fr);
-    gap: 16px;
+  .current-panel,
+  .mail-panel {
     padding: 16px;
   }
 
-  .identity-photo {
-    width: 96px;
-    height: 124px;
+  .current-work-item {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .current-work-image {
+    aspect-ratio: 3 / 2;
+  }
+
+  .profile-card {
+    width: min(100%, 320px);
+  }
+
+  .profile-card-photo {
+    max-height: 340px;
+  }
+
+  .profile-card-body h2 {
+    font-size: 21px;
   }
 
   .paper-row {
