@@ -17,6 +17,10 @@ npm install
 npm run dev
 ```
 
+## GitHub Pages
+
+The project is configured for static export with `next build`. GitHub Actions builds the site and deploys the generated `out/` directory to GitHub Pages.
+
 ## Update Content
 
 Edit `content/profile.ts` for identity and About sections. Edit `content/entries.ts` to add profile entries. New entries automatically appear on Home, Notes, and Archive based on their `type` and `featured` values.
