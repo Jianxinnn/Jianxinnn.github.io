@@ -1,12 +1,16 @@
+import Link from "next/link";
 import { BlogList } from "@/components/blog-list";
-import { blogPosts, sortBlogPosts } from "@/content/blog/posts";
+import { BlogPagination } from "@/components/blog-pagination";
+import { BlogSearch } from "@/components/blog-search";
+import { getBlogPage, getBlogTags } from "@/content/blog/posts";
 
 export const metadata = {
   title: "Blog"
 };
 
 export default function BlogPage() {
-  const posts = sortBlogPosts(blogPosts);
+  const page = getBlogPage(1);
+  const tags = getBlogTags();
 
   return (
     <div className="blog-page">
@@ -18,7 +22,19 @@ export default function BlogPage() {
           explanations, and research workflow experiments.
         </p>
       </header>
-      <BlogList posts={posts} />
+      <BlogSearch />
+      {tags.length ? (
+        <nav aria-label="Blog tags" className="blog-tag-cloud">
+          {tags.map((tag) => (
+            <Link href={`/blog/tags/${tag.slug}`} key={tag.slug}>
+              {tag.label}
+              <span>{tag.count}</span>
+            </Link>
+          ))}
+        </nav>
+      ) : null}
+      <BlogList posts={page.posts} />
+      <BlogPagination currentPage={page.currentPage} totalPages={page.totalPages} />
     </div>
   );
 }

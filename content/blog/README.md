@@ -1,62 +1,88 @@
 # Blog Content Guide
 
-The blog system has one public index and multiple source formats. Every post
-must be registered in `content/blog/posts.ts`; the source format only changes
-how the detail page is rendered.
+Every blog post lives in its own directory under `content/blog/posts/`.
+Metadata is written once in `meta.ts`; generated files feed Home, Blog, Archive,
+tag pages, and MDX detail routes.
 
 ## Standard MDX Post
 
 Use this for new writing.
 
-1. Create `content/blog/my-post.mdx`.
-2. Import it in `content/blog/content.ts` and add it to `blogPostContent`.
-3. Add a `BlogPost` record in `content/blog/posts.ts`:
-
-```ts
-{
-  slug: "my-post",
-  title: "My Post",
-  summary: "One sentence summary.",
-  date: "2026-06-20",
-  readingTime: "5 min read",
-  sourceType: "mdx",
-  href: "/blog/my-post/",
-  image: "/assets/visuals/notes-field.png",
-  badge: "转载 / 译",
-  tags: ["tag"]
-}
+```txt
+content/blog/posts/my-post/
+  index.mdx
+  meta.ts
 ```
 
-The post will appear on `/blog`, Home, and Archive automatically.
-Use `badge` only when the card needs a small source-status label, such as
-`"转载"` or `"转载 / 译"`.
+`meta.ts`:
+
+```ts
+import type { BlogPostMeta } from "../../types";
+
+const meta = {
+  title: "My Post",
+  summary: "One sentence summary.",
+  date: "2026-06-21",
+  sourceType: "mdx",
+  image: "/assets/visuals/notes-field.png",
+  tags: ["research systems"]
+} satisfies BlogPostMeta;
+
+export default meta;
+```
+
+The generator reads `index.mdx`, estimates `readingTime`, and creates the
+route `/blog/my-post/`.
 
 ## Imported HTML Post
 
-Use this when the article is already a full standalone HTML page.
+Use this for full standalone HTML articles.
 
-1. Put the file at `public/blog/my-html-post/index.html`.
-2. Add a `BlogPost` record with `sourceType: "html"` and
-   `href: "/blog/my-html-post/"`.
+```txt
+content/blog/posts/my-html-post/
+  meta.ts
+public/blog/my-html-post/
+  index.html
+```
 
-The HTML page keeps its own article layout, while `/blog` still shows the same
-title, summary, date, read time, tags, and thumbnail as other posts.
+The metadata still appears in Home, Blog, Archive, tags, and search. The HTML
+page keeps its own article layout.
 
 ## External Post
 
-Use this for posts hosted elsewhere.
+Use this for content hosted elsewhere.
 
 ```ts
-{
-  slug: "external-post",
+const meta = {
   title: "External Post",
   summary: "One sentence summary.",
-  date: "2026-06-20",
+  date: "2026-06-21",
   readingTime: "8 min read",
   sourceType: "external",
   href: "https://example.com/post",
-  tags: ["tag"]
-}
+  tags: ["research systems"]
+} satisfies BlogPostMeta;
 ```
 
-External posts appear in the index and open in a new tab.
+## Commands
+
+```bash
+npm run content:generate
+npm run content:validate
+npm run typecheck
+npm run build
+```
+
+`npm run build` generates metadata, validates content, builds the static site,
+and then creates the Pagefind search index under `out/pagefind/`.
+
+## Tags And Badges
+
+Allowed tags live in `content/blog/tags.ts`. Add a tag there before using it in
+`meta.ts`.
+
+Use `badge` only when the post needs a source-status note:
+
+```ts
+badge: "转载 / 译"
+```

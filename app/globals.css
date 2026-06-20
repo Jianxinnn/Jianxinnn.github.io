@@ -596,6 +596,90 @@ main,
   line-height: 1.55;
 }
 
+.blog-search {
+  display: grid;
+  gap: 10px;
+  padding: 22px 0 4px;
+}
+
+.blog-search input {
+  width: 100%;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--field);
+  color: var(--text);
+  padding: 0 12px;
+}
+
+.blog-search-results {
+  display: grid;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  overflow: hidden;
+}
+
+.blog-search-results a {
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.blog-search-results a:last-child {
+  border-bottom: 0;
+}
+
+.blog-search-results strong {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.blog-search-results span,
+.blog-search-empty {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.blog-search-empty {
+  margin: 0;
+}
+
+.blog-tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px 0 4px;
+}
+
+.blog-tag-cloud a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--field);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.blog-tag-cloud a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.blog-tag-cloud span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
 .blog-feed {
   width: 100%;
 }
@@ -685,6 +769,7 @@ main,
   margin-top: 2px;
 }
 
+.blog-tags a,
 .blog-tags span {
   display: inline-flex;
   align-items: center;
@@ -697,6 +782,47 @@ main,
   font-size: 12px;
   font-weight: 700;
   line-height: 1.2;
+}
+
+.blog-tags a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.blog-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 28px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.blog-pagination > div {
+  display: flex;
+  gap: 6px;
+}
+
+.blog-pagination a,
+.blog-pagination span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+}
+
+.blog-pagination a {
+  color: var(--accent);
+}
+
+.blog-pagination a[aria-current="page"] {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+  color: var(--text);
 }
 
 .blog-article-page {

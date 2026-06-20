@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BlogTags } from "@/components/blog-tags";
 import { blogPostContent } from "@/content/blog/content";
 import { getBlogPost, sortBlogPosts } from "@/content/blog/posts";
 import { formatDate } from "@/lib/content";
@@ -60,13 +61,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <span aria-hidden="true">·</span>
           <time dateTime={post.date}>{formatDate(post.date)}</time>
         </div>
-        {post.tags?.length ? (
-          <div className="blog-tags" aria-label="Tags">
-            {post.tags.map((tag) => (
-              <span key={tag}>{tag}</span>
-            ))}
-          </div>
-        ) : null}
+        <BlogTags tags={post.tags} />
       </header>
       <div className="mdx-body">
         <Content />

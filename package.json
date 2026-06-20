@@ -3,9 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "npm run content:generate",
     "dev": "next dev",
-    "build": "next build",
+    "content:generate": "tsx scripts/generate-blog-index.ts",
+    "content:validate": "tsx scripts/validate-content.ts",
+    "prebuild": "npm run content:generate && npm run content:validate",
+    "build": "next build && pagefind --site out --output-subdir pagefind",
     "start": "next start",
+    "pretypecheck": "npm run content:generate",
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
@@ -21,6 +26,8 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "pagefind": "^1.5.2",
+    "tsx": "^4.22.4",
     "typescript": "latest"
   },
   "overrides": {

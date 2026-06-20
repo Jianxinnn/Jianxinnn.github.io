@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { BlogTags } from "@/components/blog-tags";
 import type { BlogPost } from "@/content/blog/posts";
 import { formatDate } from "@/lib/content";
 
@@ -51,13 +52,7 @@ export function BlogList({ posts, showImages = true }: BlogListProps) {
               <span aria-hidden="true">·</span>
               <time dateTime={post.date}>{formatDate(post.date)}</time>
             </div>
-            {post.tags?.length ? (
-              <div className="blog-tags" aria-label="Tags">
-                {post.tags.map((tag) => (
-                  <span key={tag}>{tag}</span>
-                ))}
-              </div>
-            ) : null}
+            <BlogTags tags={post.tags} />
           </div>
           <PostLink className="blog-card-year" post={post}>
             {new Date(post.date).getFullYear()}
