@@ -131,10 +131,7 @@ main,
 }
 
 .home-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(240px, 1fr);
-  gap: 24px;
-  align-items: stretch;
+  display: block;
   padding: 32px 0 44px;
   border-bottom: 1px solid var(--line);
 }
@@ -174,9 +171,7 @@ main,
   line-height: 1.12;
 }
 
-.current-heading a,
-.profile-card-body a,
-.mail-link {
+.current-heading a {
   color: var(--accent);
   font-size: 14px;
   font-weight: 800;
@@ -264,6 +259,29 @@ main,
   font-weight: 800;
   line-height: 1.35;
   text-transform: uppercase;
+}
+
+.contact-icon-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.contact-icon-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--accent);
+}
+
+.contact-icon-links a:hover {
+  border-color: var(--accent);
 }
 
 .home-log-layout {
@@ -446,24 +464,25 @@ main,
 
 .about-hero {
   display: grid;
-  grid-template-columns: 128px minmax(0, 1fr);
-  gap: 36px;
-  align-items: start;
+  grid-template-columns: minmax(220px, 1fr) minmax(0, 3fr);
+  gap: 24px;
+  align-items: stretch;
   padding-bottom: 44px;
   border-bottom: 1px solid var(--line);
 }
 
-.about-avatar {
-  width: 128px;
-  height: 180px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  object-fit: cover;
-  object-position: center top;
+.about-profile-card {
+  min-height: 100%;
 }
 
 .about-intro {
+  display: grid;
+  align-content: start;
   min-width: 0;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfbfb;
 }
 
 .about-intro .eyebrow {
@@ -492,7 +511,7 @@ main,
 
 .fact-list {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0;
   margin: 32px 0 0;
   border-top: 1px solid var(--line);
@@ -538,33 +557,11 @@ main,
   line-height: 1.2;
 }
 
-.about-block-heading {
-  display: grid;
-  align-content: start;
-  gap: 14px;
-}
-
-.section-links {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  gap: 9px;
-}
-
-.section-links a {
-  color: var(--accent);
-  font-size: 13px;
-  font-weight: 800;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-
 .about-prose {
   display: grid;
   gap: 20px;
 }
 
-.info-list,
 .timeline-list {
   display: grid;
   gap: 22px;
@@ -645,7 +642,6 @@ main,
   color: var(--accent);
 }
 
-.info-item,
 .timeline-item {
   min-width: 0;
 }
@@ -659,7 +655,6 @@ main,
   text-transform: uppercase;
 }
 
-.info-item h3,
 .timeline-item h3 {
   margin: 0;
   color: var(--text);
@@ -669,7 +664,6 @@ main,
   line-height: 1.3;
 }
 
-.info-item p:not(.info-kicker),
 .timeline-item p:not(.info-kicker) {
   margin: 8px 0 0;
   color: var(--text);
@@ -686,34 +680,6 @@ main,
 .timeline-place {
   color: var(--muted);
   font-weight: 700;
-}
-
-.contact-block {
-  border-bottom: 0;
-}
-
-.contact-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.contact-links a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 36px;
-  padding: 0 14px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.contact-links a:first-child {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: #ffffff;
 }
 
 .archive-page,
@@ -846,8 +812,6 @@ main,
   }
 
   .home-hero {
-    grid-template-columns: 1fr;
-    gap: 18px;
     padding: 28px 0 40px;
   }
 
@@ -866,6 +830,10 @@ main,
     gap: 24px;
   }
 
+  .mail-panel {
+    position: static;
+  }
+
   .entry-row {
     grid-template-columns: minmax(0, 1fr) 120px;
     gap: 16px;
@@ -881,13 +849,8 @@ main,
   }
 
   .about-hero {
-    grid-template-columns: 128px minmax(0, 1fr);
+    grid-template-columns: minmax(180px, 1fr) minmax(0, 3fr);
     gap: 22px;
-  }
-
-  .about-avatar {
-    width: 128px;
-    height: 180px;
   }
 
   .fact-list {
@@ -897,11 +860,6 @@ main,
   .about-block {
     grid-template-columns: 1fr;
     gap: 18px;
-  }
-
-  .section-links {
-    flex-direction: row;
-    flex-wrap: wrap;
   }
 
   .timeline-item {
@@ -941,7 +899,7 @@ main,
   }
 
   .profile-card {
-    width: min(100%, 320px);
+    width: 100%;
   }
 
   .profile-card-photo {
@@ -969,11 +927,6 @@ main,
 
   .about-hero {
     grid-template-columns: 1fr;
-  }
-
-  .about-avatar {
-    width: 112px;
-    height: 158px;
   }
 
   .about-intro h1,

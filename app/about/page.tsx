@@ -1,30 +1,63 @@
-import Link from "next/link";
-import { PaperIndex } from "@/components/paper-index";
+import { GraduationCap, Mail } from "lucide-react";
 import { profile } from "@/content/profile";
 
 export const metadata = {
   title: "About"
 };
 
+function GitHubMark() {
+  return (
+    <svg aria-hidden="true" height="20" viewBox="0 0 24 24" width="20">
+      <path
+        d="M12 .3C5.37.3 0 5.67 0 12.3c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.04c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.21.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23.96-.27 1.98-.4 3-.4s2.05.13 3 .4c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.93.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.58C20.57 22.09 24 17.6 24 12.3 24 5.67 18.63.3 12 .3Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
 export default function AboutPage() {
-  const contactLinks = profile.links.filter((link) => link.label !== "Google Scholar");
+  const githubLink = profile.links.find((link) => link.label === "GitHub");
+  const scholarLink = profile.links.find((link) => link.label === "Google Scholar");
+  const facts = profile.facts.filter((fact) => fact.label !== "Contact");
 
   return (
     <div className="about-page">
       <section className="about-hero">
-        <img
-          alt={`${profile.name} avatar`}
-          className="about-avatar"
-          height="180"
-          src={profile.assets.avatar}
-          width="128"
-        />
+        <aside className="profile-card about-profile-card" aria-label="Profile contacts">
+          <img
+            alt={`${profile.name} avatar`}
+            className="profile-card-photo"
+            height="320"
+            src={profile.assets.avatar}
+            width="240"
+          />
+          <div className="profile-card-body">
+            <h2>{profile.name}</h2>
+            <p>{profile.shortRole}</p>
+            <div className="contact-icon-links" aria-label="Contact links">
+              {githubLink ? (
+                <a aria-label="GitHub" href={githubLink.href} title="GitHub">
+                  <GitHubMark />
+                </a>
+              ) : null}
+              {scholarLink ? (
+                <a aria-label="Google Scholar" href={scholarLink.href} title="Google Scholar">
+                  <GraduationCap size={21} strokeWidth={2} />
+                </a>
+              ) : null}
+              <a aria-label="Email" href={`mailto:${profile.email}`} title="Email">
+                <Mail size={20} strokeWidth={2} />
+              </a>
+            </div>
+          </div>
+        </aside>
         <div className="about-intro">
           <p className="eyebrow">About</p>
           <h1>{profile.name}</h1>
-          <p>{profile.about}</p>
+          <p>{profile.role}</p>
           <dl className="fact-list">
-            {profile.facts.map((fact) => (
+            {facts.map((fact) => (
               <div key={fact.label}>
                 <dt>{fact.label}</dt>
                 <dd>{fact.value}</dd>
@@ -43,16 +76,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="about-block papers-block">
-        <div className="about-block-heading">
-          <h2>Papers</h2>
-          <div className="section-links">
-            <Link href="/papers">Full index</Link>
-          </div>
-        </div>
-        <PaperIndex papers={profile.papers.slice(0, 3)} />
-      </section>
-
       <section className="about-block">
         <h2>Experience</h2>
         <div className="timeline-list">
@@ -65,18 +88,6 @@ export default function AboutPage() {
               </div>
               <p>{item.description}</p>
             </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="about-block contact-block">
-        <h2>Contact</h2>
-        <div className="contact-links">
-          <a href={`mailto:${profile.email}`}>{profile.email}</a>
-          {contactLinks.map((link) => (
-            <a href={link.href} key={link.label}>
-              {link.label}
-            </a>
           ))}
         </div>
       </section>

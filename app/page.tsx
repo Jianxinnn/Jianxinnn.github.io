@@ -49,21 +49,6 @@ export default function HomePage() {
             ))}
           </div>
         </section>
-
-        <aside className="profile-card" aria-label="Profile summary">
-          <img
-            alt={`${profile.name} avatar`}
-            className="profile-card-photo"
-            height="320"
-            src={profile.assets.avatar}
-            width="240"
-          />
-          <div className="profile-card-body">
-            <h2>{profile.name}</h2>
-            <p>{profile.shortRole}</p>
-            <Link href="/about">About</Link>
-          </div>
-        </aside>
       </section>
 
       <section className="home-log-layout">
@@ -85,9 +70,6 @@ export default function HomePage() {
             <input aria-label="Email address" name="email" placeholder="Email address" type="email" />
             <button type="submit">Subscribe</button>
           </form>
-          <a className="mail-link" href={`mailto:${profile.email}`}>
-            {profile.email}
-          </a>
         </aside>
       </section>
     </div>
