@@ -80,9 +80,15 @@ TERM_FIXES = [
     ("跳跃率", "跳转率"),
 ]
 
+HEADING_FIXES = {
+    "## 4.3 Score Matching": "## 4.3 Score Matching（得分匹配）",
+    "## 8 References": "## 8 参考文献",
+}
+
 
 REFERENCE_START = re.compile(r"^## 8 References")
 APPENDIX_START = re.compile(r"^## A ")
+LIST_MARKER = re.compile(r"^(\s*(?:\d+\.|-)\s+)(.*)$")
 
 
 def load_cache() -> dict[str, str]:
@@ -177,6 +183,23 @@ def restore(text: str, placeholders: dict[str, str]) -> str:
     return text
 
 
+def display_math(text: str) -> list[str]:
+    return [re.sub(r"\s+", " ", item.strip()) for item in re.findall(r"\$\$(.*?)\$\$", text, flags=re.S)]
+
+
+def inline_math(text: str) -> list[str]:
+    without_display = re.sub(r"\$\$.*?\$\$", " ", text, flags=re.S)
+    return [re.sub(r"\s+", " ", item.strip()) for item in re.findall(r"(?<!\$)\$([^$\n]+)\$(?!\$)", without_display)]
+
+
+def math_fragments(text: str) -> list[str]:
+    return display_math(text) + inline_math(text)
+
+
+def list_item_count(text: str) -> int:
+    return sum(1 for line in text.splitlines() if LIST_MARKER.match(line))
+
+
 def apply_term_fixes(text: str) -> str:
     for source, target in TERM_FIXES:
         text = text.replace(source, target)
@@ -191,6 +214,52 @@ def apply_term_fixes(text: str) -> str:
     return text
 
 
+def translate_plain_text(text: str, translator: GoogleTranslator) -> str:
+    if not text.strip() or not re.search(r"[A-Za-z]", text):
+        return text
+
+    leading = re.match(r"^\s*", text).group(0)
+    trailing = re.search(r"\s*$", text).group(0)
+    core = text[len(leading) : len(text) - len(trailing) if trailing else len(text)]
+    if not core.strip():
+        return text
+
+    last_error: Exception | None = None
+    for attempt in range(6):
+        try:
+            return leading + translator.translate(core) + trailing
+        except Exception as error:
+            last_error = error
+            time.sleep(1.5 * (attempt + 1))
+            translator = GoogleTranslator(source="en", target="zh-CN")
+    raise RuntimeError(f"Translation failed after retries for text fragment: {core[:120]!r}") from last_error
+
+
+def translate_preserving_protected_order(body: str, translator: GoogleTranslator) -> str:
+    protected, placeholders = protect(body)
+    translated_parts: list[str] = []
+    for part in re.split(r"(ZQX\d+QXZ)", protected):
+        if not part:
+            continue
+        if part in placeholders:
+            translated_parts.append(placeholders[part])
+        else:
+            translated_parts.append(translate_plain_text(part, translator))
+    return apply_term_fixes("".join(translated_parts))
+
+
+def translate_list_block(body: str, translator: GoogleTranslator) -> str:
+    translated_lines: list[str] = []
+    for line in body.splitlines():
+        match = LIST_MARKER.match(line)
+        if match:
+            marker, item = match.groups()
+            translated_lines.append(marker + translate_preserving_protected_order(item, translator).lstrip())
+        else:
+            translated_lines.append(translate_preserving_protected_order(line, translator))
+    return "\n".join(translated_lines)
+
+
 def should_skip_translation(block: str, in_references: bool) -> bool:
     stripped = block.strip()
     return (
@@ -203,13 +272,21 @@ def should_skip_translation(block: str, in_references: bool) -> bool:
 
 
 def translate_block(block: str, translator: GoogleTranslator, cache: dict[str, str], in_references: bool) -> str:
+    if block in HEADING_FIXES:
+        return HEADING_FIXES[block]
+
     if should_skip_translation(block, in_references):
         return block
 
     digest = hashlib.sha256(block.encode("utf-8")).hexdigest()
     if digest in cache:
         cached = apply_term_fixes(cache[digest])
-        if "保留_" not in cached and "KEEP_" not in cached:
+        if (
+            "保留_" not in cached
+            and "KEEP_" not in cached
+            and math_fragments(cached) == math_fragments(block)
+            and list_item_count(cached) == list_item_count(block)
+        ):
             return cached
 
     prefix = ""
@@ -218,21 +295,11 @@ def translate_block(block: str, translator: GoogleTranslator, cache: dict[str, s
         prefix = "## "
         body = block[3:]
 
-    protected, placeholders = protect(body)
-    last_error: Exception | None = None
-    translated = protected
-    for attempt in range(6):
-        try:
-            translated = translator.translate(protected)
-            break
-        except Exception as error:
-            last_error = error
-            time.sleep(1.5 * (attempt + 1))
-            translator = GoogleTranslator(source="en", target="zh-CN")
-    else:
-        raise RuntimeError(f"Translation failed after retries for block: {block[:120]!r}") from last_error
-    translated = restore(translated, placeholders)
-    translated = apply_term_fixes(translated)
+    translated = (
+        translate_list_block(body, translator)
+        if list_item_count(body)
+        else translate_preserving_protected_order(body, translator)
+    )
     result = prefix + translated
     cache[digest] = result
     return result

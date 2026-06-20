@@ -249,7 +249,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>i.e. for every time t and location x we get a vector $u_{t}(x) \\in \\mathbb{R}^{d}$ specifying a velocity in space (see Figure 1). An ODE imposes a condition on a trajectory: we want a trajectory X that “follows along the lines” of the vector field $u_{t}$ , starting at the point $x_{0}$ . We may formalize such a trajectory as being the solution to the equation:</p>",
-    "zh": "<p>即对于每个时间 t 和位置 x，我们都会得到一个向量 $u_{t}(x) \\in \\mathbb{R}^{d}$ 指定空间速度（见图 1）。 ODE 对轨迹施加一个条件：我们想要一条轨迹 X，它从点 $x_{0}$ 开始，“沿着向量场 $u_{t}$ 的线”。我们可以将这样的轨迹形式化为方程的解：</p>"
+    "zh": "<p>即对于每个时间 t 和位置 x 我们得到一个向量 $u_{t}(x) \\in \\mathbb{R}^{d}$ 指定空间速度（见图 1）。 ODE 对轨迹施加一个条件：我们想要一条“沿着向量场的线”的轨迹 X $u_{t}$ ，从点开始 $x_{0}$ 。我们可以将这样的轨迹形式化为方程的解：</p>"
   },
   {
     "kind": "html",
@@ -349,7 +349,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Simulating an ODE. In general, it is not possible to compute the flow $\\psi_{t}$ explicitly if $u_{t}$ is not as simple as in the previous example. In these cases, one uses numerical methods to simulate ODEs. Fortunately, this is a classical and well researched topic in numerical analysis, and a myriad of powerful methods exist [21]. One of the simplest and most intuitive methods is the Euler method. In the Euler method, we initialize with $X_{0} = x_{0}$ and update via</p>",
-    "zh": "<p>模拟 ODE。一般来说，如果 $u_{t}$ 不像前面的示例那么简单，则不可能显式计算流 $\\psi_{t}$ 。在这些情况下，可以使用数值方法来模拟 ODE。幸运的是，这是数值分析中一个经典且经过充分研究的主题，并且存在无数强大的方法[21]。最简单、最直观的方法之一是欧拉方法。在欧拉方法中，我们使用 $X_{0} = x_{0}$ 进行初始化并通过</p>"
+    "zh": "<p>模拟 ODE。一般来说，无法计算流量 $\\psi_{t}$ 明确地如果 $u_{t}$ 并不像前面的例子那么简单。在这些情况下，可以使用数值方法来模拟 ODE。幸运的是，这是数值分析中一个经典且经过深入研究的主题，并且存在无数强大的方法 [21]。最简单、最直观的方法之一是欧拉方法。在欧拉方法中，我们初始化为 $X_{0} = x_{0}$ 并通过更新</p>"
   },
   {
     "kind": "html",
@@ -374,7 +374,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Flow models. We can now construct a generative model via an ODE by making the vector field a neural network vector field $u_{t}^{\\theta}$ . For now, we simply mean that $u_{t}^{\\theta}$ is a parameterized function $u_{t}^{\\theta}: R^{d} \\times [0,1] \\to R^{d}$ with parameters $\\theta$ . Later, we will discuss particular choices of neural network architectures. Remember that our goal was to generate samples $z \\sim p_{data}$ from a distribution $p_{data}$ . In particular, these samples must be random. Note though that an ODE itself is not random but fully deterministic. To inject some randomness, we simple make the initial condition $X_{0}$ random. Specifically, we choose an initial distribution $p_{init}$ . In most cases, we set $p_{\\mathrm{init}} = \\mathcal{N}(0, I_{d})$ to be a simple standard Gaussian. Most importantly, whatever distribution you choose, it must be one that we can easily sample from at inference-time. A flow model is then described by the ODE</p>",
-    "zh": "<p>流动模型。我们现在可以通过 ODE 构建生成式模型，将向量场设为神经网络向量场 $u_{t}^{\\theta}$ 。现在，我们只是说 $u_{t}^{\\theta}$ 是一个带有参数 $\\theta$ 的参数化函数 $u_{t}^{\\theta}: R^{d} \\times [0,1] \\to R^{d}$ 。稍后，我们将讨论神经网络架构的特定选择。请记住，我们的目标是从分布 $p_{data}$ 生成样本 $z \\sim p_{data}$ 。特别是，这些样本必须是随机的。但请注意，ODE 本身不是随机的，而是完全确定性的。为了注入一些随机性，我们简单地将初始条件 $X_{0}$ 设为随机。具体来说，我们选择初始分布 $p_{init}$ 。在大多数情况下，我们将 $p_{\\mathrm{init}} = \\mathcal{N}(0, I_{d})$ 设置为简单的标准高斯。最重要的是，无论您选择什么分布，它都必须是我们可以在推理时轻松采样的分布。然后用 ODE 描述流模型</p>"
+    "zh": "<p>流动模型。我们现在可以通过 ODE 构建生成式模型，将向量场设为神经网络向量场 $u_{t}^{\\theta}$ 。现在，我们的意思只是 $u_{t}^{\\theta}$ 是一个参数化函数 $u_{t}^{\\theta}: R^{d} \\times [0,1] \\to R^{d}$ 带参数 $\\theta$ 。稍后，我们将讨论神经网络架构的特定选择。请记住，我们的目标是生成样本 $z \\sim p_{data}$ 来自分布 $p_{data}$ 。特别是，这些样本必须是随机的。但请注意，ODE 本身不是随机的，而是完全确定性的。为了注入一些随机性，我们简单地设置初始条件 $X_{0}$ 随机的。具体来说，我们选择一个初始分布 $p_{init}$ 。大多数情况下，我们设置 $p_{\\mathrm{init}} = \\mathcal{N}(0, I_{d})$ 是一个简单的标准高斯分布。最重要的是，无论您选择什么分布，它都必须是我们可以在推理时轻松采样的分布。然后用 ODE 描述流模型</p>"
   },
   {
     "kind": "html",
@@ -549,7 +549,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>where $\\sigma_{t}\\geq0$ describes the diffusion coefficient and $R_{t}(h)$ describes a stochastic error term such that the standard deviation $\\mathbb{E}[\\|R_{t}(h)\\|^{2}]^{1/2}\\to0$ goes to zero for $h\\to0$ . The above describes a stochastic differential equation (SDE). It is common to denote it in the following symbolic notation:</p>",
-    "zh": "<p>其中 $\\sigma_{t}\\geq0$ 描述扩散系数， $R_{t}(h)$ 描述随机误差项，使得 $h\\to0$ 的标准差 $\\mathbb{E}[\\|R_{t}(h)\\|^{2}]^{1/2}\\to0$ 变为零。上面描述了随机微分方程（SDE）。通常用以下符号表示法：</p>"
+    "zh": "<p>在哪里 $\\sigma_{t}\\geq0$ 描述扩散系数和 $R_{t}(h)$ 描述随机误差项，使得标准差 $\\mathbb{E}[\\|R_{t}(h)\\|^{2}]^{1/2}\\to0$ 变为零 $h\\to0$ 。上面描述了随机微分方程（SDE）。通常用以下符号表示法：</p>"
   },
   {
     "kind": "html",
@@ -589,7 +589,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Let us consider a constant diffusion coefficient $\\sigma_{t} = \\sigma \\geq 0$ and a constant linear drift $u_{t}(x) = -\\theta x$ for $\\theta > 0$ , yielding the SDE</p>",
-    "zh": "<p>让我们考虑 $\\theta > 0$ 的恒定扩散系数 $\\sigma_{t} = \\sigma \\geq 0$ 和恒定线性漂移 $u_{t}(x) = -\\theta x$ ，从而产生 SDE</p>"
+    "zh": "<p>让我们考虑恒定的扩散系数 $\\sigma_{t} = \\sigma \\geq 0$ 和恒定的线性漂移 $u_{t}(x) = -\\theta x$ 为了 $\\theta > 0$ ，产生 SDE</p>"
   },
   {
     "kind": "html",
@@ -599,7 +599,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>A solution $(X_{t})_{0\\leq t\\leq1}$ to the above SDE is known as an Ornstein-Uhlenbeck (OU) process. We visualize it in Figure 3. The vector field $-\\theta x$ pushes the process back to its center 0 (since the drift always points in the direction opposite to the current position), while the diffusion coefficient $\\sigma$ always adds more noise. This process converges towards a Gaussian distribution $\\mathcal{N}(0,\\sigma^{2}/(2\\theta))$ if we simulate it for $t\\to\\infty$ . Note that for $\\sigma=0$ , we have a flow with linear vector field that we have studied in Equation (3).</p>",
-    "zh": "<p>上述 SDE 的解决方案 $(X_{t})_{0\\leq t\\leq1}$ 称为 Ornstein-Uhlenbeck (OU) 过程。我们在图 3 中对其进行可视化。矢量场 $-\\theta x$ 将过程推回其中心 0（因为漂移始终指向与当前位置相反的方向），而扩散系数 $\\sigma$ 始终会增加更多噪声。如果我们模拟 $t\\to\\infty$ ，这个过程会收敛到高斯分布 $\\mathcal{N}(0,\\sigma^{2}/(2\\theta))$ 。请注意，对于 $\\sigma=0$ ，我们有一个具有线性向量场的流，我们已在方程（3）中研究过该流。</p>"
+    "zh": "<p>一个解决方案 $(X_{t})_{0\\leq t\\leq1}$ 上述 SDE 称为 Ornstein-Uhlenbeck (OU) 过程。我们将其可视化于图 3 中。矢量场 $-\\theta x$ 将过程推回到其中心 0（因为漂移总是指向与当前位置相反的方向），而扩散系数 $\\sigma$ 总是会增加更多的噪声。该过程收敛于高斯分布 $\\mathcal{N}(0,\\sigma^{2}/(2\\theta))$ 如果我们模拟它 $t\\to\\infty$ 。请注意，对于 $\\sigma=0$ ，我们有一个具有线性向量场的流，我们在方程（3）中研究过它。</p>"
   },
   {
     "kind": "html",
@@ -664,7 +664,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Throughout this document, a diffusion model consists of a neural network $u_{t}^{\\theta}$ with parameters $\\theta$ that parameterize a vector field and a fixed diffusion coefficient $\\sigma_{t}$ :</p>",
-    "zh": "<p>在本文档中，扩散模型由神经网络 $u_{t}^{\\theta}$ 和参数 $\\theta$ 组成，参数 $\\theta$ 参数化矢量场和固定扩散系数 $\\sigma_{t}$ ：</p>"
+    "zh": "<p>在本文档中，扩散模型由神经网络组成 $u_{t}^{\\theta}$ 带参数 $\\theta$ 参数化矢量场和固定扩散系数 $\\sigma_{t}$ :</p>"
   },
   {
     "kind": "html",
@@ -884,7 +884,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>A probability path $(p_{t})_{0\\leq t\\leq1}$ specifies what distributions $X_{t}\\sim p_{t}$ the points $X_{t}$ along a trajectory should have. At this point, this is just what we “wish” to be the case. But how can we find a vector field such that the trajectories $X_{t}$ follow the probability path? Flow matching explicitly constructs such a vector field - the “marginal vector field” - which we explain in this section.</p>",
-    "zh": "<p>概率路径 $(p_{t})_{0\\leq t\\leq1}$ 指定沿着轨迹的点 $X_{t}$ 应该具有什么分布 $X_{t}\\sim p_{t}$ 。在这一点上，这正是我们“希望”的情况。但我们怎样才能找到一个向量场，使得轨迹 $X_{t}$ 遵循概率路径呢？流匹配显式地构造了这样一个向量场——“边缘向量场”——我们将在本节中对此进行解释。</p>"
+    "zh": "<p>概率路径 $(p_{t})_{0\\leq t\\leq1}$ 指定什么分布 $X_{t}\\sim p_{t}$ 点 $X_{t}$ 沿着应该有的轨迹。在这一点上，这正是我们“希望”的情况。但是我们怎样才能找到一个矢量场使得轨迹 $X_{t}$ 遵循概率路径？流匹配显式地构造了这样一个向量场——“边缘向量场”——我们将在本节中对此进行解释。</p>"
   },
   {
     "kind": "html",
@@ -989,7 +989,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>is a valid conditional vector field model in the sense of Theorem 9: its ODE trajectories $X_{t}$ satisfy $X_{t} \\sim p_{t}(\\cdot |z) = \\mathcal{N}(\\alpha_{t}z, \\beta_{t}^{2}I_{d})$ if $X_0 \\sim \\mathcal{N}(0, I_d)$ . In Figure 6, we confirm this visually by comparing samples from the conditional probability path (ground truth) to samples from simulated ODE trajectories of this flow. As you can see, the distribution match. We will now prove this.</p>",
-    "zh": "<p>是定理 9 意义上的有效条件向量场模型：如果 $X_0 \\sim \\mathcal{N}(0, I_d)$ ，则其 ODE 轨迹 $X_{t}$ 满足 $X_{t} \\sim p_{t}(\\cdot |z) = \\mathcal{N}(\\alpha_{t}z, \\beta_{t}^{2}I_{d})$ 。在图 6 中，我们通过比较条件概率路径（基本事实）中的样本与该流的模拟 ODE 轨迹中的样本来直观地确认这一点。如您所见，分布匹配。我们现在将证明这一点。</p>"
+    "zh": "<p>是定理 9 意义上的有效条件向量场模型：其 ODE 轨迹 $X_{t}$ 满足 $X_{t} \\sim p_{t}(\\cdot |z) = \\mathcal{N}(\\alpha_{t}z, \\beta_{t}^{2}I_{d})$ 如果 $X_0 \\sim \\mathcal{N}(0, I_d)$ 。在图 6 中，我们通过比较条件概率路径（基本事实）中的样本与该流的模拟 ODE 轨迹中的样本来直观地确认这一点。如您所见，分布匹配。我们现在将证明这一点。</p>"
   },
   {
     "kind": "html",
@@ -1014,7 +1014,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>We conclude that the trajectories are distributed like the conditional probability path (i.e, Equation (17) is fulfilled). It remains to extract the vector field $u_{t}^{\\mathrm{target}}(x|z)$ from $\\psi_{t}^{\\mathrm{target}}(x|z)$ . By the definition of a flow (Equation (2b)), it holds</p>",
-    "zh": "<p>我们得出结论，轨迹的分布类似于条件概率路径（即满足方程（17））。剩下的工作就是从 $\\psi_{t}^{\\mathrm{target}}(x|z)$ 中提取向量场 $u_{t}^{\\mathrm{target}}(x|z)$ 。根据流的定义（方程（2b）），它成立</p>"
+    "zh": "<p>我们得出结论，轨迹的分布类似于条件概率路径（即满足方程（17））。剩下的就是提取向量场 $u_{t}^{\\mathrm{target}}(x|z)$ 从 $\\psi_{t}^{\\mathrm{target}}(x|z)$ 。根据流的定义（方程（2b）），它成立</p>"
   },
   {
     "kind": "html",
@@ -1109,7 +1109,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>where in (i) we used the definition of $p_{t}(x)$ in Equation (12), in (ii) we used the continuity equation for the conditional probability path $p_{t}(\\cdot|z)$ , in (iii) we swapped the integral and divergence operator using Equation (22), in (iv) we multiplied and divided by $p_{t}(x)$ , and in (v) we used Equation (18). The beginning and end of the above chain of equations show that the continuity equation is fulfilled for $u_{t}^{target}$ . By Theorem 11, this is enough to imply Equation (19), and we are done.</p>",
-    "zh": "<p>其中，在 (i) 中，我们使用方程 (12) 中 $p_{t}(x)$ 的定义，在 (ii) 中，我们使用条件概率路径 $p_{t}(\\cdot|z)$ 的连续性方程，在 (iii) 中，我们使用方程 (22) 交换积分和散度运算符，在 (iv) 中，我们乘以 $p_{t}(x)$ 并除以 $p_{t}(x)$ ，在 (v) 中，我们使用方程 (18)。上述方程链的开头和结尾表明 $u_{t}^{target}$ 满足连续性方程。根据定理 11，这足以暗示方程（19），我们就完成了。</p>"
+    "zh": "<p>在 (i) 中我们使用了定义 $p_{t}(x)$ 在方程（12）中，在（ii）中我们使用条件概率路径的连续性方程 $p_{t}(\\cdot|z)$ ，在 (iii) 中我们使用方程 (22) 交换积分和散度运算符，在 (iv) 中我们乘以并除以 $p_{t}(x)$ ，在 (v) 中我们使用方程 (18)。上述方程链的开头和结尾表明连续性方程满足 $u_{t}^{target}$ 。根据定理 11，这足以暗示方程（19），我们就完成了。</p>"
   },
   {
     "kind": "html",
@@ -1174,7 +1174,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Hence, minimizing $\\mathcal{L}_{\\mathrm{CFM}}(\\theta)$ with e.g., stochastic gradient descent (SGD) is equivalent to minimizing $\\mathcal{L}_{\\mathrm{FM}}(\\theta)$ in the same fashion. In particular, for the minimizer $\\theta^{*}$ of $\\mathcal{L}_{\\mathrm{CFM}}(\\theta)$ , it will hold that $u_{t}^{\\theta^{*}} = u_{t}^{target}$ , i.e. the neural network will equal the marginal vector field (assuming an infinitely expressive parameterization).</p>",
-    "zh": "<p>因此，使用例如随机梯度下降（SGD）最小化 $\\mathcal{L}_{\\mathrm{CFM}}(\\theta)$ 相当于以相同的方式最小化 $\\mathcal{L}_{\\mathrm{FM}}(\\theta)$ 。特别是，对于 $\\mathcal{L}_{\\mathrm{CFM}}(\\theta)$ 的最小化器 $\\theta^{*}$ ，它将保持 $u_{t}^{\\theta^{*}} = u_{t}^{target}$ ，即神经网络将等于边缘向量场（假设无限表达参数化）。</p>"
+    "zh": "<p>因此，最小化 $\\mathcal{L}_{\\mathrm{CFM}}(\\theta)$ 例如，随机梯度下降（SGD）相当于最小化 $\\mathcal{L}_{\\mathrm{FM}}(\\theta)$ 以同样的方式。特别是对于最小化器 $\\theta^{*}$ 的 $\\mathcal{L}_{\\mathrm{CFM}}(\\theta)$ ，它将保持 $u_{t}^{\\theta^{*}} = u_{t}^{target}$ ，即神经网络将等于边缘向量场（假设无限表达参数化）。</p>"
   },
   {
     "kind": "html",
@@ -1354,7 +1354,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Flow matching training consists of learning the marginal vector field $u_{t}^{target}$ . To construct it, we choose a conditional probability path $p_{t}(x|z)$ that fulfils $p_{0}(\\cdot|z)=p_{\\mathrm{init}}$ , $p_{1}(\\cdot|z)=\\delta_{z}$ . Next, we find a conditional vector field $u_{t}^{\\mathrm{target}}(x|z)$ such that its corresponding flow $\\psi_{t}^{\\mathrm{target}}(x|z)$ fulfills</p>",
-    "zh": "<p>流匹配训练包括学习边缘向量场 $u_{t}^{target}$ 。为了构造它，我们选择满足 $p_{0}(\\cdot|z)=p_{\\mathrm{init}}$ 、 $p_{1}(\\cdot|z)=\\delta_{z}$ 的条件概率路径 $p_{t}(x|z)$ 。接下来，我们找到一个条件向量场 $u_{t}^{\\mathrm{target}}(x|z)$ ，使其对应的流 $\\psi_{t}^{\\mathrm{target}}(x|z)$ 满足</p>"
+    "zh": "<p>流匹配训练包括学习边缘向量场 $u_{t}^{target}$ 。为了构建它，我们选择一条条件概率路径 $p_{t}(x|z)$ 满足 $p_{0}(\\cdot|z)=p_{\\mathrm{init}}$ , $p_{1}(\\cdot|z)=\\delta_{z}$ 。接下来，我们找到一个条件向量场 $u_{t}^{\\mathrm{target}}(x|z)$ 使得其对应的流量 $\\psi_{t}^{\\mathrm{target}}(x|z)$ 满足</p>"
   },
   {
     "kind": "html",
@@ -1629,7 +1629,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>So far, we have demonstrated how one can construct a trajectory $X_{t}$ of an ODE that follows a desired probability path $p_{t}$ via a marginal vector field $u_{t}^{target}$ . But this approach is constrained to flow models. What about diffusion models? Using score functions, let us now extend this result to SDEs.</p>",
-    "zh": "<p>到目前为止，我们已经演示了如何构建 ODE 的轨迹 $X_{t}$ ，该轨迹通过边缘向量场 $u_{t}^{target}$ 遵循所需的概率路径 $p_{t}$ 。但这种方法仅限于流模型。那么扩散模型呢？现在让我们使用score 函数将此结果扩展到 SDE。</p>"
+    "zh": "<p>到目前为止，我们已经演示了如何构建轨迹 $X_{t}$ 遵循所需概率路径的 ODE $p_{t}$ 通过边缘向量场 $u_{t}^{target}$ 。但这种方法仅限于流模型。那么扩散模型呢？现在让我们使用score 函数将此结果扩展到 SDE。</p>"
   },
   {
     "kind": "html",
@@ -1729,7 +1729,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Then $X_{t}$ has distribution $p_{t}$ for all $0 \\leq t \\leq 1$ if and only if the Fokker-Planck equation holds:</p>",
-    "zh": "<p>那么 $X_{t}$ 对于所有 $0 \\leq t \\leq 1$ 具有分布 $p_{t}$ 当且仅当 Fokker-Planck 方程成立时：</p>"
+    "zh": "<p>然后 $X_{t}$ 有分布 $p_{t}$ 为所有人 $0 \\leq t \\leq 1$ 当且仅当福克-普朗克方程成立：</p>"
   },
   {
     "kind": "html",
@@ -1764,7 +1764,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>The above construction has a famous special case when the probability path is constant, i.e. $p_t = p$ for a fixed distribution $p$ . In this case, we set $u_t^{\\mathrm{target}} = 0$ and obtain the SDE</p>",
-    "zh": "<p>当概率路径恒定时，上述构造有一个著名的特殊情况，即固定分布 $p$ 的 $p_t = p$ 。在本例中，我们设置 $u_t^{\\mathrm{target}} = 0$ 并获取 SDE</p>"
+    "zh": "<p>当概率路径恒定时，上述结构有一个著名的特例，即 $p_t = p$ 对于固定分布 $p$ 。在这种情况下，我们设置 $u_t^{\\mathrm{target}} = 0$ 并获得SDE</p>"
   },
   {
     "kind": "html",
@@ -1809,7 +1809,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<h3>4.3 Score Matching</h3>",
-    "zh": "<h3>4.3 score matching</h3>"
+    "zh": "<h3>4.3 Score Matching（得分匹配）</h3>"
   },
   {
     "kind": "html",
@@ -1944,7 +1944,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Alternatively: $\\mathcal{L}(\\theta) = \\|\\epsilon_{t}^{\\theta}(x_{t}) - \\epsilon\\|^{2}$ 7: Update the model parameters $\\theta$ via gradient descent on $\\mathcal{L}(\\theta)$ .</p>",
-    "zh": "<p>或者： $\\mathcal{L}(\\theta) = \\|\\epsilon_{t}^{\\theta}(x_{t}) - \\epsilon\\|^{2}$ 7：通过 $\\mathcal{L}(\\theta)$ 上的梯度下降更新模型参数 $\\theta$ 。</p>"
+    "zh": "<p>或者： $\\mathcal{L}(\\theta) = \\|\\epsilon_{t}^{\\theta}(x_{t}) - \\epsilon\\|^{2}$ 7：更新模型参数 $\\theta$ 通过梯度下降 $\\mathcal{L}(\\theta)$ .</p>"
   },
   {
     "kind": "html",
@@ -2069,7 +2069,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Notice the difference from summary 7: we are additionally guiding $u_{t}^{\\theta}$ with the input $y \\in \\mathcal{Y}$ . For any such $y \\in \\mathcal{Y}$ , samples may then be generated from such a model as follows:</p>",
-    "zh": "<p>请注意与摘要 7 的区别：我们另外使用输入 $y \\in \\mathcal{Y}$ 引导 $u_{t}^{\\theta}$ 。对于任何这样的 $y \\in \\mathcal{Y}$ ，可以从这样的模型生成样本，如下所示：</p>"
+    "zh": "<p>请注意与摘要 7 的区别：我们另外提供引导 $u_{t}^{\\theta}$ 与输入 $y \\in \\mathcal{Y}$ 。对于任何此类 $y \\in \\mathcal{Y}$ ，然后可以从这样的模型生成样本，如下所示：</p>"
   },
   {
     "kind": "html",
@@ -2164,7 +2164,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Classifier Guidance. For simplicity, we will focus here on the case of Gaussian probability paths. Recall from Equation (15) that a Gaussian conditional probability path is given by $p_{t}(\\cdot|z)=\\mathcal{N}(\\alpha_{t}z,\\beta_{t}^{2}I_{d})$ where the noise schedulers $\\alpha_{t}$ and $\\beta_{t}$ are continuously differentiable, monotonic, and satisfy $\\alpha_{0}=\\beta_{1}=0$ and $\\alpha_{1}=\\beta_{0}=1$ . Further, recall that we can use Proposition 1 to rewrite the guided vector field $u_{t}^{\\mathrm{target}}(x|y)$ in the following form using the guided score function $\\nabla\\log p_{t}(x|y)$</p>",
-    "zh": "<p>分类器引导。为简单起见，我们将在这里重点关注高斯概率路径的情况。回顾等式（15），高斯条件概率路径由 $p_{t}(\\cdot|z)=\\mathcal{N}(\\alpha_{t}z,\\beta_{t}^{2}I_{d})$ 给出，其中噪声调度器 $\\alpha_{t}$ 和 $\\beta_{t}$ 是连续可微的、单调的，并且满足 $\\alpha_{0}=\\beta_{1}=0$ 和 $\\alpha_{1}=\\beta_{0}=1$ 。此外，回想一下，我们可以使用命题 1 使用引导得分函数 $\\nabla\\log p_{t}(x|y)$ 将引导向量场 $u_{t}^{\\mathrm{target}}(x|y)$ 重写为以下形式</p>"
+    "zh": "<p>分类器引导。为简单起见，我们将在这里重点关注高斯概率路径的情况。回顾等式 (15)，高斯条件概率路径由下式给出 $p_{t}(\\cdot|z)=\\mathcal{N}(\\alpha_{t}z,\\beta_{t}^{2}I_{d})$ 噪声调度器在哪里 $\\alpha_{t}$ 和 $\\beta_{t}$ 连续可微、单调且满足 $\\alpha_{0}=\\beta_{1}=0$ 和 $\\alpha_{1}=\\beta_{0}=1$ 。此外，回想一下我们可以使用命题 1 重写引导向量场 $u_{t}^{\\mathrm{target}}(x|y)$ 使用引导score 函数采用以下形式 $\\nabla\\log p_{t}(x|y)$</p>"
   },
   {
     "kind": "html",
@@ -2289,7 +2289,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>8: Update the model parameters $\\theta$ via gradient descent on $\\mathcal{L}(\\theta)$ .</p>",
-    "zh": "<p>8：通过 $\\mathcal{L}(\\theta)$ 上的梯度下降更新模型参数 $\\theta$ 。</p>"
+    "zh": "<p>8：更新模型参数 $\\theta$ 通过梯度下降 $\\mathcal{L}(\\theta)$ .</p>"
   },
   {
     "kind": "html",
@@ -2454,7 +2454,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<ol>\n<li>Neural network architectures: We first discuss how raw conditioning input, including the time t, and guidance variable $y_{raw}$ (i.e., a discrete class label or raw text), is converted, or embedded into a vector-valued form digestible by the model $u_{t}^{\\theta}(x|y)$ itself. Then we discuss popular architectural choices for $u_{t}^{\\theta}(x|y)$ , including the U-Net and diffusion transformer.  </li>\n<li>Latent Space: We discuss variational autoencoders, which allow for generative modeling in a lower dimensional latent space, thereby enabling ultra high-resolution image generation.  </li>\n<li>Case Studies: Finally, we will examine in depth the two state-of-the-art image and video models mentioned above - Stable Diffusion and Meta MovieGen - to give you a taste of how things are done at scale.</li>\n</ol>",
-    "zh": "<ol>\n<li>神经网络架构：我们首先讨论如何将原始条件输入（包括时间 t 和引导变量 $y_{raw}$ （即离散类标签或原始文本））转换或嵌入到模型 $u_{t}^{\\theta}(x|y)$ 本身可消化的向量值形式中。然后我们讨论 $u_{t}^{\\theta}(x|y)$ 的流行架构选择，包括 U-Net 和扩散变压器。<br />\n2.latent 空间：我们讨论变分自编码器，它允许在较低维度的latent 空间中进行生成式建模，从而实现超高分辨率图像生成。  </li>\n<li>案例研究：最后，我们将深入研究上面提到的两种最先进的图像和视频模型 - Stable Diffusion 和 Meta MovieGen - 让您了解如何大规模完成工作。</li>\n</ol>"
+    "zh": "<ol>\n<li>神经网络架构：我们首先讨论原始条件输入（包括时间 t 和引导变量）如何 $y_{raw}$ （即离散类标签或原始文本）被转换或嵌入到模型可消化的向量值形式中 $u_{t}^{\\theta}(x|y)$ 本身。然后我们讨论流行的架构选择 $u_{t}^{\\theta}(x|y)$ ，包括U-Net和扩散变压器。  </li>\n<li>latent 空间：我们讨论变分自编码器，它允许在较低维度的latent 空间中进行生成式建模，从而实现超高分辨率图像生成。  </li>\n<li>案例研究：最后，我们将深入研究上面提到的两种最先进的图像和视频模型 - Stable Diffusion 和 Meta MovieGen - 让您了解如何大规模完成工作。</li>\n</ol>"
   },
   {
     "kind": "html",
@@ -2464,7 +2464,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Let us first turn our attention toward the design of scalable neural network architectures for flow and diffusion models targeting image-like modalities (e.g., images and videos). Specifically, we'll explore how the task of the (guided) vector field $u_t^\\theta(x|y)$ with parameters $\\theta$ is implemented in practice. Note that the neural network must have 3 inputs: a vector $x \\in \\mathbb{R}^d$ , a conditioning variable $y \\in \\mathcal{Y}$ , and a time value $t \\in [0,1]$ , as well as one output, a vector $u_t^\\theta(x|y) \\in \\mathbb{R}^d$ . For low-dimensional distributions (e.g. the toy distributions we have seen in previous sections), it is sufficient to parameterize $u_t^\\theta(x|y)$ as a multi-layer perceptron (MLP), otherwise known as a fully connected neural network. That is, in this simple setting, a forward pass through $u_t^\\theta(x|y)$ would involve concatenating our input $x, y,$ and $t$ , and passing them through an MLP. However, for complex, high-dimensional distributions, such as those over images, videos, and proteins, an MLP will likely not suffice, and it is common to use special, application-specific architectures. For the remainder of this subsection, we will consider the case of images (and by extension, videos). First, we'll consider how the raw conditioning information - the time $t$ and the conditioning variable $y$ - are embedded into a vector-valued form digestible by the actual model. Second, we'll consider two common architectural architectural choices for such a model: the U-Net [38, 17, 22, 11], and the diffusion transformer (DiT) [12, 30, 28].</p>",
-    "zh": "<p>让我们首先将注意力转向针对类图像模式（例如图像和视频）的流和扩散模型的可扩展神经网络架构的设计。具体来说，我们将探讨如何在实践中实现带有参数 $\\theta$ 的（引导）矢量场 $u_t^\\theta(x|y)$ 的任务。请注意，神经网络必须有 3 个输入：向量 $x \\in \\mathbb{R}^d$ 、条件变量 $y \\in \\mathcal{Y}$ 和时间值 $t \\in [0,1]$ ，以及一个输出，即向量 $u_t^\\theta(x|y) \\in \\mathbb{R}^d$ 。对于低维分布（例如我们在前面几节中看到的玩具分布），将 $u_t^\\theta(x|y)$ 参数化为多层感知器（MLP）就足够了，也称为全连接神经网络。也就是说，在这个简单的设置中，通过 $u_t^\\theta(x|y)$ 的前向传递将涉及连接我们的输入 $x, y,$ 和 $t$ ，并将它们传递给 MLP。然而，对于复杂的高维分布，例如图像、视频和蛋白质上的分布，MLP 可能不够，并且通常使用特殊的、特定于应用程序的架构。对于本小节的其余部分，我们将考虑图像（以及扩展的视频）的情况。首先，我们将考虑如何将原始条件信息（时间 $t$ 和条件变量 $y$）嵌入到实际模型可消化的向量值形式中。其次，我们将考虑此类模型的两种常见架构选择：U-Net [38, 17, 22, 11] 和扩散变压器 (DiT) [12, 30, 28]。</p>"
+    "zh": "<p>让我们首先将注意力转向针对类图像模式（例如图像和视频）的流和扩散模型的可扩展神经网络架构的设计。具体来说，我们将探讨（引导）向量场的任务如何 $u_t^\\theta(x|y)$ 带参数 $\\theta$ 并落实到实践中。请注意，神经网络必须有 3 个输入：一个向量 $x \\in \\mathbb{R}^d$ , 条件变量 $y \\in \\mathcal{Y}$ ，和时间值 $t \\in [0,1]$ ，以及一个输出，一个向量 $u_t^\\theta(x|y) \\in \\mathbb{R}^d$ 。对于低维分布（例如我们在前面几节中看到的玩具分布），参数化就足够了 $u_t^\\theta(x|y)$ 作为多层感知器（MLP），也称为全连接神经网络。也就是说，在这个简单的设置中，前向传递 $u_t^\\theta(x|y)$ 将涉及连接我们的输入 $x, y,$ 和 $t$ ，并将它们传递给 MLP。然而，对于复杂的高维分布，例如图像、视频和蛋白质上的分布，MLP 可能不够，并且通常使用特殊的、特定于应用程序的架构。对于本小节的其余部分，我们将考虑图像（以及扩展的视频）的情况。首先，我们将考虑原始调节信息 - 时间 $t$ 和条件变量 $y$ - 嵌入到实际模型可消化的向量值形式中。其次，我们将考虑此类模型的两种常见架构选择：U-Net [38, 17, 22, 11]，以及扩散变压器 (DiT) [12, 30, 28].</p>"
   },
   {
     "kind": "html",
@@ -2504,7 +2504,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Embedding Class Labels. When $y_{raw} \\in Y \\triangleq \\{0, \\ldots, N\\}$ is just a class label, then it is often easiest to simply learn a separate embedding vector for each of the $N + 1$ possible values of $y_{raw}$ , and set y to this embedding vector. One would consider the parameters of these embeddings to be included in the parameters of $u_{t}^{\\theta}(x|y)$ , and would therefore learn these during training.</p>",
-    "zh": "<p>嵌入类标签。当 $y_{raw} \\in Y \\triangleq \\{0, \\ldots, N\\}$ 只是一个类标签时，通常最简单的方法是简单地为 $y_{raw}$ 的每个 $N + 1$ 可能值学习一个单独的嵌入向量，并将 y 设置为此嵌入向量。人们会认为这些嵌入的参数包含在 $u_{t}^{\\theta}(x|y)$ 的参数中，因此会在训练期间学习这些参数。</p>"
+    "zh": "<p>嵌入类标签。什么时候 $y_{raw} \\in Y \\triangleq \\{0, \\ldots, N\\}$ 只是一个类标签，那么通常最简单的是为每个类别学习一个单独的嵌入向量 $N + 1$ 的可能值 $y_{raw}$ ，并将 y 设置为该嵌入向量。人们会认为这些嵌入的参数包含在 $u_{t}^{\\theta}(x|y)$ ，因此会在训练期间学习这些。</p>"
   },
   {
     "kind": "html",
@@ -2764,7 +2764,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>A natural answer to this question lies in compression: perhaps the actual space of images, for example, lies near a much lower-dimensional manifold of the high dimensional image space. More concretely, we might consider an encoder $\\mu_{\\phi}:R^{d}\\to R^{k}$ , together with some decoder $\\mu_{\\theta}:R^{k}\\to R^{d}$ , which together map raw images $x\\in R^{d}$ to and from latents $z\\in R^{k}$ , respectively. The dimension k is typically chosen to be much smaller than d. For images, in which, for example, $d = 3 \\times 1024 \\times 1024$ , it is not uncommon to downsample to obtain e.g., $k = 3 \\times \\frac{1024}{16} \\times \\frac{1024}{16}$ . Together, $\\mu_{\\phi}$ and $\\mu_{\\theta}$ are referred to as an autoencoder. Ideally, $\\mu_{\\phi}$ and $\\mu_{\\theta}$ are chosen so as to achieve high reconstruction quality, or in other words, so that $\\mu_{\\theta}(\\mu_{\\phi}(x))$ resembles x on average. Accordingly, autoencoders are usually trained with the reconstruction loss</p>",
-    "zh": "<p>这个问题的一个自然答案在于压缩：例如，图像的实际空间可能位于高维图像空间的低维流形附近。更具体地说，我们可能会考虑一个编码器 $\\mu_{\\phi}:R^{d}\\to R^{k}$ 和一些解码器 $\\mu_{\\theta}:R^{k}\\to R^{d}$ ，它们分别将原始图像 $x\\in R^{d}$ 映射到潜在图像 $z\\in R^{k}$ 或从潜在图像 $z\\in R^{k}$ 映射。通常选择尺寸 k 远小于 d。对于例如 $d = 3 \\times 1024 \\times 1024$ 的图像，下采样以获得例如 $k = 3 \\times \\frac{1024}{16} \\times \\frac{1024}{16}$ 的情况并不少见。 $\\mu_{\\phi}$ 和 $\\mu_{\\theta}$ 一起称为自编码器。理想情况下，选择 $\\mu_{\\phi}$ 和 $\\mu_{\\theta}$ 以获得高重建质量，或者换句话说，使得 $\\mu_{\\theta}(\\mu_{\\phi}(x))$ 平均类似于 x。因此，自编码器通常使用重建损失进行训练</p>"
+    "zh": "<p>这个问题的一个自然答案在于压缩：例如，图像的实际空间可能位于高维图像空间的低维流形附近。更具体地说，我们可以考虑一个编码器 $\\mu_{\\phi}:R^{d}\\to R^{k}$ ，连同一些解码器 $\\mu_{\\theta}:R^{k}\\to R^{d}$ ，它们一起映射原始图像 $x\\in R^{d}$ 往返于潜伏者 $z\\in R^{k}$ ， 分别。通常选择尺寸 k 远小于 d。对于图像，例如， $d = 3 \\times 1024 \\times 1024$ ，下采样以获得例如，并不罕见 $k = 3 \\times \\frac{1024}{16} \\times \\frac{1024}{16}$ 。一起， $\\mu_{\\phi}$ 和 $\\mu_{\\theta}$ 被称为自编码器。理想情况下， $\\mu_{\\phi}$ 和 $\\mu_{\\theta}$ 选择以获得高重建质量，或者换句话说，以便 $\\mu_{\\theta}(\\mu_{\\phi}(x))$ 平均值类似于 x。因此，自编码器通常使用重建损失进行训练</p>"
   },
   {
     "kind": "html",
@@ -2779,7 +2779,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Amenability to Generative Modeling. Unfortunately, the reconstruction loss above is not enough to train a “good” autoencoder. Recall that our eventual goal is to train a generative model in the latent space, and targeting the latent distribution $p_{\\mathrm{latent}}(z)$ given by $z = \\mu_{\\phi}(x), x \\sim p_{\\mathrm{data}}$ . A generative model for $p_{\\mathrm{data}}(x)$ is then realized by passing the output of our latent generative model through the decoder $\\mu_{\\theta}$ . A subtle issue arises with autoencoders as we have currently formulated them in that we have little to no control over $p_{\\mathrm{latent}}(z)$ , and thus essentially no guarantee that $p_{\\mathrm{latent}}(z)$ is even well-behaved enough to be amenable to training such a generative model (i.e., nice, simple, Gaussian-like). While transforming our data in latent space might have compressed it, we might have transformed the data distribution $p_{data}$ into a very hard-to-learn distribution $p_{latent}$ . Therefore, the question is: how can we make sure that the latent distribution $p_{latent}$ is still well-behaved and easy-to-learn? To allow for more explicit regularization of the latent distribution, we will now recast the concept of autoencoder in a more general probabilistic framework leading to the concept of a variational autoencoder.</p>",
-    "zh": "<p>适合生成式建模。不幸的是，上面的重建损失不足以训练一个“好的”自编码器。回想一下，我们的最终目标是在latent 空间中训练生成式模型，并针对 $z = \\mu_{\\phi}(x), x \\sim p_{\\mathrm{data}}$ 给出的潜在分布 $p_{\\mathrm{latent}}(z)$ 。然后通过解码器 $\\mu_{\\theta}$ 传递潜在生成式模型的输出来实现 $p_{\\mathrm{data}}(x)$ 的生成式模型。自编码器出现了一个微妙的问题，因为我们目前已经制定了它们，因为我们几乎无法控制 $p_{\\mathrm{latent}}(z)$ ，因此基本上无法保证 $p_{\\mathrm{latent}}(z)$ 的行为足够好，能够训练这样的生成式模型（即，漂亮、简单、类似高斯）。虽然在latent 空间中转换我们的数据可能会压缩它，但我们可能已经将数据分布 $p_{data}$ 转换为非常难以学习的分布 $p_{latent}$ 。因此，问题是：我们如何确保潜在分布 $p_{latent}$ 仍然表现良好且易于学习？为了允许对潜在分布进行更明确的正则化，我们现在将在更通用的概率框架中重新定义自编码器的概念，从而产生变分自编码器的概念。</p>"
+    "zh": "<p>适合生成式建模。不幸的是，上面的重建损失不足以训练一个“好的”自编码器。回想一下，我们的最终目标是在latent 空间中训练生成式模型，并针对潜在分布 $p_{\\mathrm{latent}}(z)$ 给出的 $z = \\mu_{\\phi}(x), x \\sim p_{\\mathrm{data}}$ 。生成式模型 $p_{\\mathrm{data}}(x)$ 然后通过将潜在生成式模型的输出传递给解码器来实现 $\\mu_{\\theta}$ 。自编码器出现了一个微妙的问题，因为我们目前已经制定了它们，因为我们几乎无法控制 $p_{\\mathrm{latent}}(z)$ ，因此基本上不能保证 $p_{\\mathrm{latent}}(z)$ 甚至表现得足够好，能够训练这样的生成式模型（即，漂亮、简单、类似高斯）。虽然在latent 空间中转换我们的数据可能会压缩它，但我们可能会改变数据分布 $p_{data}$ 进入一个非常难学的分布 $p_{latent}$ 。因此，问题是：我们如何确保潜在分布 $p_{latent}$ 还乖巧好学吗？为了允许对潜在分布进行更明确的正则化，我们现在将在更通用的概率框架中重新定义自编码器的概念，从而产生变分自编码器的概念。</p>"
   },
   {
     "kind": "html",
@@ -2789,7 +2789,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>A variational autoencoder (VAE) is obtained from our (deterministic) standard autoencoder formulation by relaxing the constraint that the encoder and decoder are deterministic functions. In particular, let us consider an encoder $q_{\\phi}(z|x)$ with parameters $\\phi$ , and a decoder $p_{\\theta}(x|z)$ with parameters $\\theta$ . The most common choice is to take</p>",
-    "zh": "<p>通过放宽编码器和解码器是确定性函数的约束，从我们的（确定性）标准自编码器公式中获得变分自编码器（VAE）。特别地，让我们考虑一个带有参数 $\\phi$ 的编码器 $q_{\\phi}(z|x)$ 和带有参数 $\\theta$ 的解码器 $p_{\\theta}(x|z)$ 。最常见的选择是采取</p>"
+    "zh": "<p>通过放宽编码器和解码器是确定性函数的约束，从我们的（确定性）标准自编码器公式中获得变分自编码器（VAE）。特别地，让我们考虑一个编码器 $q_{\\phi}(z|x)$ 带参数 $\\phi$ ，和一个解码器 $p_{\\theta}(x|z)$ 带参数 $\\theta$ 。最常见的选择是采取</p>"
   },
   {
     "kind": "html",
@@ -2924,7 +2924,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>The expression above is intuitive: If the mean and variances coincide, that then $D_{\\mathrm{KL}}(q \\parallel p) = 0$ . Further, it increases with the squared error $\\|\\mu_{q} - \\mu_{p}\\|^{2}$ between the mean vectors. Finally, the function $\\mathcal{K}(\\alpha)$ has a unique minimum at $\\alpha = 1$ so that $D_{\\mathrm{KL}}(q \\parallel p)$ is minimized when $\\sigma_{q} = \\sigma_{p}$ .</p>",
-    "zh": "<p>上面的表达式很直观：如果均值和方差一致，则 $D_{\\mathrm{KL}}(q \\parallel p) = 0$ 。此外，它随着平均向量之间的平方误差 $\\|\\mu_{q} - \\mu_{p}\\|^{2}$ 而增加。最后，函数 $\\mathcal{K}(\\alpha)$ 在 $\\alpha = 1$ 处具有唯一的最小值，以便在 $\\sigma_{q} = \\sigma_{p}$ 时最小化 $D_{\\mathrm{KL}}(q \\parallel p)$ 。</p>"
+    "zh": "<p>上面的表达式很直观：如果均值和方差一致，那么 $D_{\\mathrm{KL}}(q \\parallel p) = 0$ 。此外，它随着平方误差的增加而增加 $\\|\\mu_{q} - \\mu_{p}\\|^{2}$ 平均向量之间。最后，函数 $\\mathcal{K}(\\alpha)$ 有一个唯一的最小值 $\\alpha = 1$ 以便 $D_{\\mathrm{KL}}(q \\parallel p)$ 最小化时 $\\sigma_{q} = \\sigma_{p}$ .</p>"
   },
   {
     "kind": "html",
@@ -3119,7 +3119,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>To train a latent generative model, we simply follow the existing training recipe, but work directly in the latent space. At training time, we draw samples from $q_{\\phi}(z|x)$ with $x \\sim p_{data}$ , and at inference time, we sample z from the latent diffusion or flow model, and then decode using $x = \\mu_{\\mathrm{mean}}(z)$ (note that we take the mean rather than a random sample to avoid noise-induced artifacts). Intuitively, a well-trained autoencoder can be thought of as filtering out high-frequency or otherwise semantically meaningless details, allowing the generative model to “focus” on important, perceptually relevant features [36]. At the time of the writing of this document, nearly all state-of-the-art approaches to image and video generation follow the so-called latent diffusion paradigm involving training a flow or diffusion model within the latent space of an autoencoder [36, 48]. However, it is important to note: one also needs to train the autoencoder before training the diffusion models. Crucially, performance now depends also on how good the autoencoder compresses images into latent space and recovers aesthetically pleasing images.</p>",
-    "zh": "<p>为了训练潜在生成式模型，我们只需遵循现有的训练方法，但直接在latent 空间中工作。在训练时，我们使用 $x \\sim p_{data}$ 从 $q_{\\phi}(z|x)$ 中抽取样本，在推理时，我们从潜在扩散或流模型中采样 z，然后使用 $x = \\mu_{\\mathrm{mean}}(z)$ 进行解码（请注意，我们采用平均值而不是随机样本，以避免噪声引起的伪影）。直观上，训练有素的自编码器可以被认为过滤掉高频或其他语义上无意义的细节，从而允许生成式模型“专注于”重要的、感知相关的特征[36]。在撰写本文档时，几乎所有最先进的图像和视频生成方法都遵循所谓的潜在扩散范式，涉及在自编码器 [36, 48] 的latent 空间内训练流或扩散模型。然而，需要注意的是：在训练扩散模型之前还需要训练自编码器。至关重要的是，现在的性能还取决于自编码器将图像压缩到latent 空间并恢复美观图像的效果。</p>"
+    "zh": "<p>为了训练潜在生成式模型，我们只需遵循现有的训练方法，但直接在latent 空间中工作。在训练时，我们从以下位置抽取样本 $q_{\\phi}(z|x)$ 和 $x \\sim p_{data}$ ，在推理时，我们从潜在扩散或流动模型中采样 z，然后使用进行解码 $x = \\mu_{\\mathrm{mean}}(z)$ （请注意，我们采用平均值而不是随机样本，以避免噪声引起的伪影）。直观地说，训练有素的自编码器可以被认为过滤掉高频或其他语义上无意义的细节，从而允许生成式模型“专注于”重要的、感知相关的特征 [36]。在撰写本文档时，几乎所有最先进的图像和视频生成方法都遵循所谓的潜在扩散范式，涉及在自编码器的latent 空间内训练流或扩散模型 [36, 48]。然而，需要注意的是：在训练扩散模型之前还需要训练自编码器。至关重要的是，现在的性能还取决于自编码器将图像压缩到latent 空间并恢复美观图像的效果。</p>"
   },
   {
     "kind": "html",
@@ -3254,7 +3254,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>(1) Outgoing rates are positives: $Q_{t}(y|x)\\geq 0$ whenever $x\\neq y$ (85)</p>",
-    "zh": "<p>(1) 传出率为正值：每当 $x\\neq y$ 时，$Q_{t}(y|x)\\geq 0$ (85)</p>"
+    "zh": "<p>(1) 流出率为正： $Q_{t}(y|x)\\geq 0$ 每当 $x\\neq y$ (85)</p>"
   },
   {
     "kind": "html",
@@ -3279,7 +3279,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>The left-hand side is the infinitesimal rate of change of the probability of switching from $x$ to $y$ . We impose the condition that these probabilities should change as specified by the rate matrix. Let's briefly check that it reasonable to request these conditions, i.e. we simply set $Q_{t}(y|x)$ as in Equation (87), would it be a valid rate matrix? For $h = 0$ , the probability of switching from $x$ to $y \\neq x$ is zero (as no time has passed), i.e. $p_{t|t}(y|x) = 0$ for all $y \\neq x$ . Therefore, we know that the derivative must be non-negative and $Q_{t}(y|x) \\geq 0$ whenever $y \\neq x$ . This checks that the first condition in Equation (85) holds. Further, we know that</p>",
-    "zh": "<p>左侧是从 $x$ 切换到 $y$ 的概率的无穷小变化率。我们施加的条件是这些概率应按照速率矩阵的指定进行变化。让我们简单地检查一下请求这些条件是否合理，即我们简单地设置 $Q_{t}(y|x)$ 如方程（87）所示，它会是一个有效的速率矩阵吗？对于 $h = 0$ ，从 $x$ 切换到 $y \\neq x$ 的概率为零（因为没有时间过去），即 $p_{t|t}(y|x) = 0$ 对于所有 $y \\neq x$ 。因此，我们知道导数必须是非负的，并且每当 $y \\neq x$ 时 $Q_{t}(y|x) \\geq 0$ 。这将检查等式 (85) 中的第一个条件是否成立。进一步，我们知道</p>"
+    "zh": "<p>左边是从切换概率的无穷小变化率 $x$ 到 $y$ 。我们施加的条件是这些概率应按照速率矩阵的指定进行变化。让我们简单地检查一下请求这些条件是否合理，即我们简单地设置 $Q_{t}(y|x)$ 如方程（87）所示，它是一个有效的速率矩阵吗？为了 $h = 0$ ，从切换的概率 $x$ 到 $y \\neq x$ 为零（因为没有时间过去），即 $p_{t|t}(y|x) = 0$ 为所有人 $y \\neq x$ 。因此，我们知道导数一定是非负的，并且 $Q_{t}(y|x) \\geq 0$ 每当 $y \\neq x$ 。这将检查等式 (85) 中的第一个条件是否成立。进一步，我们知道</p>"
   },
   {
     "kind": "html",
@@ -3394,7 +3394,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>CTMC model. Next, let us define how we can a parameterize a CTMC in a neural network. A CTMC model (or discrete diffusion model) is given by an initial distribution $p_{init}$ over S and a neural network $Q_{t}^{\\theta}$ with parameters $\\theta$ such that for every input $x \\in S$ the model returns a single column of the rate matrix</p>",
-    "zh": "<p>CTMC模型。接下来，让我们定义如何在神经网络中参数化 CTMC。 CTMC 模型（或离散扩散模型）由 S 上的初始分布 $p_{init}$ 和具有参数 $\\theta$ 的神经网络 $Q_{t}^{\\theta}$ 给出，使得对于每个输入 $x \\in S$ ，模型返回速率矩阵的单列</p>"
+    "zh": "<p>CTMC模型。接下来，让我们定义如何在神经网络中参数化 CTMC。 CTMC 模型（或离散扩散模型）由初始分布给出 $p_{init}$ 通过 S 和神经网络 $Q_{t}^{\\theta}$ 带参数 $\\theta$ 这样对于每个输入 $x \\in S$ 该模型返回速率矩阵的单列</p>"
   },
   {
     "kind": "html",
@@ -3419,7 +3419,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>We call all $y$ that differ from $x$ in at most one token the neighbors $N(x)$ of $x$ . We can write such a factorized CTMC model as</p>",
-    "zh": "<p>我们将最多一个标记与 $x$ 不同的所有 $y$ 称为 $x$ 的邻居 $N(x)$ 。我们可以将分解的 CTMC 模型写为</p>"
+    "zh": "<p>我们打电话给所有 $y$ 不同于 $x$ 邻居最多有一个令牌 $N(x)$ 的 $x$ 。我们可以将分解的 CTMC 模型写为</p>"
   },
   {
     "kind": "html",
@@ -3519,7 +3519,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>We define $\\delta_{z}(x)$ to be function such that $\\delta_{z}(x)=0$ if $x\\neq z$ and $\\delta_{z}(x)=1$ if x=z. A (discrete) conditional probability path is given by set of distributions $p_{t}(x|z)$ for $x,z\\in S$ and $0\\leq t\\leq1$ such that</p>",
-    "zh": "<p>我们将 $\\delta_{z}(x)$ 定义为函数，如果 $x\\neq z$ 则为 $\\delta_{z}(x)=0$，如果 x=z 则为 $\\delta_{z}(x)=1$。 （离散）条件概率路径由 $x,z\\in S$ 和 $0\\leq t\\leq1$ 的分布集 $p_{t}(x|z)$ 给出，使得</p>"
+    "zh": "<p>我们定义 $\\delta_{z}(x)$ 具有这样的功能 $\\delta_{z}(x)=0$ 如果 $x\\neq z$ 和 $\\delta_{z}(x)=1$ 如果x=z。 （离散）条件概率路径由一组分布给出 $p_{t}(x|z)$ 为了 $x,z\\in S$ 和 $0\\leq t\\leq1$ 这样</p>"
   },
   {
     "kind": "html",
@@ -3659,7 +3659,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Let $p_t$ be a set of distributions on $S$ for every $0 \\leq t \\leq 1$ . Further, let $X_t$ be a CTMC with matrix $Q_t$ and initial distribution $p_0$ . Then $X_t \\sim p_t$ for all $0 \\leq t \\leq 1$ if and only if the Kolmogorov Forward Equation (KFE) holds:</p>",
-    "zh": "<p>令 $p_t$ 为每个 $0 \\leq t \\leq 1$ 的 $S$ 上的一组分布。此外，令 $X_t$ 为具有矩阵 $Q_t$ 和初始分布 $p_0$ 的 CTMC。那么 $X_t \\sim p_t$ 对于所有 $0 \\leq t \\leq 1$ 当且仅当柯尔莫哥洛夫前向方程 (KFE) 成立：</p>"
+    "zh": "<p>让 $p_t$ 是一组分布 $S$ 对于每一个 $0 \\leq t \\leq 1$ 。进一步，让 $X_t$ 成为具有矩阵的 CTMC $Q_t$ 和初始分布 $p_0$ 。然后 $X_t \\sim p_t$ 为所有人 $0 \\leq t \\leq 1$ 当且仅当柯尔莫哥洛夫远期方程 (KFE) 成立：</p>"
   },
   {
     "kind": "html",
@@ -3669,7 +3669,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Proof of KFE. To show that the KFE is necessary, assume that $p_t(x)$ are the true marginals of the CTMC, i.e. $X_t \\sim p_t$ for every $0 \\leq t \\leq 1$ . Then we can compute:</p>",
-    "zh": "<p>KFE 证明。为了证明 KFE 是必要的，假设 $p_t(x)$ 是 CTMC 的真正边缘，即每个 $0 \\leq t \\leq 1$ 都有 $X_t \\sim p_t$ 。然后我们可以计算：</p>"
+    "zh": "<p>KFE 证明。为了证明 KFE 是必要的，假设 $p_t(x)$ 是 CTMC 的真实边际，即 $X_t \\sim p_t$ 对于每一个 $0 \\leq t \\leq 1$ 。然后我们可以计算：</p>"
   },
   {
     "kind": "html",
@@ -3919,7 +3919,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<h2>8 References</h2>",
-    "zh": "<h2>8 References</h2>"
+    "zh": "<h2>8 参考文献</h2>"
   },
   {
     "kind": "html",
@@ -3959,7 +3959,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>where $\\int p_X(x)\\mathrm{d}x = 1$ . By convention, we omit the integration interval when integrating over the whole space $(\\int \\equiv \\int_{\\mathbb{R}^d})$ . To keep notation concise, we will refer to the PDF $p_{X_t}$ of RV $X_{t}$ as simply $p_t$ . We will use the notation $X\\sim p$ or $X\\sim p(X)$ to indicate that $X$ is distributed according to $p$ . One common PDF in generative modeling is the $d$ -dimensional isotropic Gaussian:</p>",
-    "zh": "<p>其中 $\\int p_X(x)\\mathrm{d}x = 1$ 。按照惯例，我们在对整个空间 $(\\int \\equiv \\int_{\\mathbb{R}^d})$ 进行积分时省略积分间隔。为了保持符号简洁，我们将 RV $X_{t}$ 的 PDF $p_{X_t}$ 简称为 $p_t$ 。我们将使用符号 $X\\sim p$ 或 $X\\sim p(X)$ 来指示 $X$ 根据 $p$ 分布。生成式建模中的一种常见 PDF 是 $d$ 维各向同性高斯：</p>"
+    "zh": "<p>在哪里 $\\int p_X(x)\\mathrm{d}x = 1$ 。按照惯例，我们在对整个空间进行积分时省略积分区间 $(\\int \\equiv \\int_{\\mathbb{R}^d})$ 。为了保持符号简洁，我们将参考 PDF $p_{X_t}$ 房车的 $X_{t}$ 简单地说 $p_t$ 。我们将使用符号 $X\\sim p$ 或者 $X\\sim p(X)$ 表明 $X$ 是根据分布 $p$ 。生成式建模中一种常见的 PDF 是 $d$ 维各向同性高斯：</p>"
   },
   {
     "kind": "html",
@@ -4014,7 +4014,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>See Figure 21 for an illustration of the joint PDF of two RVs in $\\mathbb{R}$ ( $d = 1$ ). The conditional PDF $p_{X|Y}$ describes the PDF of the random variable $X$ when conditioned on an event $Y = y$ with density $p_Y(y) > 0$ :</p>",
-    "zh": "<p>有关 $\\mathbb{R}$ ( $d = 1$ ) 中两个 RV 的联合 PDF 的说明，请参见图 21。条件 PDF $p_{X|Y}$ 描述了以密度为 $p_Y(y) > 0$ 的事件 $Y = y$ 为条件时随机变量 $X$ 的 PDF：</p>"
+    "zh": "<p>请参见图 21，了解两个 RV 的联合 PDF 的说明。 $\\mathbb{R}$ ( $d = 1$ ）。条件 PDF $p_{X|Y}$ 描述随机变量的 PDF $X$ 当以事件为条件时 $Y = y$ 与密度 $p_Y(y) > 0$ :</p>"
   },
   {
     "kind": "html",
@@ -4139,7 +4139,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Then $X_{t}$ has distribution $p_{t}$ for all $0 \\leq t \\leq 1$ if and only if the Fokker-Planck equation holds:</p>",
-    "zh": "<p>那么 $X_{t}$ 对于所有 $0 \\leq t \\leq 1$ 具有分布 $p_{t}$ 当且仅当 Fokker-Planck 方程成立时：</p>"
+    "zh": "<p>然后 $X_{t}$ 有分布 $p_{t}$ 为所有人 $0 \\leq t \\leq 1$ 当且仅当福克-普朗克方程成立：</p>"
   },
   {
     "kind": "html",
@@ -4214,7 +4214,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>where in (i) we used a 2nd Taylor approximation of $f$ around $X_{t}$ and in (ii) we used the fact that the Hessian $\\nabla^2 f$ is a symmetric matrix. Note that $\\mathbb{E}[W_{t + h} - W_t|X_t] = 0$ and $W_{t + h} - W_t|X_t\\sim \\mathcal{N}(0,hI_d)$ . Therefore</p>",
-    "zh": "<p>其中，在 (i) 中，我们在 $X_{t}$ 周围使用了 $f$ 的二阶泰勒近似，在 (ii) 中，我们使用了 Hessian $\\nabla^2 f$ 是对称矩阵的事实。请注意 $\\mathbb{E}[W_{t + h} - W_t|X_t] = 0$ 和 $W_{t + h} - W_t|X_t\\sim \\mathcal{N}(0,hI_d)$ 。所以</p>"
+    "zh": "<p>其中 (i) 我们使用了二阶泰勒近似 $f$ 大约 $X_{t}$ 在 (ii) 中我们使用了 Hessian 矩阵 $\\nabla^2 f$ 是一个对称矩阵。注意 $\\mathbb{E}[W_{t + h} - W_t|X_t] = 0$ 和 $W_{t + h} - W_t|X_t\\sim \\mathcal{N}(0,hI_d)$ 。所以</p>"
   },
   {
     "kind": "html",
@@ -4274,7 +4274,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Finally, we explain why it is also a sufficient condition. The Fokker-Planck equation is a partial differential equation (PDE). More specifically, it is a so-called parabolic partial differential equation. Similar to Theorem 3, such differential equations have a unique solution given fixed initial conditions (see e.g. [15, Chapter 7]). Now, if Equation (108) holds for $p_t$ , we just shown above that it must also hold for true distribution $q_t$ of $X_t$ (i.e. $X_t \\sim q_t$ ) - in other words, both $p_t$ and $q_t$ are solutions to the parabolic PDE. Further, we know that the initial conditions are the same, i.e. $p_0 = q_0 = p_{\\mathrm{init}}$ by construction of an interpolating probability path. Hence, by uniqueness of the solution of the differential equation, we know that $p_t = q_t$ for all $0 \\leq t \\leq 1$ - which means $X_t \\sim q_t = p_t$ and which is what we wanted to show.</p>",
-    "zh": "<p>最后，我们解释为什么它也是一个充分条件。福克-普朗克方程是偏微分方程 (PDE)。更具体地，它是所谓的抛物型偏微分方程。与定理 3 类似，在给定固定初始条件的情况下，此类微分方程具有唯一解（参见 [15，第 7 章]）。现在，如果方程 (108) 对于 $p_t$ 成立，那么我们上面刚刚表明它也必须对于 $X_t$ 的真实分布 $q_t$ （即 $X_t \\sim q_t$ ）成立 - 换句话说， $p_t$ 和 $q_t$ 都是抛物线偏微分方程的解。此外，我们知道初始条件是相同的，即通过构建插值概率路径来实现 $p_0 = q_0 = p_{\\mathrm{init}}$ 。因此，通过微分方程解的唯一性，我们知道 $p_t = q_t$ 对于所有 $0 \\leq t \\leq 1$ - 这意味着 $X_t \\sim q_t = p_t$ ，这就是我们想要展示的。</p>"
+    "zh": "<p>最后，我们解释为什么它也是一个充分条件。福克-普朗克方程是偏微分方程 (PDE)。更具体地，它是所谓的抛物型偏微分方程。与定理 3 类似，在给定固定初始条件的情况下，此类微分方程具有唯一解（参见 [15，第 7 章]）。现在，如果方程（108）成立 $p_t$ ，我们刚刚在上面表明它也必须适用于真实分布 $q_t$ 的 $X_t$ （IE。 $X_t \\sim q_t$ ) - 换句话说，两者 $p_t$ 和 $q_t$ 是抛物线偏微分方程的解。此外，我们知道初始条件是相同的，即 $p_0 = q_0 = p_{\\mathrm{init}}$ 通过构建插值概率路径。因此，根据微分方程解的唯一性，我们知道 $p_t = q_t$ 为所有人 $0 \\leq t \\leq 1$ - 这意味着 $X_t \\sim q_t = p_t$ 这就是我们想要展示的。</p>"
   },
   {
     "kind": "html",
@@ -4739,7 +4739,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>Reconstruction vs Generation. Given an encoder $q_{\\phi}(z|x)$ , decoder $p_{\\theta}(x|z)$ , and latent generative model $r_{\\psi}$ trained to sample from $q_{\\phi}(z)$ , we may consider the following two generative models</p>",
-    "zh": "<p>重建与一代。给定一个编码器 $q_{\\phi}(z|x)$ 、解码器 $p_{\\theta}(x|z)$ 和经过训练以从 $q_{\\phi}(z)$ 采样的潜在生成式模型 $r_{\\psi}$ ，我们可以考虑以下两个生成式模型</p>"
+    "zh": "<p>重建与一代。给定一个编码器 $q_{\\phi}(z|x)$ , 解码器 $p_{\\theta}(x|z)$ ，和潜在生成式模型 $r_{\\psi}$ 训练样本 $q_{\\phi}(z)$ ，我们可以考虑以下两种生成式模型</p>"
   },
   {
     "kind": "html",
@@ -4814,7 +4814,7 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<p>The idea is that after drawing a data point $z \\sim p_{data}$ one simulates the forward process and thereby corrupts or \"noises\" the data. The forward process is designed such that for $t \\to \\infty$ its distribution converges to a Gaussian $\\mathcal{N}(0, I_d)$ . In other words, for $T \\gg 0$ it holds that $\\bar{X}_T \\sim \\mathcal{N}(0, I_d)$ approximately. Note that this essentially corresponds to a probability path: the conditional distribution of $\\bar{X}_t$ given $\\bar{X}_0 = z$ is a conditional probability path $\\bar{p}_t(\\cdot | z)$ and the distribution of $\\bar{X}_t$ marginalized over $z \\sim p_{data}$ corresponds to a marginal probability path $\\bar{p}_t$ .⁶ However, note that with this construction, we need to know the distribution of $X_t | X_0 = z$ in closed form in order to train our models to avoid simulating the SDE. This essentially restrict the vector field $u_t^{forw}$ to ones such that we know the distribution $\\bar{X}_t | \\bar{X}_0 = z$ in closed form. Therefore, throughout the diffusion model literature, vector fields in forward processes are always of the affine form, i.e. $u_t^{forw}(x) = a_t x$ for some continuous function $a_t$ . For this choice, we can use known formulas of the conditional distribution [40, 44, 23]:</p>",
-    "zh": "<p>这个想法是，在绘制数据点 $z \\sim p_{data}$ 之后，模拟前向过程，从而破坏或“干扰”数据。前向过程的设计使得 $t \\to \\infty$ 的分布收敛于高斯 $\\mathcal{N}(0, I_d)$ 。换句话说，对于 $T \\gg 0$ 来说，它大约支持 $\\bar{X}_T \\sim \\mathcal{N}(0, I_d)$ 。请注意，这本质上对应于一条概率路径：给定 $\\bar{X}_0 = z$ 的 $\\bar{X}_t$ 的条件分布是一条条件概率路径 $\\bar{p}_t(\\cdot | z)$，而在 $z \\sim p_{data}$ 上边缘化的 $\\bar{X}_t$ 的分布对应于一条边缘概率路径 $\\bar{p}_t$ 。⁶ 但是，请注意，通过这种构造，我们需要知道封闭形式的 $X_t | X_0 = z$ 分布，以便训练我们的模型以避免模拟 SDE。这本质上将向量场 $u_t^{forw}$ 限制为使得我们知道闭合形式的分布 $\\bar{X}_t | \\bar{X}_0 = z$ 的向量场。因此，在整个扩散模型文献中，前向过程中的向量场始终是仿射形式，即 $u_t^{forw}(x) = a_t x$ 对于某些连续函数 $a_t$ 。对于这种选择，我们可以使用条件分布 [40, 44, 23] 的已知公式：</p>"
+    "zh": "<p>这个想法是在绘制数据点之后 $z \\sim p_{data}$ 一种方法是模拟前向过程，从而破坏或“干扰”数据。前向过程的设计使得 $t \\to \\infty$ 其分布收敛于高斯分布 $\\mathcal{N}(0, I_d)$ 。换句话说，对于 $T \\gg 0$ 它认为 $\\bar{X}_T \\sim \\mathcal{N}(0, I_d)$ 大约。请注意，这本质上对应于概率路径： $\\bar{X}_t$ 给定 $\\bar{X}_0 = z$ 是条件概率路径 $\\bar{p}_t(\\cdot | z)$ 和分布 $\\bar{X}_t$ 被边缘化 $z \\sim p_{data}$ 对应于边缘概率路径 $\\bar{p}_t$ .⁶ 但是，请注意，通过这种构造，我们需要知道 $X_t | X_0 = z$ 以封闭形式来训练我们的模型以避免模拟 SDE。这本质上限制了向量场 $u_t^{forw}$ 到那些我们知道分布的 $\\bar{X}_t | \\bar{X}_0 = z$ 以封闭形式。因此，在整个扩散模型文献中，前向过程中的矢量场始终是仿射形式，即 $u_t^{forw}(x) = a_t x$ 对于某些连续函数 $a_t$ 。对于这种选择，我们可以使用条件分布的已知公式 [40, 44, 23]:</p>"
   },
   {
     "kind": "html",
@@ -4879,6 +4879,6 @@ export const lectureNotesSegments = [
   {
     "kind": "html",
     "en": "<ol>\n<li>Discrete-time: Approximations of SDEs via discrete-time Markov chains are often used.  </li>\n<li>Inverted time convention: It is popular to use an inverted time convention where t = 0 corresponds to $p_{data}$ (as opposed to here where t = 0 corresponds to $p_{init}$ ).  </li>\n<li>Forward process: Forward processes (or noising processes) are ways of constructing (Gaussian) probability paths.  </li>\n<li>Training target via time-reversal: A training target can also be constructed via the time-reversal of SDEs. This is a specific instance of the construction presented here (with an inverted time convention).</li>\n</ol>",
-    "zh": "<ol>\n<li>离散时间：经常使用通过离散时间马尔可夫链来近似 SDE。  </li>\n<li>倒置时间约定：通常使用倒置时间约定，其中 t = 0 对应于 $p_{data}$ （与此处相反，其中 t = 0 对应于 $p_{init}$ ）。  </li>\n<li>前向过程：前向过程（或噪声过程）是构建（高斯）概率路径的方法。<br />\n4.通过时间反转的训练目标：也可以通过SDE的时间反转来构建训练目标。这是此处介绍的构造的特定实例（具有倒置时间约定）。</li>\n</ol>"
+    "zh": "<ol>\n<li>离散时间：经常使用通过离散时间马尔可夫链的 SDE 近似。  </li>\n<li>倒置时间约定：通常使用倒置时间约定，其中 t = 0 对应于 $p_{data}$ （与此处相反，其中 t = 0 对应于 $p_{init}$ ).  </li>\n<li>前向过程：前向过程（或噪声过程）是构建（高斯）概率路径的方法。  </li>\n<li>通过时间反转的训练目标：还可以通过 SDE 的时间反转来构建训练目标。这是此处介绍的构造的特定实例（具有倒置时间约定）。</li>\n</ol>"
   }
 ] satisfies BilingualSegment[];
