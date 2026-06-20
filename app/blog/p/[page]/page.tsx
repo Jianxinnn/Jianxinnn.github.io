@@ -16,16 +16,19 @@ export const dynamicParams = false;
 export function generateStaticParams() {
   const { totalPages } = getBlogPage(1);
 
-  return Array.from({ length: Math.max(0, totalPages - 1) }, (_, index) => ({
+  return Array.from({ length: Math.max(1, totalPages - 1) }, (_, index) => ({
     page: String(index + 2)
   }));
 }
 
 export async function generateMetadata({ params }: BlogPageProps) {
   const { page } = await params;
+  const pageNumber = Number(page);
+  const { totalPages } = getBlogPage(1);
 
   return {
-    title: `Blog Page ${page}`
+    title: `Blog Page ${page}`,
+    ...(pageNumber > totalPages ? { robots: { follow: false, index: false } } : {})
   };
 }
 
@@ -36,11 +39,24 @@ export default async function PaginatedBlogPage({ params }: BlogPageProps) {
     notFound();
   }
 
-  const page = getBlogPage(pageNumber);
+  const { totalPages } = getBlogPage(1);
 
-  if (page.currentPage !== pageNumber) {
-    notFound();
+  if (pageNumber > totalPages) {
+    return (
+      <div className="blog-page">
+        <header className="blog-index-header">
+          <p className="eyebrow">Blog</p>
+          <h1>No posts on this page.</h1>
+          <p>This page is outside the current archive.</p>
+          <Link className="back-link" href="/blog">
+            First page
+          </Link>
+        </header>
+      </div>
+    );
   }
+
+  const page = getBlogPage(pageNumber);
 
   return (
     <div className="blog-page">

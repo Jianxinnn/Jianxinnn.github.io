@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BlogList } from "@/components/blog-list";
 import { BlogPagination } from "@/components/blog-pagination";
 import { BlogSearch } from "@/components/blog-search";
+import { blogConfig } from "@/content/blog/config";
 import {
   blogPosts,
   getBlogArchive,
@@ -21,7 +22,7 @@ export default function BlogPage() {
   const page = getBlogPage(1);
   const archive = getBlogArchive();
   const categories = getBlogCategories();
-  const featuredPosts = getFeaturedPosts().slice(0, 1);
+  const featuredPosts = getFeaturedPosts().slice(0, blogConfig.featuredLimit);
   const featuredSlugs = new Set(featuredPosts.map((post) => post.slug));
   const latestPost = page.posts[0];
   const listPosts = page.posts.filter((post) => !featuredSlugs.has(post.slug));
@@ -109,10 +110,10 @@ export default function BlogPage() {
               <h2>Sources</h2>
               <div className="blog-source-stats">
                 {sourceStats.map((item) => (
-                  <div key={item.status}>
+                  <Link href={`/blog/sources/${item.status}`} key={item.status}>
                     <span>{item.label}</span>
                     <span>{item.count}</span>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </section>

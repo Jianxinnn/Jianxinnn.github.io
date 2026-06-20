@@ -729,7 +729,7 @@ main,
 }
 
 .blog-rail-block nav:not(.blog-tag-cloud) a,
-.blog-source-stats div {
+.blog-source-stats a {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -744,6 +744,10 @@ main,
 }
 
 .blog-rail-block nav:not(.blog-tag-cloud) a:hover {
+  color: var(--accent);
+}
+
+.blog-source-stats a:hover {
   color: var(--accent);
 }
 
@@ -1170,15 +1174,59 @@ main,
   border-top: 1px solid var(--line);
 }
 
-.blog-archive-year h2 {
+.blog-archive-year-label {
   position: sticky;
   top: 88px;
   align-self: start;
-  margin: 0;
+  display: grid;
+  gap: 6px;
   padding-top: 24px;
+}
+
+.blog-archive-year-label h2 {
+  margin: 0;
   color: var(--accent);
   font-family: var(--heading-font);
   font-size: 18px;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+.blog-archive-year-label span,
+.blog-archive-month-label span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.blog-archive-months {
+  display: grid;
+}
+
+.blog-archive-month {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.blog-archive-month:last-child {
+  border-bottom: 0;
+}
+
+.blog-archive-month-label {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding-top: 25px;
+}
+
+.blog-archive-month-label h3 {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--heading-font);
+  font-size: 14px;
   font-weight: 850;
   line-height: 1.2;
 }
@@ -1190,7 +1238,11 @@ main,
   border-bottom: 1px solid var(--line);
 }
 
-.blog-archive-post h3 {
+.blog-archive-month .blog-archive-post:last-child {
+  border-bottom: 0;
+}
+
+.blog-archive-post h4 {
   margin: 0;
   color: var(--text);
   font-family: var(--heading-font);
@@ -1199,7 +1251,7 @@ main,
   line-height: 1.22;
 }
 
-.blog-archive-post h3 a:hover {
+.blog-archive-post h4 a:hover {
   text-decoration: underline;
   text-underline-offset: 4px;
 }
@@ -1723,15 +1775,17 @@ main,
   .blog-library-summary,
   .blog-library-rail,
   .bilingual-pair,
-  .blog-archive-year {
+  .blog-archive-year,
+  .blog-archive-month {
     grid-template-columns: 1fr;
   }
 
-  .blog-archive-year {
+  .blog-archive-year,
+  .blog-archive-month {
     gap: 0;
   }
 
-  .blog-archive-year h2 {
+  .blog-archive-year-label {
     position: static;
   }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { blogConfig } from "@/content/blog/config";
 
 type PagefindResult = {
   data: () => Promise<{
@@ -50,7 +51,7 @@ export function BlogSearch() {
         const pagefind = await importPagefind("/pagefind/pagefind.js");
         const search = await pagefind.search(trimmed);
         const nextResults = await Promise.all(
-          search.results.slice(0, 6).map(async (result) => {
+          search.results.slice(0, blogConfig.searchResultLimit).map(async (result) => {
             const data = await result.data();
 
             return {

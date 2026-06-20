@@ -10,6 +10,7 @@ const allowedCategories = new Set<string>(allowedBlogCategories);
 const allowedTags = new Set<string>(allowedBlogTags);
 const allowedLanguages = new Set(["bilingual", "en", "zh"]);
 const allowedSourceStatuses = new Set(["imported", "original", "repost", "translation"]);
+const allowedSourceTypes = new Set(["external", "html", "mdx"]);
 
 async function exists(filePath: string) {
   try {
@@ -42,6 +43,9 @@ async function main() {
     if (!post.summary.trim()) errors.push(`${post.slug}: summary is required`);
     if (!isValidDate(post.date)) errors.push(`${post.slug}: date must be YYYY-MM-DD`);
     if (!post.readingTime.trim()) errors.push(`${post.slug}: readingTime is required`);
+    if (!allowedSourceTypes.has(post.sourceType)) {
+      errors.push(`${post.slug}: sourceType must be mdx, html, or external`);
+    }
     if (post.updated && !isValidDate(post.updated)) {
       errors.push(`${post.slug}: updated must be YYYY-MM-DD`);
     }
@@ -91,17 +95,26 @@ async function main() {
       errors.push(`${post.slug}: external href must start with http:// or https://`);
     }
 
-    if (post.image?.startsWith("/")) {
-      const imagePath = path.join(repoRoot, "public", post.image);
-      if (!(await exists(imagePath))) {
-        errors.push(`${post.slug}: missing image ${post.image}`);
+    if (post.image) {
+      if (post.image.startsWith("/")) {
+        const imagePath = path.join(repoRoot, "public", post.image);
+        if (!(await exists(imagePath))) {
+          errors.push(`${post.slug}: missing image ${post.image}`);
+        }
+      } else if (!/^https:\/\//.test(post.image)) {
+        errors.push(`${post.slug}: image must be a local /public path or HTTPS URL`);
       }
     }
 
+    const seenTags = new Set<string>();
     for (const tag of post.tags ?? []) {
       if (!allowedTags.has(tag)) {
         errors.push(`${post.slug}: unknown tag "${tag}" in content/blog/tags.ts`);
       }
+      if (seenTags.has(tag)) {
+        errors.push(`${post.slug}: duplicate tag "${tag}"`);
+      }
+      seenTags.add(tag);
     }
   }
 

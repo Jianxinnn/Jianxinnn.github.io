@@ -48,6 +48,14 @@ You can scaffold this structure with:
 npm run blog:new -- --title="My Post" --slug="my-post"
 ```
 
+For a translated or reposted MDX article:
+
+```bash
+npm run blog:new -- --title="My Translation" --slug="my-translation" --language="zh" --category="Paper notes" --source-status="translation"
+```
+
+Then replace `originalTitle`, `originalUrl`, `summary`, and the article body.
+
 ## Imported HTML Post
 
 Use this for full standalone HTML articles.
@@ -115,6 +123,22 @@ Allowed categories live in `content/blog/categories.ts`. Allowed tags live in
 `image` can be either a local asset such as `/assets/visuals/notes-field.png`
 or an external HTTPS image URL. Local assets should live under `public/assets/`.
 
+## Scaling Rules
+
+The blog is organized as a static content library:
+
+1. `content/blog/posts/<slug>/meta.ts` is the canonical record for every post.
+2. `npm run content:generate` rebuilds the generated index used by Home, Blog,
+   archive, category, tag, source, and detail pages.
+3. `npm run content:validate` blocks unknown categories, tags, source types,
+   invalid dates, missing local assets, and non-HTTPS remote images.
+4. `/blog` shows a paginated library view, `/blog/archive` groups posts by
+   year and month, `/blog/categories/*` and `/blog/tags/*` handle topical
+   browsing, and `/blog/sources/*` separates original, translation, repost,
+   and imported articles.
+5. Pagefind indexes the static export during `npm run build`, so full-text
+   search scales without a database.
+
 ## Bilingual Long Posts
 
 For long translated posts, generate trusted segment data and render it with
@@ -137,6 +161,6 @@ and then creates the Pagefind search index under `out/pagefind/`.
 ## Scale Plan
 
 This static setup is the right default until the site has frequent multi-author
-editing or hundreds of posts. When the archive grows, keep adding posts as
-files; the generated index, Pagefind search, category pages, and yearly archive
-continue to work without a database.
+editing, private drafts, comments, or thousands of posts. When the archive grows,
+keep adding posts as files; the generated index, Pagefind search, category
+pages, source pages, and year/month archive continue to work without a database.

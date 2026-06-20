@@ -9,6 +9,8 @@ type BlogTagPageProps = {
   }>;
 };
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return getBlogTags().map((tag) => ({
     tag: tag.slug

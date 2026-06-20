@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BlogSourceMark } from "@/components/blog-source-mark";
 import { BlogTags } from "@/components/blog-tags";
-import { getBlogArchive } from "@/content/blog/posts";
+import { getBlogArchiveByMonth } from "@/content/blog/posts";
 import type { BlogPost } from "@/content/blog/posts";
 import { formatDate } from "@/lib/content";
 
@@ -22,13 +22,13 @@ function PostTitleLink({ post }: { post: BlogPost }) {
 }
 
 export default function BlogArchivePage() {
-  const archive = getBlogArchive();
+  const archive = getBlogArchiveByMonth();
 
   return (
     <div className="blog-page">
       <header className="blog-index-header">
         <p className="eyebrow">Blog archive</p>
-        <h1>All notes by year.</h1>
+        <h1>All notes by year and month.</h1>
         <p>Static archive for scanning older notes as the site grows.</p>
         <Link className="back-link" href="/blog">
           Blog
@@ -38,28 +38,45 @@ export default function BlogArchivePage() {
       <div className="blog-archive-list">
         {archive.map((group) => (
           <section className="blog-archive-year" id={`year-${group.year}`} key={group.year}>
-            <h2>{group.year}</h2>
-            {group.posts.map((post) => (
-              <article className="blog-archive-post" key={post.slug}>
-                <h3>
-                  <PostTitleLink post={post} />
-                </h3>
-                <BlogSourceMark source={post.source} />
-                <p>{post.summary}</p>
-                <div className="entry-meta">
-                  <time dateTime={post.date}>{formatDate(post.date)}</time>
-                  <span aria-hidden="true">·</span>
-                  <span>{post.readingTime}</span>
-                  {post.category ? (
-                    <>
-                      <span aria-hidden="true">·</span>
-                      <span>{post.category}</span>
-                    </>
-                  ) : null}
-                </div>
-                <BlogTags tags={post.tags} />
-              </article>
-            ))}
+            <div className="blog-archive-year-label">
+              <h2>{group.year}</h2>
+              <span>{group.posts.length} posts</span>
+            </div>
+            <div className="blog-archive-months">
+              {group.months.map((month) => (
+                <section
+                  className="blog-archive-month"
+                  id={`month-${month.key}`}
+                  key={month.key}
+                >
+                  <div className="blog-archive-month-label">
+                    <h3>{month.label}</h3>
+                    <span>{month.posts.length}</span>
+                  </div>
+                  {month.posts.map((post) => (
+                    <article className="blog-archive-post" key={post.slug}>
+                      <h4>
+                        <PostTitleLink post={post} />
+                      </h4>
+                      <BlogSourceMark source={post.source} />
+                      <p>{post.summary}</p>
+                      <div className="entry-meta">
+                        <time dateTime={post.date}>{formatDate(post.date)}</time>
+                        <span aria-hidden="true">·</span>
+                        <span>{post.readingTime}</span>
+                        {post.category ? (
+                          <>
+                            <span aria-hidden="true">·</span>
+                            <span>{post.category}</span>
+                          </>
+                        ) : null}
+                      </div>
+                      <BlogTags tags={post.tags} />
+                    </article>
+                  ))}
+                </section>
+              ))}
+            </div>
           </section>
         ))}
       </div>
