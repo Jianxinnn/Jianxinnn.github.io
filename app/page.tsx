@@ -20,7 +20,7 @@ export default function HomePage() {
             className="featured-image"
             height={640}
             priority
-            src={featured.image ?? "/images/profile-field.png"}
+            src={featured.image ?? "/assets/visuals/profile-field.png"}
             width={960}
           />
         </div>

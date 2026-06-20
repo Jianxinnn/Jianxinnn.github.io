@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Mail, Search, Share2 } from "lucide-react";
+import { BrandMark } from "@/components/brand-mark";
 import { profile } from "@/content/profile";
 
 export function SiteHeader() {
@@ -11,13 +12,12 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <div className="topbar">
-        <Link aria-label="Home" className="mark" href="/">
-          <span className="mark-dot mark-dot-one" />
-          <span className="mark-dot mark-dot-two" />
-          <span className="mark-dot mark-dot-three" />
-        </Link>
-        <Link className="site-title" href="/">
-          {profile.siteTitle}
+        <Link aria-label="Home" className="brand-link" href="/">
+          <BrandMark className="brand-logo" />
+          <span className="brand-wordmark">
+            <span className="brand-name">{profile.siteTitle}</span>
+            <span className="brand-kicker">{profile.headerTagline}</span>
+          </span>
         </Link>
         <div className="header-actions">
           <button aria-label="Search" className="icon-button" title="Search">

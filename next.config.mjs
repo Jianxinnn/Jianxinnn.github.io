@@ -6,7 +6,7 @@ const nextConfig = {
     unoptimized: true,
     localPatterns: [
       {
-        pathname: "/images/**"
+        pathname: "/assets/**"
       }
     ]
   }

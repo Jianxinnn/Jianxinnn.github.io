@@ -22,7 +22,7 @@ export const entries: Entry[] = [
     date: "2026-06-20",
     type: "project",
     collaborators: "Personal systems research",
-    image: "/images/profile-field.png",
+    image: "/assets/visuals/profile-field.png",
     featured: true,
     pinned: true
   },
@@ -34,7 +34,7 @@ export const entries: Entry[] = [
     date: "2026-06-18",
     type: "note",
     collaborators: "Design note",
-    image: "/images/notes-field.png",
+    image: "/assets/visuals/notes-field.png",
     pinned: true
   },
   {
@@ -45,7 +45,7 @@ export const entries: Entry[] = [
     date: "2026-05-28",
     type: "project",
     collaborators: "AI tooling",
-    image: "/images/figure-field.png"
+    image: "/assets/visuals/figure-field.png"
   },
   {
     slug: "notes-on-ai-agents",
