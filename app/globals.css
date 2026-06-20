@@ -127,12 +127,13 @@ main,
 .page-shell {
   width: min(1120px, calc(100vw - 48px));
   margin: 0 auto;
-  padding: 36px 0 72px;
+  padding: 10px 0 72px;
 }
 
 .home-hero {
-  display: block;
-  padding: 32px 0 44px;
+  display: grid;
+  gap: 18px;
+  padding: 10px 0 44px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -154,53 +155,22 @@ main,
 .home-signature {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--line);
+  gap: 12px;
+  padding: 0 2px;
 }
 
-.signature-mark {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
+.signature-letter {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
   height: 42px;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  background:
-    linear-gradient(135deg, transparent 47%, var(--accent) 48%, var(--accent) 52%, transparent 53%),
-    #ffffff;
-}
-
-.signature-mark::before,
-.signature-mark::after,
-.signature-mark span {
-  position: absolute;
-  display: block;
-  content: "";
-  border-radius: 999px;
-  background: var(--accent);
-}
-
-.signature-mark::before {
-  width: 6px;
-  height: 6px;
-  top: 10px;
-  right: 11px;
-}
-
-.signature-mark::after {
-  width: 6px;
-  height: 6px;
-  bottom: 10px;
-  left: 11px;
-}
-
-.signature-mark span {
-  width: 18px;
-  height: 2px;
-  transform: rotate(-35deg);
+  color: var(--accent);
+  font-family: var(--serif-font);
+  font-size: 46px;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: 1.5px 1.5px 0 var(--cyan), -1px 2px 0 var(--red);
 }
 
 .home-signature h1 {
@@ -217,6 +187,10 @@ main,
   align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
+}
+
+.current-heading > div {
+  min-width: 0;
 }
 
 .current-heading .eyebrow {
@@ -839,15 +813,15 @@ main,
 
   .page-shell {
     width: min(100vw - 32px, 720px);
-    padding-top: 24px;
+    padding-top: 8px;
   }
 
   .home-hero {
-    padding: 28px 0 40px;
+    padding: 8px 0 40px;
   }
 
   .current-heading {
-    align-items: start;
+    align-items: stretch;
     flex-direction: column;
     gap: 12px;
   }
@@ -917,13 +891,13 @@ main,
   }
 
   .home-signature {
-    align-items: flex-start;
     gap: 12px;
   }
 
-  .signature-mark {
-    width: 36px;
-    height: 36px;
+  .signature-letter {
+    width: 30px;
+    height: 38px;
+    font-size: 42px;
   }
 
   .home-signature h1 {

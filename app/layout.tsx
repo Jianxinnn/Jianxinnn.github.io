@@ -9,7 +9,10 @@ export const metadata: Metadata = {
     default: `${profile.name} | Personal Profile`,
     template: `%s | ${profile.name}`
   },
-  description: profile.intro
+  description: profile.intro,
+  icons: {
+    icon: [{ url: `${profile.assets.logo}?v=2`, type: "image/svg+xml" }]
+  }
 };
 
 export default function RootLayout({
