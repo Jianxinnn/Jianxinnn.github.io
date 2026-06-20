@@ -633,14 +633,16 @@ main,
 .blog-badge {
   display: inline-flex;
   align-items: center;
-  min-height: 23px;
-  padding: 0 8px;
-  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--accent) 7%, var(--field));
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 800;
+  min-height: 22px;
+  padding: 0 7px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--soft);
+  color: var(--muted);
+  font-family: var(--body-font);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0;
   line-height: 1.2;
   white-space: nowrap;
 }
