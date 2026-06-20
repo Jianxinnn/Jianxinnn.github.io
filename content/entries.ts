@@ -1,3 +1,5 @@
+import { blogPosts } from "@/content/blog/posts";
+
 export type EntryType = "project" | "note" | "writing" | "talk" | "publication";
 
 export type Entry = {
@@ -12,40 +14,19 @@ export type Entry = {
   pinned?: boolean;
 };
 
-export const entries: Entry[] = [
-  {
-    slug: "alphafold3-illustrated-cn",
-    title: "图解 AlphaFold",
-    summary:
-      "一篇 AlphaFold3 架构的中文可视化导览，梳理输入准备、表征学习、结构预测与置信度评估等模块。",
-    date: "2026-06-20",
-    type: "writing",
-    collaborators: "AlphaFold3 / illustrated note",
-    image: "/assets/visuals/notes-field.png",
-    href: "/blog/alphafold3-illustrated-cn/"
-  },
-  {
-    slug: "agentic-research-workbench",
-    title: "Agentic Research Workbench",
-    summary:
-      "A modular workspace for reading papers, extracting structure, generating figures, and turning scattered research artifacts into reusable knowledge.",
-    date: "2026-06-20",
-    type: "project",
-    collaborators: "Personal systems research",
-    image: "/assets/visuals/profile-field.png",
-    pinned: true
-  },
-  {
-    slug: "publication-profile-design",
-    title: "A publication-first personal profile",
-    summary:
-      "Design notes on turning a personal site into a compact research index with separate spaces for papers, notes, projects, and profile context.",
-    date: "2026-06-18",
-    type: "note",
-    collaborators: "Design note",
-    image: "/assets/visuals/notes-field.png",
-    pinned: true
-  },
+const blogEntries: Entry[] = blogPosts.map((post) => ({
+  slug: post.slug,
+  title: post.title,
+  summary: post.summary,
+  date: post.date,
+  type: "writing",
+  collaborators: post.tags?.join(" / ") ?? post.readingTime,
+  image: post.image,
+  href: post.href,
+  pinned: post.featured
+}));
+
+const standaloneEntries: Entry[] = [
   {
     slug: "scientific-figure-pipeline",
     title: "Scientific figure pipeline",
@@ -62,7 +43,7 @@ export const entries: Entry[] = [
     summary:
       "Short observations on making agent workflows inspectable, resumable, and grounded in project-local conventions.",
     date: "2026-04-12",
-    type: "writing",
+    type: "note",
     collaborators: "Research memo"
   },
   {
@@ -84,3 +65,5 @@ export const entries: Entry[] = [
     collaborators: "Life-science AI"
   }
 ];
+
+export const entries: Entry[] = [...blogEntries, ...standaloneEntries];

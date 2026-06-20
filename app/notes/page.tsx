@@ -7,9 +7,7 @@ export const metadata = {
 };
 
 export default function NotesPage() {
-  const notes = sortEntries(
-    entries.filter((entry) => entry.type === "note" || entry.type === "writing")
-  );
+  const notes = sortEntries(entries.filter((entry) => entry.type === "note"));
 
   return (
     <div className="notes-page">

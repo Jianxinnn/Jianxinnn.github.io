@@ -1,15 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail } from "lucide-react";
-import { EntryList } from "@/components/entry-list";
-import { entries } from "@/content/entries";
+import { BlogList } from "@/components/blog-list";
+import { blogPosts, sortBlogPosts } from "@/content/blog/posts";
 import { profile } from "@/content/profile";
-import { formatDate, sortEntries } from "@/lib/content";
+import { formatDate } from "@/lib/content";
 
 export default function HomePage() {
-  const sorted = sortEntries(entries);
-  const currentWork = sorted.slice(0, 2);
-  const history = sorted.slice(2);
+  const posts = sortBlogPosts(blogPosts);
+  const currentWork = posts.slice(0, 2);
+  const history = posts.slice(2);
 
   return (
     <div className="page-shell">
@@ -25,49 +25,59 @@ export default function HomePage() {
               <p className="eyebrow">Current work</p>
               <h1 id="current-work-heading">Research systems and working notes</h1>
             </div>
-            <Link href="/archive">Archive</Link>
+            <Link href="/blog">Blog</Link>
           </div>
 
           <div className="current-work-list">
-            {currentWork.map((entry, index) => (
-              <article className="current-work-item" key={entry.slug}>
-                {entry.image ? (
-                  entry.href ? (
-                    <Link aria-label={entry.title} className="current-work-image-link" href={entry.href}>
+            {currentWork.map((post, index) => (
+              <article className="current-work-item" key={post.slug}>
+                {post.image ? (
+                  post.href.startsWith("http") ? (
+                    <a
+                      aria-label={post.title}
+                      className="current-work-image-link"
+                      href={post.href}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
                       <Image
                         alt=""
                         className="current-work-image"
                         height={214}
                         priority={index === 0}
-                        src={entry.image}
+                        src={post.image}
+                        width={320}
+                      />
+                    </a>
+                  ) : (
+                    <Link aria-label={post.title} className="current-work-image-link" href={post.href}>
+                      <Image
+                        alt=""
+                        className="current-work-image"
+                        height={214}
+                        priority={index === 0}
+                        src={post.image}
                         width={320}
                       />
                     </Link>
-                  ) : (
-                    <Image
-                      alt=""
-                      className="current-work-image"
-                      height={214}
-                      priority={index === 0}
-                      src={entry.image}
-                      width={320}
-                    />
                   )
                 ) : null}
                 <div className="current-work-copy">
                   <div className="entry-meta">
-                    <time dateTime={entry.date}>{formatDate(entry.date)}</time>
+                    <time dateTime={post.date}>{formatDate(post.date)}</time>
                     <span aria-hidden="true">·</span>
-                    <span>{entry.collaborators}</span>
+                    <span>{post.readingTime}</span>
                   </div>
                   <h2>
-                    {entry.href ? (
-                      <Link href={entry.href}>{entry.title}</Link>
+                    {post.href.startsWith("http") ? (
+                      <a href={post.href} rel="noreferrer" target="_blank">
+                        {post.title}
+                      </a>
                     ) : (
-                      entry.title
+                      <Link href={post.href}>{post.title}</Link>
                     )}
                   </h2>
-                  <p>{entry.summary}</p>
+                  <p>{post.summary}</p>
                 </div>
               </article>
             ))}
@@ -79,9 +89,9 @@ export default function HomePage() {
         <div className="recent-log">
           <div className="section-heading">
             <h2>Recent log</h2>
-            <Link href="/notes">Notes</Link>
+            <Link href="/blog">Blog</Link>
           </div>
-          <EntryList entries={history} />
+          <BlogList posts={history} />
         </div>
 
         <aside className="mail-panel" aria-label="Email updates">

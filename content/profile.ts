@@ -29,9 +29,9 @@ export const profile = {
   },
   nav: [
     { label: "Home", href: "/" },
+    { label: "Blog", href: "/blog" },
     { label: "Papers", href: "/papers" },
     { label: "Notes", href: "/notes" },
-    { label: "Archive", href: "/archive" },
     { label: "About", href: "/about" }
   ],
   links: [
