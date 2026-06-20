@@ -9,7 +9,6 @@ export type Entry = {
   collaborators?: string;
   image?: string;
   href?: string;
-  featured?: boolean;
   pinned?: boolean;
 };
 
@@ -23,14 +22,13 @@ export const entries: Entry[] = [
     type: "project",
     collaborators: "Personal systems research",
     image: "/assets/visuals/profile-field.png",
-    featured: true,
     pinned: true
   },
   {
     slug: "publication-profile-design",
     title: "A publication-first personal profile",
     summary:
-      "Design notes on replacing the usual portfolio grid with a compact research publication architecture: featured work, dated archive, and long-form About.",
+      "Design notes on turning a personal site into a compact research index with separate spaces for papers, notes, projects, and profile context.",
     date: "2026-06-18",
     type: "note",
     collaborators: "Design note",

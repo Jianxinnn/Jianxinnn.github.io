@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Mail, Search, Share2 } from "lucide-react";
+import { Mail } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { profile } from "@/content/profile";
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const scholarLink = profile.links.find((link) => link.label === "Google Scholar");
 
   return (
     <header className="site-header">
@@ -19,35 +20,34 @@ export function SiteHeader() {
             <span className="brand-kicker">{profile.headerTagline}</span>
           </span>
         </Link>
+        <nav aria-label="Main navigation" className="section-tabs">
+          {profile.nav.map((item) => {
+            const active =
+              item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+            return (
+              <Link
+                aria-current={active ? "page" : undefined}
+                className={active ? "tab active" : "tab"}
+                href={item.href}
+                key={item.href}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
         <div className="header-actions">
-          <button aria-label="Search" className="icon-button" title="Search">
-            <Search size={22} strokeWidth={2} />
-          </button>
-          <button aria-label="Share" className="icon-button" title="Share">
-            <Share2 size={21} strokeWidth={2} />
-          </button>
+          {scholarLink ? (
+            <a className="secondary-button" href={scholarLink.href}>
+              Scholar
+            </a>
+          ) : null}
           <a className="primary-button" href={`mailto:${profile.email}`}>
             <Mail size={17} strokeWidth={2} />
             <span>Contact</span>
           </a>
         </div>
       </div>
-      <nav aria-label="Main navigation" className="section-tabs">
-        {profile.nav.map((item) => {
-          const active =
-            item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-          return (
-            <Link
-              aria-current={active ? "page" : undefined}
-              className={active ? "tab active" : "tab"}
-              href={item.href}
-              key={item.href}
-            >
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
     </header>
   );
 }

@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { PaperIndex } from "@/components/paper-index";
 import { profile } from "@/content/profile";
 
 export const metadata = {
@@ -5,15 +7,17 @@ export const metadata = {
 };
 
 export default function AboutPage() {
+  const scholarLink = profile.links.find((link) => link.label === "Google Scholar");
+
   return (
     <div className="about-page">
       <section className="about-hero">
         <img
           alt={`${profile.name} avatar`}
           className="about-avatar"
-          height="176"
+          height="180"
           src={profile.assets.avatar}
-          width="176"
+          width="128"
         />
         <div className="about-intro">
           <p className="eyebrow">About</p>
@@ -39,17 +43,15 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="about-block">
-        <h2>Papers</h2>
-        <div className="info-list">
-          {profile.papers.map((paper) => (
-            <article className="info-item" key={paper.title}>
-              <p className="info-kicker">{paper.venue}</p>
-              <h3>{paper.title}</h3>
-              <p>{paper.description}</p>
-            </article>
-          ))}
+      <section className="about-block papers-block">
+        <div className="about-block-heading">
+          <h2>Papers</h2>
+          <div className="section-links">
+            <Link href="/papers">Full index</Link>
+            {scholarLink ? <a href={scholarLink.href}>Scholar</a> : null}
+          </div>
         </div>
+        <PaperIndex papers={profile.papers.slice(0, 3)} />
       </section>
 
       <section className="about-block">
