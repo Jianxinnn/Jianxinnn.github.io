@@ -50,7 +50,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <Link className="back-link" href="/blog">
           Blog
         </Link>
-        <h1>{post.title}</h1>
+        <div className="blog-article-title-line">
+          <h1>{post.title}</h1>
+          {post.badge ? <span className="blog-badge">{post.badge}</span> : null}
+        </div>
         <p>{post.summary}</p>
         <div className="entry-meta">
           <span>{post.readingTime}</span>

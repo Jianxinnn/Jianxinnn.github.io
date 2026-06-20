@@ -39,9 +39,12 @@ export function BlogList({ posts, showImages = true }: BlogListProps) {
       {posts.map((post) => (
         <article className="blog-card" key={post.slug}>
           <div className="blog-card-copy">
-            <PostLink className="blog-card-title" post={post}>
-              {post.title}
-            </PostLink>
+            <div className="blog-title-line">
+              <PostLink className="blog-card-title" post={post}>
+                {post.title}
+              </PostLink>
+              {post.badge ? <span className="blog-badge">{post.badge}</span> : null}
+            </div>
             <p>{post.summary}</p>
             <div className="entry-meta">
               <span>{post.readingTime}</span>

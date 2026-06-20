@@ -68,15 +68,18 @@ export default function HomePage() {
                     <span aria-hidden="true">·</span>
                     <span>{post.readingTime}</span>
                   </div>
-                  <h2>
-                    {post.href.startsWith("http") ? (
-                      <a href={post.href} rel="noreferrer" target="_blank">
-                        {post.title}
-                      </a>
-                    ) : (
-                      <Link href={post.href}>{post.title}</Link>
-                    )}
-                  </h2>
+                  <div className="current-title-line">
+                    <h2>
+                      {post.href.startsWith("http") ? (
+                        <a href={post.href} rel="noreferrer" target="_blank">
+                          {post.title}
+                        </a>
+                      ) : (
+                        <Link href={post.href}>{post.title}</Link>
+                      )}
+                    </h2>
+                    {post.badge ? <span className="blog-badge">{post.badge}</span> : null}
+                  </div>
                   <p>{post.summary}</p>
                 </div>
               </article>

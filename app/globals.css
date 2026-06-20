@@ -303,7 +303,7 @@ main,
 }
 
 .current-work-copy h2 {
-  margin: 8px 0 0;
+  margin: 0;
   color: var(--text);
   font-family: var(--heading-font);
   font-size: 20px;
@@ -322,6 +322,14 @@ main,
   color: var(--text);
   font-size: 15px;
   line-height: 1.48;
+}
+
+.current-title-line {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .profile-card {
@@ -606,12 +614,35 @@ main,
   gap: 10px;
 }
 
+.blog-title-line,
+.blog-article-title-line {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
 .blog-card-title {
   color: var(--text);
   font-family: var(--heading-font);
   font-size: 24px;
   font-weight: 850;
   line-height: 1.18;
+}
+
+.blog-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 23px;
+  padding: 0 8px;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 7%, var(--field));
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .blog-card-title:hover,
@@ -693,7 +724,7 @@ main,
   text-transform: uppercase;
 }
 
-.blog-article-header h1 {
+.blog-article-title-line h1 {
   margin: 0;
   font-family: var(--heading-font);
   font-size: 44px;
@@ -1213,7 +1244,7 @@ main,
   }
 
   .blog-index-header h1,
-  .blog-article-header h1 {
+  .blog-article-title-line h1 {
     font-size: 34px;
   }
 

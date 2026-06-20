@@ -22,11 +22,14 @@ Use this for new writing.
   sourceType: "mdx",
   href: "/blog/my-post/",
   image: "/assets/visuals/notes-field.png",
+  badge: "转载 / 译",
   tags: ["tag"]
 }
 ```
 
 The post will appear on `/blog`, Home, and Archive automatically.
+Use `badge` only when the card needs a small source-status label, such as
+`"转载"` or `"转载 / 译"`.
 
 ## Imported HTML Post
 
