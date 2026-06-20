@@ -4,14 +4,34 @@
   --muted: #868787;
   --line: #e6e6e6;
   --soft: #f0f0f0;
+  --panel: #fbfbfb;
+  --field: #ffffff;
   --accent: #000031;
   --accent-soft: #494a70;
   --cyan: #22b8cf;
   --red: #e94444;
+  --header-bg: rgba(255, 255, 255, 0.96);
+  --button-text: #ffffff;
   --heading-font: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI",
     system-ui, sans-serif;
   --body-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --serif-font: Spectral, Georgia, "Times New Roman", serif;
+}
+
+[data-theme="dark"] {
+  --bg: #151515;
+  --text: #eeeeee;
+  --muted: #a4a4a4;
+  --line: #343434;
+  --soft: #242424;
+  --panel: #1c1c1c;
+  --field: #171717;
+  --accent: #9fc9ff;
+  --accent-soft: #bbc8e8;
+  --cyan: #35c6df;
+  --red: #ff6f78;
+  --header-bg: rgba(21, 21, 21, 0.94);
+  --button-text: #101010;
 }
 
 * {
@@ -21,7 +41,12 @@
 html {
   background: var(--bg);
   color: var(--text);
+  color-scheme: light;
   scroll-behavior: smooth;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 body {
@@ -70,7 +95,7 @@ main,
   inset: 0 0 auto;
   z-index: 20;
   border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--header-bg);
   backdrop-filter: blur(8px);
 }
 
@@ -105,6 +130,14 @@ main,
   min-width: 0;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+}
+
 .tab {
   display: flex;
   align-items: center;
@@ -122,6 +155,24 @@ main,
 .tab.active {
   border-color: var(--line);
   background: var(--soft);
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--field);
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent);
 }
 
 .page-shell {
@@ -142,7 +193,7 @@ main,
 .mail-panel {
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fbfbfb;
+  background: var(--panel);
 }
 
 .current-panel {
@@ -321,7 +372,7 @@ main,
   height: 38px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--field);
   color: var(--accent);
 }
 
@@ -390,7 +441,7 @@ main,
 .mail-form input {
   min-width: 0;
   border: 1px solid var(--line);
-  background: #ffffff;
+  background: var(--field);
   color: var(--text);
   padding: 0 12px;
 }
@@ -398,7 +449,7 @@ main,
 .mail-form button {
   border: 1px solid var(--accent);
   background: var(--accent);
-  color: #ffffff;
+  color: var(--button-text);
   cursor: pointer;
   font-size: 14px;
   font-weight: 800;
@@ -528,7 +579,7 @@ main,
   padding: 26px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fbfbfb;
+  background: var(--panel);
 }
 
 .about-intro .eyebrow {
@@ -815,6 +866,12 @@ main,
   }
 
   .section-tabs {
+    justify-content: flex-start;
+    overflow-x: visible;
+    padding-bottom: 0;
+  }
+
+  .header-actions {
     grid-area: nav;
     justify-content: flex-start;
     overflow-x: auto;
