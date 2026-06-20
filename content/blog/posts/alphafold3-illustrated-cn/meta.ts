@@ -9,7 +9,14 @@ const meta = {
   sourceType: "html",
   href: "/blog/alphafold3-illustrated-cn/",
   image: "/assets/visuals/notes-field.png",
-  badge: "转载 / 译",
+  category: "Paper notes",
+  language: "zh",
+  source: {
+    status: "translation",
+    label: "转载 / 翻译",
+    originalTitle: "The Illustrated AlphaFold",
+    originalUrl: "https://elanapearl.github.io/blog/2024/the-illustrated-alphafold/"
+  },
   tags: ["AlphaFold3", "illustrated note"],
   featured: true
 } satisfies BlogPostMeta;

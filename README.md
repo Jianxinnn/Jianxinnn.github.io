@@ -30,3 +30,11 @@ The project is configured for static export with `next build`. GitHub Actions bu
 Edit `content/profile.ts` for identity and About sections. Add formal writing under `content/blog/posts/<slug>/` with a `meta.ts` file; generated metadata automatically appears on Home, Blog, Archive, tag pages, and search. Use `content/entries.ts` only for non-blog notes, projects, talks, or other archive items.
 
 See `content/blog/README.md` for the MDX, imported HTML, and external post workflow.
+
+Quick start for a new blog post:
+
+```bash
+npm run blog:new -- --title="My New Post" --slug="my-new-post"
+npm run content:generate
+npm run content:validate
+```

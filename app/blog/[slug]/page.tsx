@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BlogSectionNav } from "@/components/blog-section-nav";
+import { BlogSourceMark } from "@/components/blog-source-mark";
 import { BlogTags } from "@/components/blog-tags";
 import { blogPostContent } from "@/content/blog/content";
 import { getBlogPost, sortBlogPosts } from "@/content/blog/posts";
@@ -60,12 +62,20 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <span>{post.readingTime}</span>
           <span aria-hidden="true">·</span>
           <time dateTime={post.date}>{formatDate(post.date)}</time>
+          {post.category ? (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>{post.category}</span>
+            </>
+          ) : null}
         </div>
+        <BlogSourceMark source={post.source} variant="article" />
         <BlogTags tags={post.tags} />
       </header>
       <div className="mdx-body">
         <Content />
       </div>
+      <BlogSectionNav />
     </article>
   );
 }

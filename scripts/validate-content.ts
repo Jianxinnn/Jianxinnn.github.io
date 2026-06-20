@@ -2,10 +2,14 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { blogPosts } from "../.generated/blog-posts";
+import { allowedBlogCategories } from "../content/blog/categories";
 import { allowedBlogTags } from "../content/blog/tags";
 
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
+const allowedCategories = new Set<string>(allowedBlogCategories);
 const allowedTags = new Set<string>(allowedBlogTags);
+const allowedLanguages = new Set(["bilingual", "en", "zh"]);
+const allowedSourceStatuses = new Set(["imported", "original", "repost", "translation"]);
 
 async function exists(filePath: string) {
   try {
@@ -38,6 +42,30 @@ async function main() {
     if (!post.summary.trim()) errors.push(`${post.slug}: summary is required`);
     if (!isValidDate(post.date)) errors.push(`${post.slug}: date must be YYYY-MM-DD`);
     if (!post.readingTime.trim()) errors.push(`${post.slug}: readingTime is required`);
+    if (post.updated && !isValidDate(post.updated)) {
+      errors.push(`${post.slug}: updated must be YYYY-MM-DD`);
+    }
+    if (post.category && !allowedCategories.has(post.category)) {
+      errors.push(`${post.slug}: unknown category "${post.category}" in content/blog/categories.ts`);
+    }
+    if (post.language && !allowedLanguages.has(post.language)) {
+      errors.push(`${post.slug}: language must be en, zh, or bilingual`);
+    }
+    if (post.source) {
+      if (!allowedSourceStatuses.has(post.source.status)) {
+        errors.push(`${post.slug}: source.status is not supported`);
+      }
+      if (
+        post.source.status !== "original" &&
+        post.source.originalUrl &&
+        !/^https?:\/\//.test(post.source.originalUrl)
+      ) {
+        errors.push(`${post.slug}: source.originalUrl must start with http:// or https://`);
+      }
+      if (post.source.status !== "original" && !post.source.originalUrl) {
+        errors.push(`${post.slug}: non-original posts should include source.originalUrl`);
+      }
+    }
 
     if (post.sourceType === "mdx") {
       const mdxPath = path.join(repoRoot, "content/blog/posts", post.slug, "index.mdx");

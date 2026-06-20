@@ -77,8 +77,12 @@ async function normalizePost(slug: string): Promise<BlogPost> {
     href,
     ...(meta.image ? { image: meta.image } : {}),
     ...(meta.badge ? { badge: meta.badge } : {}),
+    ...(meta.category ? { category: meta.category } : {}),
+    ...(meta.language ? { language: meta.language } : {}),
+    ...(meta.source ? { source: meta.source } : {}),
     ...(meta.tags?.length ? { tags: meta.tags } : {}),
-    ...(meta.featured ? { featured: true } : {})
+    ...(meta.featured ? { featured: true } : {}),
+    ...(meta.updated ? { updated: meta.updated } : {})
   };
 }
 

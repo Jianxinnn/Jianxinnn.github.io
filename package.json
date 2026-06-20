@@ -5,6 +5,7 @@
   "scripts": {
     "predev": "npm run content:generate",
     "dev": "next dev",
+    "blog:new": "tsx scripts/new-blog-post.ts",
     "content:generate": "tsx scripts/generate-blog-index.ts",
     "content:validate": "tsx scripts/validate-content.ts",
     "prebuild": "npm run content:generate && npm run content:validate",

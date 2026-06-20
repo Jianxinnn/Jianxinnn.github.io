@@ -1,6 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { BlogPostImage } from "@/components/blog-post-image";
+import { BlogSourceMark } from "@/components/blog-source-mark";
 import { BlogTags } from "@/components/blog-tags";
 import type { BlogPost } from "@/content/blog/posts";
 import { formatDate } from "@/lib/content";
@@ -46,11 +47,18 @@ export function BlogList({ posts, showImages = true }: BlogListProps) {
               </PostLink>
               {post.badge ? <span className="blog-badge">{post.badge}</span> : null}
             </div>
+            <BlogSourceMark source={post.source} />
             <p>{post.summary}</p>
             <div className="entry-meta">
               <span>{post.readingTime}</span>
               <span aria-hidden="true">·</span>
               <time dateTime={post.date}>{formatDate(post.date)}</time>
+              {post.category ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span>{post.category}</span>
+                </>
+              ) : null}
             </div>
             <BlogTags tags={post.tags} />
           </div>
@@ -59,7 +67,7 @@ export function BlogList({ posts, showImages = true }: BlogListProps) {
           </PostLink>
           {showImages && post.image ? (
             <PostLink className="blog-card-image-link" post={post}>
-              <Image
+              <BlogPostImage
                 alt=""
                 className="blog-card-image"
                 height={214}

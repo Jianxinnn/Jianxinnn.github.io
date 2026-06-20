@@ -1,7 +1,15 @@
 import { blogPosts } from "@/.generated/blog-posts";
+import { blogCategories } from "@/content/blog/categories";
 import type { BlogPost } from "@/content/blog/types";
 
-export type { BlogPost, BlogPostMeta, BlogSourceType } from "@/content/blog/types";
+export type {
+  BlogLanguage,
+  BlogPost,
+  BlogPostMeta,
+  BlogPostSource,
+  BlogSourceStatus,
+  BlogSourceType
+} from "@/content/blog/types";
 export { blogPosts };
 
 export const BLOG_PAGE_SIZE = 2;
@@ -37,6 +45,12 @@ export function slugifyTag(tag: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+export function slugifyCategory(category: string) {
+  const configured = blogCategories.find((item) => item.label === category);
+
+  return configured?.slug ?? slugifyTag(category);
+}
+
 export function getBlogTags(posts: BlogPost[] = blogPosts) {
   const tags = new Map<string, { label: string; slug: string; count: number }>();
 
@@ -62,4 +76,76 @@ export function getPostsByTagSlug(tagSlug: string) {
       post.tags?.some((tag) => slugifyTag(tag) === tagSlug)
     )
   );
+}
+
+export function getFeaturedPosts(posts: BlogPost[] = blogPosts) {
+  return sortBlogPosts(posts.filter((post) => post.featured));
+}
+
+export function getBlogCategories(posts: BlogPost[] = blogPosts) {
+  const counts = new Map<string, number>();
+
+  for (const post of posts) {
+    if (post.category) {
+      counts.set(post.category, (counts.get(post.category) ?? 0) + 1);
+    }
+  }
+
+  return blogCategories
+    .map((category) => ({
+      ...category,
+      count: counts.get(category.label) ?? 0
+    }))
+    .filter((category) => category.count > 0);
+}
+
+export function getPostsByCategorySlug(categorySlug: string) {
+  const category = blogCategories.find((item) => item.slug === categorySlug);
+
+  if (!category) {
+    return [];
+  }
+
+  return sortBlogPosts(blogPosts.filter((post) => post.category === category.label));
+}
+
+export function getBlogArchive(posts: BlogPost[] = blogPosts) {
+  return sortBlogPosts(posts).reduce<Array<{ year: string; posts: BlogPost[] }>>(
+    (groups, post) => {
+      const year = new Date(post.date).getFullYear().toString();
+      const group = groups.find((item) => item.year === year);
+
+      if (group) {
+        group.posts.push(post);
+      } else {
+        groups.push({ year, posts: [post] });
+      }
+
+      return groups;
+    },
+    []
+  );
+}
+
+export function getBlogSourceStats(posts: BlogPost[] = blogPosts) {
+  const labels: Record<string, string> = {
+    imported: "Imported",
+    original: "Original",
+    repost: "Repost",
+    translation: "Translation"
+  };
+  const counts = new Map<string, number>();
+
+  for (const post of posts) {
+    const status = post.source?.status ?? "original";
+    counts.set(status, (counts.get(status) ?? 0) + 1);
+  }
+
+  return [...counts.entries()]
+    .map(([status, count]) => ({
+      count,
+      label: labels[status] ?? status,
+      status
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 }

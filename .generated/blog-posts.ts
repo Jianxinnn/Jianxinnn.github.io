@@ -11,6 +11,11 @@ export const blogPosts: BlogPost[] = [
     "sourceType": "mdx",
     "href": "/blog/agentic-research-workbench/",
     "image": "/assets/visuals/profile-field.png",
+    "category": "Research systems",
+    "language": "en",
+    "source": {
+      "status": "original"
+    },
     "tags": [
       "research systems",
       "agents"
@@ -26,7 +31,14 @@ export const blogPosts: BlogPost[] = [
     "sourceType": "html",
     "href": "/blog/alphafold3-illustrated-cn/",
     "image": "/assets/visuals/notes-field.png",
-    "badge": "转载 / 译",
+    "category": "Paper notes",
+    "language": "zh",
+    "source": {
+      "status": "translation",
+      "label": "转载 / 翻译",
+      "originalTitle": "The Illustrated AlphaFold",
+      "originalUrl": "https://elanapearl.github.io/blog/2024/the-illustrated-alphafold/"
+    },
     "tags": [
       "AlphaFold3",
       "illustrated note"
@@ -42,6 +54,11 @@ export const blogPosts: BlogPost[] = [
     "sourceType": "mdx",
     "href": "/blog/publication-profile-design/",
     "image": "/assets/visuals/notes-field.png",
+    "category": "Site notes",
+    "language": "en",
+    "source": {
+      "status": "original"
+    },
     "tags": [
       "site design",
       "content system"

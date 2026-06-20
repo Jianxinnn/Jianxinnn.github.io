@@ -1,7 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import { BlogList } from "@/components/blog-list";
+import { BlogPostImage } from "@/components/blog-post-image";
+import { BlogSourceMark } from "@/components/blog-source-mark";
 import { blogPosts, sortBlogPosts } from "@/content/blog/posts";
 import { profile } from "@/content/profile";
 import { formatDate } from "@/lib/content";
@@ -40,7 +41,7 @@ export default function HomePage() {
                       rel="noreferrer"
                       target="_blank"
                     >
-                      <Image
+                      <BlogPostImage
                         alt=""
                         className="current-work-image"
                         height={214}
@@ -51,7 +52,7 @@ export default function HomePage() {
                     </a>
                   ) : (
                     <Link aria-label={post.title} className="current-work-image-link" href={post.href}>
-                      <Image
+                      <BlogPostImage
                         alt=""
                         className="current-work-image"
                         height={214}
@@ -68,6 +69,7 @@ export default function HomePage() {
                     <span aria-hidden="true">·</span>
                     <span>{post.readingTime}</span>
                   </div>
+                  <BlogSourceMark source={post.source} />
                   <div className="current-title-line">
                     <h2>
                       {post.href.startsWith("http") ? (

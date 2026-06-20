@@ -7,6 +7,11 @@ const meta = {
   date: "2026-06-18",
   sourceType: "mdx",
   image: "/assets/visuals/notes-field.png",
+  category: "Site notes",
+  language: "en",
+  source: {
+    status: "original"
+  },
   tags: ["site design", "content system"]
 } satisfies BlogPostMeta;
 
