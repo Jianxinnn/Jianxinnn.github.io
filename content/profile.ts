@@ -41,11 +41,6 @@ export const profile = {
       href: "https://scholar.google.com/citations?user=UYHlxe0AAAAJ&hl=zh-CN"
     }
   ],
-  facts: [
-    { label: "Focus", value: "AI for Science, research systems, scientific interfaces" },
-    { label: "Base", value: "Shanghai" },
-    { label: "Contact", value: "jstangjianxin@163.com" }
-  ],
   bio: [
     "I am interested in the tooling layer around scientific AI: literature workflows, biological data interfaces, molecular visualization, and agent systems that can operate inside real research projects.",
     "This site is organized as a personal research index rather than a newsletter. It keeps projects, notes, papers, and profile context separate so each section can grow without forcing everything into one feed."

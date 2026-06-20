@@ -147,8 +147,69 @@ main,
 .current-panel {
   display: grid;
   align-content: start;
-  gap: 20px;
+  gap: 22px;
   padding: 22px;
+}
+
+.home-signature {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.signature-mark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background:
+    linear-gradient(135deg, transparent 47%, var(--accent) 48%, var(--accent) 52%, transparent 53%),
+    #ffffff;
+}
+
+.signature-mark::before,
+.signature-mark::after,
+.signature-mark span {
+  position: absolute;
+  display: block;
+  content: "";
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.signature-mark::before {
+  width: 6px;
+  height: 6px;
+  top: 10px;
+  right: 11px;
+}
+
+.signature-mark::after {
+  width: 6px;
+  height: 6px;
+  bottom: 10px;
+  left: 11px;
+}
+
+.signature-mark span {
+  width: 18px;
+  height: 2px;
+  transform: rotate(-35deg);
+}
+
+.home-signature h1 {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--heading-font);
+  font-size: 34px;
+  font-weight: 850;
+  line-height: 1.08;
 }
 
 .current-heading {
@@ -478,6 +539,7 @@ main,
 .about-intro {
   display: grid;
   align-content: start;
+  gap: 22px;
   min-width: 0;
   padding: 26px;
   border: 1px solid var(--line);
@@ -486,7 +548,7 @@ main,
 }
 
 .about-intro .eyebrow {
-  margin-bottom: 14px;
+  margin-bottom: -6px;
 }
 
 .about-intro h1,
@@ -507,37 +569,6 @@ main,
   font-family: var(--serif-font);
   font-size: 21px;
   line-height: 1.6;
-}
-
-.fact-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0;
-  margin: 32px 0 0;
-  border-top: 1px solid var(--line);
-  border-left: 1px solid var(--line);
-}
-
-.fact-list div {
-  padding: 16px;
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-
-.fact-list dt {
-  margin: 0 0 8px;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.fact-list dd {
-  margin: 0;
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.35;
 }
 
 .about-block {
@@ -853,10 +884,6 @@ main,
     gap: 22px;
   }
 
-  .fact-list {
-    grid-template-columns: 1fr;
-  }
-
   .about-block {
     grid-template-columns: 1fr;
     gap: 18px;
@@ -887,6 +914,20 @@ main,
   .current-panel,
   .mail-panel {
     padding: 16px;
+  }
+
+  .home-signature {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .signature-mark {
+    width: 36px;
+    height: 36px;
+  }
+
+  .home-signature h1 {
+    font-size: 28px;
   }
 
   .current-work-item {

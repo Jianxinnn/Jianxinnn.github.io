@@ -15,6 +15,13 @@ export default function HomePage() {
     <div className="page-shell">
       <section className="home-hero">
         <section className="current-panel" aria-labelledby="current-work-heading">
+          <div className="home-signature" aria-label={profile.name}>
+            <span className="signature-mark" aria-hidden="true">
+              <span></span>
+            </span>
+            <h1>{profile.name}</h1>
+          </div>
+
           <div className="current-heading">
             <div>
               <p className="eyebrow">Current work</p>

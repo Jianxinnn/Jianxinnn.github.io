@@ -19,7 +19,6 @@ function GitHubMark() {
 export default function AboutPage() {
   const githubLink = profile.links.find((link) => link.label === "GitHub");
   const scholarLink = profile.links.find((link) => link.label === "Google Scholar");
-  const facts = profile.facts.filter((fact) => fact.label !== "Contact");
 
   return (
     <div className="about-page">
@@ -55,24 +54,11 @@ export default function AboutPage() {
         <div className="about-intro">
           <p className="eyebrow">About</p>
           <h1>{profile.name}</h1>
-          <p>{profile.role}</p>
-          <dl className="fact-list">
-            {facts.map((fact) => (
-              <div key={fact.label}>
-                <dt>{fact.label}</dt>
-                <dd>{fact.value}</dd>
-              </div>
+          <div className="about-prose">
+            {profile.bio.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
             ))}
-          </dl>
-        </div>
-      </section>
-
-      <section className="about-block">
-        <h2>Bio</h2>
-        <div className="about-prose">
-          {profile.bio.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
-          ))}
+          </div>
         </div>
       </section>
 
