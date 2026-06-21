@@ -3,6 +3,27 @@ import type { BlogPost } from "@/content/blog/types";
 
 export const blogPosts: BlogPost[] = [
   {
+    "slug": "adaworld-latent-actions",
+    "title": "AdaWorld: 把 action 写进 world model 预训练",
+    "summary": "一则短 note：AdaWorld 如何从无标注视频中抽取 latent action，并把世界模型适配问题改写成动作接口对齐问题。",
+    "date": "2026-06-21",
+    "readingTime": "2 min read",
+    "sourceType": "mdx",
+    "href": "/blog/adaworld-latent-actions/",
+    "image": "/assets/blog/adaworld-latent-actions/fig1-framework.jpg",
+    "category": "Technical explainers",
+    "language": "zh",
+    "source": {
+      "status": "original",
+      "note": "Reading note on arXiv:2503.18938."
+    },
+    "tags": [
+      "world models",
+      "reinforcement learning",
+      "illustrated note"
+    ]
+  },
+  {
     "slug": "agentic-research-workbench",
     "title": "Agentic Research Workbench",
     "summary": "A modular workspace for reading papers, extracting structure, generating figures, and turning scattered research artifacts into reusable knowledge.",

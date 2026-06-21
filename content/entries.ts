@@ -65,6 +65,16 @@ const standaloneEntries: Entry[] = [
     collaborators: "Research memo"
   },
   {
+    slug: "adaworld-latent-actions",
+    title: "AdaWorld latent actions",
+    summary:
+      "A short note on action-aware pretraining as a reusable control interface for adaptable world models.",
+    date: "2026-06-21",
+    type: "note",
+    collaborators: "Research memo",
+    href: "/blog/adaworld-latent-actions/"
+  },
+  {
     slug: "knowledge-interface-principles",
     title: "Knowledge interface principles",
     summary:
