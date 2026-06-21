@@ -13,6 +13,8 @@ type BlogSectionNavProps = {
   targetSelector?: string;
 };
 
+const IMAGE_WARMUP_TIMEOUT = 700;
+
 function slugifyHeading(value: string) {
   return value
     .toLowerCase()
@@ -24,10 +26,65 @@ function slugifyHeading(value: string) {
 function getScrollOffset() {
   const headerHeight =
     document.querySelector<HTMLElement>(".site-header")?.getBoundingClientRect().height ?? 64;
-  const toolbarHeight =
-    document.querySelector<HTMLElement>(".bilingual-toolbar")?.getBoundingClientRect().height ?? 0;
 
-  return headerHeight + (toolbarHeight > 0 ? toolbarHeight + 38 : 34);
+  return headerHeight + 34;
+}
+
+function waitForImage(image: HTMLImageElement) {
+  if (image.complete) {
+    return image.decode ? image.decode().catch(() => undefined) : Promise.resolve();
+  }
+
+  return new Promise<void>((resolve) => {
+    const cleanup = () => {
+      image.removeEventListener("load", cleanup);
+      image.removeEventListener("error", cleanup);
+      resolve();
+    };
+
+    image.addEventListener("load", cleanup, { once: true });
+    image.addEventListener("error", cleanup, { once: true });
+  });
+}
+
+async function warmImagesBeforeTarget(root: Element | null, target: HTMLElement) {
+  if (!root) {
+    return;
+  }
+
+  const images = Array.from(root.querySelectorAll<HTMLImageElement>("img[loading='lazy']")).filter(
+    (image) => image.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING
+  );
+
+  if (!images.length) {
+    return;
+  }
+
+  images.forEach((image) => {
+    image.loading = "eager";
+    image.decoding = "async";
+  });
+
+  await Promise.race([
+    Promise.all(images.map((image) => waitForImage(image))),
+    new Promise((resolve) => window.setTimeout(resolve, IMAGE_WARMUP_TIMEOUT))
+  ]);
+}
+
+function scrollWindowTo(top: number, behavior: ScrollBehavior) {
+  if (behavior === "smooth") {
+    window.scrollTo({ behavior, top });
+    return;
+  }
+
+  const html = document.documentElement;
+  const previousScrollBehavior = html.style.scrollBehavior;
+
+  html.style.scrollBehavior = "auto";
+  window.scrollTo({ behavior: "auto", top });
+  window.requestAnimationFrame(() => {
+    html.style.scrollBehavior = previousScrollBehavior;
+  });
 }
 
 export function BlogSectionNav({ targetSelector = ".mdx-body" }: BlogSectionNavProps) {
@@ -178,7 +235,7 @@ export function BlogSectionNav({ targetSelector = ".mdx-body" }: BlogSectionNavP
       activeLink.offsetTop - panel.clientHeight / 2 + activeLink.clientHeight / 2;
   }, [activeId, headings.length]);
 
-  const handleHeadingClick = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
+  const handleHeadingClick = async (event: MouseEvent<HTMLAnchorElement>, id: string) => {
     if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0) {
       return;
     }
@@ -191,34 +248,18 @@ export function BlogSectionNav({ targetSelector = ".mdx-body" }: BlogSectionNavP
 
     event.preventDefault();
     setActiveId(id);
-    setOpen(false);
+    setOpen(true);
+
+    await warmImagesBeforeTarget(document.querySelector(targetSelector), target);
 
     const getTargetTop = () =>
       Math.max(0, target.getBoundingClientRect().top + window.scrollY - getScrollOffset());
-    const scrollToTarget = (behavior: ScrollBehavior) => {
-      window.scrollTo({ behavior, top: getTargetTop() });
-    };
     const top = getTargetTop();
     const distance = Math.abs(window.scrollY - top);
     const encodedHash = `#${encodeURIComponent(id)}`;
 
     window.history.pushState(null, "", encodedHash);
-    scrollToTarget(distance > window.innerHeight * 3 ? "auto" : "smooth");
-
-    [250, 800, 1600].forEach((delay) => {
-      window.setTimeout(() => {
-        if (window.location.hash !== encodedHash) {
-          return;
-        }
-
-        const offset = getScrollOffset();
-        const currentTop = target.getBoundingClientRect().top;
-
-        if (Math.abs(currentTop - offset) > 24) {
-          scrollToTarget("auto");
-        }
-      }, delay);
-    });
+    scrollWindowTo(top, distance > window.innerHeight * 3 ? "auto" : "smooth");
   };
 
   if (!headings.length) {
