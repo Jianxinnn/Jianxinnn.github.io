@@ -1030,16 +1030,19 @@ main,
   background: transparent;
   box-shadow: none;
   pointer-events: auto;
+  scrollbar-color: color-mix(in srgb, var(--muted) 34%, transparent) transparent;
+  scrollbar-width: thin;
   transition: width 0.18s ease, padding 0.18s ease, border-color 0.18s ease,
-    background 0.18s ease, box-shadow 0.18s ease;
+    background 0.18s ease, box-shadow 0.18s ease, gap 0.18s ease;
 }
 
 .section-nav-shell.is-open .section-nav-panel,
 .section-nav-shell:hover .section-nav-panel,
 .section-nav-shell:focus-within .section-nav-panel {
-  width: min(286px, calc(100vw - 36px));
+  gap: 6px;
+  width: min(340px, calc(100vw - 36px));
   overflow: auto;
-  padding: 8px 10px;
+  padding: 12px;
   border-color: var(--line);
   background: color-mix(in srgb, var(--field) 96%, transparent);
   box-shadow: 0 18px 44px rgba(0, 0, 49, 0.12);
@@ -1062,7 +1065,7 @@ main,
 .section-nav-shell:hover .section-nav-heading,
 .section-nav-shell:focus-within .section-nav-heading {
   max-height: 28px;
-  padding: 0 4px 3px;
+  padding: 0 4px 6px;
   opacity: 1;
 }
 
@@ -1095,7 +1098,14 @@ main,
 .section-nav-shell.is-open .section-nav-panel a,
 .section-nav-shell:hover .section-nav-panel a,
 .section-nav-shell:focus-within .section-nav-panel a {
-  padding: 3px 6px 3px 0;
+  min-height: 30px;
+  padding: 6px 8px 6px 0;
+}
+
+.section-nav-shell.is-open .section-nav-panel a.section-nav-depth-3,
+.section-nav-shell:hover .section-nav-panel a.section-nav-depth-3,
+.section-nav-shell:focus-within .section-nav-panel a.section-nav-depth-3 {
+  padding-left: 16px;
 }
 
 .section-nav-marker {
@@ -1123,6 +1133,8 @@ main,
   max-width: 0;
   overflow: hidden;
   opacity: 0;
+  min-width: 0;
+  text-overflow: ellipsis;
   white-space: nowrap;
   transform: translateX(-4px);
   transition: max-width 0.18s ease, opacity 0.18s ease, transform 0.18s ease;
@@ -1131,7 +1143,7 @@ main,
 .section-nav-shell.is-open .section-nav-label,
 .section-nav-shell:hover .section-nav-label,
 .section-nav-shell:focus-within .section-nav-label {
-  max-width: 220px;
+  max-width: 268px;
   opacity: 1;
   transform: translateX(0);
 }
@@ -1161,6 +1173,43 @@ main,
 
 .section-nav-panel a.section-nav-depth-3[aria-current="location"] {
   color: var(--article-link) !important;
+}
+
+.section-nav-shell.is-open .section-nav-depth-1 .section-nav-label,
+.section-nav-shell.is-open .section-nav-depth-2 .section-nav-label,
+.section-nav-shell:hover .section-nav-depth-1 .section-nav-label,
+.section-nav-shell:hover .section-nav-depth-2 .section-nav-label,
+.section-nav-shell:focus-within .section-nav-depth-1 .section-nav-label,
+.section-nav-shell:focus-within .section-nav-depth-2 .section-nav-label {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.section-nav-shell.is-open .section-nav-depth-3 .section-nav-label,
+.section-nav-shell:hover .section-nav-depth-3 .section-nav-label,
+.section-nav-shell:focus-within .section-nav-depth-3 .section-nav-label {
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.section-nav-shell.is-open .section-nav-depth-3 .section-nav-marker,
+.section-nav-shell:hover .section-nav-depth-3 .section-nav-marker,
+.section-nav-shell:focus-within .section-nav-depth-3 .section-nav-marker {
+  width: 6px;
+  height: 6px;
+  margin-left: 7px;
+}
+
+.section-nav-shell.is-open .section-nav-depth-3:hover .section-nav-marker,
+.section-nav-shell.is-open .section-nav-depth-3[aria-current="location"] .section-nav-marker,
+.section-nav-shell:hover .section-nav-depth-3:hover .section-nav-marker,
+.section-nav-shell:hover .section-nav-depth-3[aria-current="location"] .section-nav-marker,
+.section-nav-shell:focus-within .section-nav-depth-3:hover .section-nav-marker,
+.section-nav-shell:focus-within .section-nav-depth-3[aria-current="location"] .section-nav-marker {
+  width: 8px;
+  height: 8px;
 }
 
 .mdx-body {
@@ -1195,7 +1244,7 @@ main,
   font-family: var(--article-heading-font);
   font-weight: 400;
   letter-spacing: 0;
-  scroll-margin-top: 104px;
+  scroll-margin-top: 132px;
 }
 
 .mdx-body h1 {
@@ -1434,7 +1483,7 @@ main,
 }
 
 .bilingual-segment :is(h2, h3, h4) {
-  scroll-margin-top: 108px;
+  scroll-margin-top: 152px;
 }
 
 .bilingual-pair {
@@ -2249,7 +2298,7 @@ main,
   .section-nav-shell.is-open .section-nav-panel,
   .section-nav-shell:hover .section-nav-panel,
   .section-nav-shell:focus-within .section-nav-panel {
-    width: min(268px, calc(100vw - 22px));
+    width: min(312px, calc(100vw - 22px));
   }
 
   .blog-card {

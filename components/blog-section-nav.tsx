@@ -1,5 +1,6 @@
 "use client";
 
+import type { MouseEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 
 type Heading = {
@@ -18,6 +19,15 @@ function slugifyHeading(value: string) {
     .trim()
     .replace(/[^a-z0-9\u3400-\u9fff]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+function getScrollOffset() {
+  const headerHeight =
+    document.querySelector<HTMLElement>(".site-header")?.getBoundingClientRect().height ?? 64;
+  const toolbarHeight =
+    document.querySelector<HTMLElement>(".bilingual-toolbar")?.getBoundingClientRect().height ?? 0;
+
+  return headerHeight + (toolbarHeight > 0 ? toolbarHeight + 38 : 34);
 }
 
 export function BlogSectionNav({ targetSelector = ".mdx-body" }: BlogSectionNavProps) {
@@ -168,6 +178,49 @@ export function BlogSectionNav({ targetSelector = ".mdx-body" }: BlogSectionNavP
       activeLink.offsetTop - panel.clientHeight / 2 + activeLink.clientHeight / 2;
   }, [activeId, headings.length]);
 
+  const handleHeadingClick = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0) {
+      return;
+    }
+
+    const target = document.getElementById(id);
+
+    if (!target) {
+      return;
+    }
+
+    event.preventDefault();
+    setActiveId(id);
+    setOpen(false);
+
+    const getTargetTop = () =>
+      Math.max(0, target.getBoundingClientRect().top + window.scrollY - getScrollOffset());
+    const scrollToTarget = (behavior: ScrollBehavior) => {
+      window.scrollTo({ behavior, top: getTargetTop() });
+    };
+    const top = getTargetTop();
+    const distance = Math.abs(window.scrollY - top);
+    const encodedHash = `#${encodeURIComponent(id)}`;
+
+    window.history.pushState(null, "", encodedHash);
+    scrollToTarget(distance > window.innerHeight * 3 ? "auto" : "smooth");
+
+    [250, 800, 1600].forEach((delay) => {
+      window.setTimeout(() => {
+        if (window.location.hash !== encodedHash) {
+          return;
+        }
+
+        const offset = getScrollOffset();
+        const currentTop = target.getBoundingClientRect().top;
+
+        if (Math.abs(currentTop - offset) > 24) {
+          scrollToTarget("auto");
+        }
+      }, delay);
+    });
+  };
+
   if (!headings.length) {
     return null;
   }
@@ -192,7 +245,8 @@ export function BlogSectionNav({ targetSelector = ".mdx-body" }: BlogSectionNavP
             className={`section-nav-depth-${Math.min(heading.depth, 3)}`}
             href={`#${heading.id}`}
             key={heading.id}
-            onClick={() => setOpen(false)}
+            onClick={(event) => handleHeadingClick(event, heading.id)}
+            title={heading.text}
           >
             <span aria-hidden="true" className="section-nav-marker" />
             <span className="section-nav-label">{heading.text}</span>
