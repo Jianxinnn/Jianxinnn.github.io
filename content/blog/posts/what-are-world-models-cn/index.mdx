@@ -41,12 +41,54 @@ z_{t+1}, r_t &\sim p_{\theta}(z_{t+1}, r_t \mid z_t, a_t) \\
 
 为了避免概念泛化，可以用下面的边界判断：
 
-- 图像分类器 / 目标检测器：<MathInline tex={String.raw`p(y \mid x)`} />。不是。它只识别当前输入，不预测动作后的变化。
-- 纯 policy 模型：<MathInline tex={String.raw`\pi(a_t \mid s_t)`} />。不是。它直接选动作，但不模拟世界转移。
-- 价值函数 / 奖励模型：<MathInline tex={String.raw`V(s_t)`} /> 或 <MathInline tex={String.raw`Q(s_t, a_t)`} />。不是。它评估好坏，不产生下一状态。
-- 纯文本 LLM：<MathInline tex={String.raw`p(w_{n+1} \mid w_{\le n})`} />。广义可以，狭义通常不是。它预测文本序列，不一定有环境状态和动作条件。
-- 纯 prompt-to-video 模型：<MathInline tex={String.raw`p(x_{1:T} \mid prompt)`} />。广义可以，狭义通常不是。它生成未来片段，但用户动作不一定进入转移方程。
-- 动作条件动力学模型：<MathInline tex={String.raw`p(s_{t+1}, r_t \mid s_t, a_t)`} />。是。它能回答“如果这样做，会怎样”。
+<table>
+  <thead>
+    <tr>
+      <th>模型类型</th>
+      <th>典型公式</th>
+      <th>判断</th>
+      <th>原因</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>图像分类器 / 目标检测器</td>
+      <td><MathInline tex={String.raw`p(y \mid x)`} /></td>
+      <td>不是</td>
+      <td>只识别当前输入，不预测动作后的变化。</td>
+    </tr>
+    <tr>
+      <td>纯 policy 模型</td>
+      <td><MathInline tex={String.raw`\pi(a_t \mid s_t)`} /></td>
+      <td>不是</td>
+      <td>直接选动作，但不模拟世界转移。</td>
+    </tr>
+    <tr>
+      <td>价值函数 / 奖励模型</td>
+      <td><MathInline tex={String.raw`V(s_t)`} /> 或 <MathInline tex={String.raw`Q(s_t, a_t)`} /></td>
+      <td>不是</td>
+      <td>评估好坏，不产生下一状态。</td>
+    </tr>
+    <tr>
+      <td>纯文本 LLM</td>
+      <td><MathInline tex={String.raw`p(w_{n+1} \mid w_{\le n})`} /></td>
+      <td>广义可以，狭义通常不是</td>
+      <td>预测文本序列，不一定有环境状态和动作条件。</td>
+    </tr>
+    <tr>
+      <td>纯 prompt-to-video 模型</td>
+      <td><MathInline tex={String.raw`p(x_{1:T} \mid prompt)`} /></td>
+      <td>广义可以，狭义通常不是</td>
+      <td>生成未来片段，但用户动作不一定进入转移方程。</td>
+    </tr>
+    <tr>
+      <td>动作条件动力学模型</td>
+      <td><MathInline tex={String.raw`p(s_{t+1}, r_t \mid s_t, a_t)`} /></td>
+      <td>是</td>
+      <td>能回答“如果这样做，会怎样”。</td>
+    </tr>
+  </tbody>
+</table>
 
 所以，判断一个系统是否是这里讨论的世界模型，不要只问它能不能生成内容。更稳的检查是：它有没有状态？有没有动作条件？能不能滚动预测动作之后的变化？这个预测能不能服务于规划或策略学习？
 
