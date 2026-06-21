@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ViewCountBadge } from "@/components/view-count-badge";
 import type { Entry } from "@/content/entries";
 import { formatDate, formatEntryType } from "@/lib/content";
+import { viewCountTargetForEntry } from "@/lib/view-count";
 
 type EntryListProps = {
   entries: Entry[];
@@ -31,7 +32,7 @@ export function EntryList({
               {showViewCounts ? (
                 <>
                   <span aria-hidden="true">·</span>
-                  <ViewCountBadge scope={entry.type} slug={entry.slug} />
+                  <ViewCountBadge {...viewCountTargetForEntry(entry)} />
                 </>
               ) : null}
             </div>

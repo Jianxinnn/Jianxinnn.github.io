@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { BlogPostImage } from "@/components/blog-post-image";
 import { BlogSourceMark } from "@/components/blog-source-mark";
 import { BlogTags } from "@/components/blog-tags";
+import { ViewCountBadge } from "@/components/view-count-badge";
 import type { BlogPost } from "@/content/blog/posts";
 import { formatDate } from "@/lib/content";
 
@@ -59,6 +60,8 @@ export function BlogList({ posts, showImages = true }: BlogListProps) {
                   <span>{post.category}</span>
                 </>
               ) : null}
+              <span aria-hidden="true">·</span>
+              <ViewCountBadge scope="blog" slug={post.slug} />
             </div>
             <BlogTags tags={post.tags} />
           </div>

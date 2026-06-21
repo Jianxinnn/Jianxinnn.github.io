@@ -2,9 +2,11 @@ import Link from "next/link";
 import { Mail } from "lucide-react";
 import { BlogPostImage } from "@/components/blog-post-image";
 import { EntryList } from "@/components/entry-list";
+import { ViewCountBadge } from "@/components/view-count-badge";
 import { entries } from "@/content/entries";
 import { profile } from "@/content/profile";
 import { formatDate, formatEntryType, sortEntries } from "@/lib/content";
+import { viewCountTargetForEntry } from "@/lib/view-count";
 
 export default function HomePage() {
   const allEntries = sortEntries(entries);
@@ -71,6 +73,8 @@ export default function HomePage() {
                     <time dateTime={entry.date}>{formatDate(entry.date)}</time>
                     <span aria-hidden="true">·</span>
                     <span>{formatEntryType(entry.type)}</span>
+                    <span aria-hidden="true">·</span>
+                    <ViewCountBadge {...viewCountTargetForEntry(entry)} />
                   </div>
                   <div className="current-title-line">
                     <h2>
@@ -99,7 +103,7 @@ export default function HomePage() {
             <h2>Recent log</h2>
             <Link href="/archive">Archive</Link>
           </div>
-          <EntryList entries={history} />
+          <EntryList entries={history} showViewCounts />
         </div>
 
         <aside className="mail-panel" aria-label="Email updates">
