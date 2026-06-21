@@ -22,17 +22,19 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-const blogEntries: Entry[] = blogPosts.map((post) => ({
-  slug: post.slug,
-  title: post.title,
-  summary: post.summary,
-  date: post.date,
-  type: "writing",
-  collaborators: post.tags?.join(" / ") ?? post.readingTime,
-  image: post.image,
-  href: post.href,
-  pinned: post.featured
-}));
+const blogEntries: Entry[] = blogPosts
+  .filter((post) => post.listed !== false)
+  .map((post) => ({
+    slug: post.slug,
+    title: post.title,
+    summary: post.summary,
+    date: post.date,
+    type: "writing",
+    collaborators: post.tags?.join(" / ") ?? post.readingTime,
+    image: post.image,
+    href: post.href,
+    pinned: post.featured
+  }));
 
 const readingEntries: Entry[] = profile.readings.map((reading) => ({
   slug: `reading-${slugify(reading.title)}`,
@@ -63,7 +65,7 @@ const standaloneEntries: Entry[] = [
     date: "2026-06-21",
     type: "note",
     collaborators: "Research memo",
-    href: "/blog/adaworld-latent-actions/"
+    href: "/notes/adaworld-latent-actions/"
   },
   {
     slug: "molecular-visualization-stack",

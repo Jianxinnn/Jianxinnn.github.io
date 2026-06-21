@@ -5,7 +5,7 @@ import { BlogSourceMark } from "@/components/blog-source-mark";
 import { BlogTags } from "@/components/blog-tags";
 import { ViewCountBadge } from "@/components/view-count-badge";
 import { blogPostContent } from "@/content/blog/content";
-import { blogPosts, getBlogPost } from "@/content/blog/posts";
+import { getBlogPost, listedBlogPosts } from "@/content/blog/posts";
 import { formatDate } from "@/lib/content";
 
 type BlogPostPageProps = {
@@ -14,8 +14,10 @@ type BlogPostPageProps = {
   }>;
 };
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
-  return blogPosts
+  return listedBlogPosts
     .filter((post) => post.sourceType === "mdx")
     .map((post) => ({
       slug: post.slug
@@ -44,7 +46,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   const Content = post ? blogPostContent[post.slug] : undefined;
 
-  if (!post || post.sourceType !== "mdx" || !Content) {
+  if (!post || post.listed === false || post.sourceType !== "mdx" || !Content) {
     notFound();
   }
 
@@ -83,7 +85,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <BlogSourceMark source={post.source} variant="article" />
         <BlogTags tags={post.tags} />
       </header>
-      <div className="mdx-body">
+      <div className="mdx-body" data-pagefind-body>
         <Content />
       </div>
       <BlogSectionNav />

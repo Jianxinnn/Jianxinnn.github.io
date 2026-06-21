@@ -25,6 +25,23 @@ type SearchResult = {
   url: string;
 };
 
+function isBlogPostUrl(url: string) {
+  try {
+    const pathname = new URL(url, window.location.origin).pathname;
+
+    return (
+      pathname.startsWith("/blog/") &&
+      !pathname.startsWith("/blog/archive") &&
+      !pathname.startsWith("/blog/categories/") &&
+      !pathname.startsWith("/blog/p/") &&
+      !pathname.startsWith("/blog/sources/") &&
+      !pathname.startsWith("/blog/tags/")
+    );
+  } catch {
+    return false;
+  }
+}
+
 const importPagefind = new Function("path", "return import(path)") as (
   path: string
 ) => Promise<PagefindModule>;
@@ -51,7 +68,7 @@ export function BlogSearch() {
         const pagefind = await importPagefind("/pagefind/pagefind.js");
         const search = await pagefind.search(trimmed);
         const nextResults = await Promise.all(
-          search.results.slice(0, blogConfig.searchResultLimit).map(async (result) => {
+          search.results.slice(0, blogConfig.searchResultLimit * 6).map(async (result) => {
             const data = await result.data();
 
             return {
@@ -63,7 +80,11 @@ export function BlogSearch() {
         );
 
         if (!cancelled) {
-          setResults(nextResults);
+          setResults(
+            nextResults
+              .filter((result) => isBlogPostUrl(result.url))
+              .slice(0, blogConfig.searchResultLimit)
+          );
           setStatus("ready");
         }
       } catch {
