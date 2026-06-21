@@ -1,0 +1,152 @@
+import { MathBlock } from "@/components/math-block";
+
+世界模型不是“会生成视频的模型”的另一个名字。更准确地说，它是一个关于世界如何变化的模型：给定当前状态和动作，预测下一步会发生什么。
+
+<MathBlock tex={String.raw`s_{t+1} \sim p_{\theta}(s_{t+1} \mid s_t, a_t)`} />
+
+这里的 `s_t` 是世界状态，`a_t` 是动作，`s_{t+1}` 是动作之后的下一个状态。如果模型输出的是分布，它承认未来有不确定性；如果输出的是一个确定函数，它就在说“这个动作必然导致这个结果”。
+
+<figure>
+  <img src="/assets/blog/world-models-cn/state-action-transition.jpg" alt="World model state action transition definition" />
+  <figcaption>图 1. 最小定义：世界模型学习状态、动作和下一状态之间的转移。来源：CMU Generative AI Lecture 26，本地课件。</figcaption>
+</figure>
+
+## 状态不等于画面
+
+现实中，智能体通常看不到完整状态。它拿到的是观测，比如一帧图像、一段视频、激光雷达、语言指令或机器人关节读数。因此现代世界模型常把观测压缩成 latent state：
+
+<MathBlock
+  tex={String.raw`\begin{aligned}
+z_t &= E_{\phi}(o_{\le t}) \\
+z_{t+1} &\sim p_{\theta}(z_{t+1} \mid z_{\le t}, a_{\le t}) \\
+\hat{o}_{t+1} &= D_{\psi}(z_{t+1})
+\end{aligned}`}
+/>
+
+`E_phi` 是编码器，把历史观测变成潜在状态；`p_theta` 是动力学模型，在 latent space 里预测未来；`D_psi` 是解码器，把 latent state 还原成可看的图像、视频或其他观测。
+
+这个拆分很重要。一个只会生成漂亮画面的模型，未必知道“我做了什么动作，世界为什么变成这样”。世界模型关心的是可控的因果转移。
+
+## 经典版本：V、M、C
+
+Ha 与 Schmidhuber 的 World Models 给了一个很清晰的早期模板：把智能体拆成 `V`、`M`、`C` 三部分。
+
+<figure>
+  <img src="/assets/blog/world-models-cn/ha-schmidhuber-vmc.jpg" alt="Ha and Schmidhuber V M C world model architecture" />
+  <figcaption>图 2. 经典 V-M-C 架构：V 负责空间压缩，M 负责时间预测，C 负责行动。来源：Edmund Goodman, World Models slide deck。</figcaption>
+</figure>
+
+对应到公式：
+
+<MathBlock
+  tex={String.raw`\begin{aligned}
+z_t &= V_{\phi}(o_t) \\
+h_t &= M_{\theta}(h_{t-1}, z_t, a_{t-1}) \\
+z_{t+1} &\sim p_{\theta}(z_{t+1} \mid z_t, h_t, a_t) \\
+a_t &= W_c [z_t, h_t] + b_c
+\end{aligned}`}
+/>
+
+`V` 把像素压成低维 `z_t`，`M` 用 RNN 记住时间上下文并预测未来 latent，`C` 是很小的控制器。真正的“世界模型”是 `V + M`；`C` 只是利用这个模型做动作选择。
+
+这套设计最有启发性的地方是：智能体可以在自己的模型里训练，也就是论文里那句问题，“agents learn inside of their own dreams”。如果梦境足够接近真实环境，训练就可以更便宜、更安全、更快。
+
+## 今天的三条路线
+
+现代世界模型大致可以分成三类。它们的目标相近，但内部表示完全不同。
+
+<figure>
+  <img src="/assets/blog/world-models-cn/three-paradigms.jpg" alt="Three paradigms for modern world models" />
+  <figcaption>图 3. 现代世界模型的三种路线：显式 3D 表示、交互式视频、潜空间世界表征。来源：CMU Generative AI Lecture 26，本地课件。</figcaption>
+</figure>
+
+第一类是先生成 3D 场景，再渲染或模拟。NeRF 和 Gaussian Splatting 属于这一脉络。它们的优势是有较明确的场景表示，可以被渲染器理解；难点是动态交互和长程物理仍然复杂。
+
+第二类是交互式视频模型。Genie 这类模型接收一张初始图和用户动作，然后逐步生成下一帧：
+
+<MathBlock
+  tex={String.raw`\begin{aligned}
+z_{t+1} &\sim p_{\theta}(z_{t+1} \mid z_{\le t}, a_{\le t}) \\
+x_{t+1} &= D(z_{t+1})
+\end{aligned}`}
+/>
+
+<figure>
+  <img src="/assets/blog/world-models-cn/genie1-architecture.jpg" alt="Genie 1 interactive video generation architecture" />
+  <figcaption>图 4. Genie-1 的核心组件：视频 tokenizer、latent action model 和 dynamics model。来源：CMU Generative AI Lecture 26，本地课件。</figcaption>
+</figure>
+
+它的体验像游戏引擎，但底层仍然主要是视频模型。优点是数据可以来自大量无动作标签视频；缺点是动作集合通常是封闭的 latent action，模型没有显式 mesh、点云或物理状态。
+
+第三类是潜空间世界表征，例如 V-JEPA 和 PAN。它们尽量不在像素上做长程预测，而是在 latent space 里预测，再按需要解码。
+
+<figure>
+  <img src="/assets/blog/world-models-cn/pan-latent-world-model.jpg" alt="PAN latent world model architecture" />
+  <figcaption>图 5. PAN 把长程预测放在 latent space，把短程视觉质量交给视频解码器。来源：CMU Generative AI Lecture 26，本地课件。</figcaption>
+</figure>
+
+PAN 可以写成：
+
+<MathBlock
+  tex={String.raw`\begin{aligned}
+z_t &= h(o_t) \\
+\hat{z}_{t+1} &= f_{\theta}(z_{\le t}, a_{\le t}) \\
+\hat{o}_{t+1} &= g_{\psi}(\hat{z}_{t+1}) \\
+\mathcal{L} &= d(o_{t+1}, \hat{o}_{t+1})
+\end{aligned}`}
+/>
+
+`h` 是视觉编码器，`f_theta` 是自回归世界模型，`g_psi` 是视频扩散解码器。关键取舍是：长程一致性交给 latent dynamics，短程视觉保真交给 decoder。
+
+## NVIDIA 的工程视角
+
+NVIDIA 的 Glossary 把世界模型定义为理解真实世界动态、物理和空间性质的神经网络，并强调它们可以使用文本、图像、视频、声音和运动数据来预测接下来会发生什么。
+
+从工程流程看，世界基础模型通常包括四步：
+
+1. 数据整理：过滤、标注、去重、切分视频，保留高质量场景。
+2. Tokenization：把高维图像和视频压成离散 token 或连续向量。
+3. 预训练：用自回归 transformer 或 diffusion transformer 学习时间因果、空间一致性和生成能力。
+4. 后训练与强化学习：用专有场景、任务奖励和闭环反馈把通用模型变成可用系统。
+
+这解释了为什么世界模型和 physical AI 绑定得越来越紧。机器人、自动驾驶和工业系统不能只靠离线识别，它们需要在行动前预演后果。
+
+## 它能解决什么
+
+世界模型最直接的价值是闭环学习。机器人可以在模拟世界里摔倒、碰撞、失败，然后更新策略，而不必每次都损耗真实设备。
+
+第二个价值是合成数据。真实世界长尾场景太贵：暴雨夜间、罕见交通冲突、危险工业动作，都不适合靠自然采集凑样本。世界模型可以生成可控的场景变体。
+
+第三个价值是规划。一个只做感知的模型回答“我看到了什么”；世界模型进一步回答“如果我这样做，会发生什么”。这就是从识别走向行动的门槛。
+
+## 边界也很清楚
+
+世界模型仍然容易在三个地方出错。
+
+第一，视觉真实不等于物理真实。视频看起来顺滑，不代表接触力、遮挡关系和物体永久性都对。
+
+第二，短期预测不等于长期规划。很多模型能维持几十秒的连贯画面，但在几分钟后失去一致状态。
+
+第三，latent action 不等于可解释控制。用户按下一个键，模型可能生成合理反应，但系统未必知道这个动作在真实物理或机器人控制里意味着什么。
+
+## 一个实用定义
+
+如果只记一句话：
+
+> 世界模型是一个可被智能体调用的未来模拟器：它把观测压成状态，根据动作预测状态如何变化，并把这种预测用于生成、训练、规划或控制。
+
+所以，判断一个系统是不是世界模型，不要只问它能不能生成视频。更关键的问题是：
+
+1. 它有没有状态？
+2. 它有没有动作条件？
+3. 它能不能预测动作之后的变化？
+4. 这个预测能不能被下游智能体用于学习、规划或控制？
+
+能回答这些问题，才算真正进入了世界模型的讨论。
+
+## 参考
+
+- NVIDIA Glossary: [What Is a World Model?](https://www.nvidia.com/en-us/glossary/world-models/)
+- David Ha and Jürgen Schmidhuber: [World Models](https://arxiv.org/abs/1803.10122)
+- Edmund Goodman: World Models, slide deck, Nov. 20, 2024.
+- Matt Gormley and Aran Nayebi: Interactive World Models, CMU Generative AI Lecture 26, Dec. 3, 2025.

@@ -3,9 +3,11 @@ import type { ComponentType } from "react";
 import AgenticResearchWorkbench from "@/content/blog/posts/agentic-research-workbench/index.mdx";
 import FlowMatchingDiffusionModelsCn from "@/content/blog/posts/flow-matching-diffusion-models-cn/index.mdx";
 import PublicationProfileDesign from "@/content/blog/posts/publication-profile-design/index.mdx";
+import WhatAreWorldModelsCn from "@/content/blog/posts/what-are-world-models-cn/index.mdx";
 
 export const blogPostContent: Record<string, ComponentType> = {
   "agentic-research-workbench": AgenticResearchWorkbench,
   "flow-matching-diffusion-models-cn": FlowMatchingDiffusionModelsCn,
-  "publication-profile-design": PublicationProfileDesign
+  "publication-profile-design": PublicationProfileDesign,
+  "what-are-world-models-cn": WhatAreWorldModelsCn
 };

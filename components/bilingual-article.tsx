@@ -3,6 +3,7 @@
 import { Columns2, Languages } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
+import { ensureMathJax, type MathJaxWindow } from "@/components/mathjax";
 
 export type BilingualSegment = {
   en: string;
@@ -19,56 +20,8 @@ type BilingualArticleProps = {
 
 type BilingualMode = "zh" | "both" | "en";
 type CalloutType = "key-idea" | "remark" | "summary";
-type MathJaxWindow = Window & {
-  MathJax?: {
-    options?: unknown;
-    startup?: {
-      promise?: Promise<unknown>;
-    };
-    tex?: unknown;
-    typesetPromise?: (elements?: HTMLElement[]) => Promise<unknown>;
-  };
-};
 
 const MIN_ARTICLE_IMAGE_SIZE = 80;
-
-function ensureMathJax() {
-  const win = window as MathJaxWindow;
-
-  if (win.MathJax?.typesetPromise) {
-    return win.MathJax.startup?.promise ?? Promise.resolve();
-  }
-
-  const existing = document.querySelector<HTMLScriptElement>("script[data-mathjax]");
-
-  if (existing) {
-    return new Promise((resolve) => {
-      existing.addEventListener("load", resolve, { once: true });
-    });
-  }
-
-  win.MathJax = {
-    tex: {
-      inlineMath: [["$", "$"], ["\\(", "\\)"]],
-      displayMath: [["$$", "$$"], ["\\[", "\\]"]],
-      processEscapes: true
-    },
-    options: {
-      skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"]
-    }
-  } as MathJaxWindow["MathJax"];
-
-  return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.async = true;
-    script.dataset.mathjax = "true";
-    script.id = "MathJax-script";
-    script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js";
-    script.addEventListener("load", resolve, { once: true });
-    script.addEventListener("error", reject, { once: true });
-    document.head.appendChild(script);
-  });
-}
 
 function SegmentContent({ html }: { html: string }) {
   return <div dangerouslySetInnerHTML={{ __html: html }} />;
