@@ -1,9 +1,19 @@
 import type { Entry } from "@/content/entries";
 
+function entrySortTime(entry: Entry) {
+  return new Date(entry.updated ?? entry.date).getTime();
+}
+
 export function sortEntries(items: Entry[]) {
-  return [...items].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+  return [...items].sort((a, b) => {
+    const timeDifference = entrySortTime(b) - entrySortTime(a);
+
+    if (timeDifference !== 0) {
+      return timeDifference;
+    }
+
+    return a.slug.localeCompare(b.slug);
+  });
 }
 
 export function formatDate(value: string) {

@@ -13,6 +13,7 @@ export type Entry = {
   image?: string;
   href?: string;
   pinned?: boolean;
+  updated?: string;
 };
 
 function slugify(value: string) {
@@ -33,7 +34,8 @@ const blogEntries: Entry[] = blogPosts
     collaborators: post.tags?.join(" / ") ?? post.readingTime,
     image: post.image,
     href: post.href,
-    pinned: post.featured
+    pinned: post.featured,
+    updated: post.updated
   }));
 
 const readingEntries: Entry[] = profile.readings.map((reading) => ({
@@ -65,7 +67,9 @@ const standaloneEntries: Entry[] = [
     date: "2026-06-21",
     type: "note",
     collaborators: "Research memo",
-    href: "/notes/adaworld-latent-actions/"
+    image: "/assets/visuals/profile-field.png",
+    href: "/notes/adaworld-latent-actions/",
+    updated: "2026-06-21T23:59:00+08:00"
   },
   {
     slug: "molecular-visualization-stack",

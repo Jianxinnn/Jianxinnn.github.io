@@ -10,8 +10,8 @@ import { viewCountTargetForEntry } from "@/lib/view-count";
 
 export default function HomePage() {
   const allEntries = sortEntries(entries);
-  const currentWork = allEntries.slice(0, 2);
-  const history = allEntries.slice(2);
+  const currentWork = allEntries.slice(0, 3);
+  const history = allEntries.slice(3);
   const newsletterAction = `https://buttondown.com/api/emails/embed-subscribe/${profile.newsletter.buttondownUsername}`;
 
   return (
