@@ -481,6 +481,11 @@ main,
   font-weight: 800;
 }
 
+.mail-panel .mail-note {
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .eyebrow {
   margin: 0 0 18px;
   color: var(--accent);

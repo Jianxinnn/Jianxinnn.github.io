@@ -124,6 +124,7 @@ export default function HomePage() {
             <input name="embed" type="hidden" value="1" />
             <button type="submit">Subscribe</button>
           </form>
+          <p className="mail-note">After subscribing, check your inbox to confirm.</p>
         </aside>
       </section>
     </div>
