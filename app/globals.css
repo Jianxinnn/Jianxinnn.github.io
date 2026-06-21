@@ -1413,6 +1413,10 @@ main,
   padding: 2px 0;
 }
 
+.mdx-body .math-inline {
+  white-space: nowrap;
+}
+
 .mdx-body pre {
   margin: 30px auto;
   padding: 16px;
