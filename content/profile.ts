@@ -87,11 +87,6 @@ export const profile = {
       links: []
     }
   ] satisfies Reading[],
-  scholar: {
-    affiliation: "East China Normal University",
-    interests: ["AI for protein design and engineering"],
-    metrics: "16 citations · h-index 2 · i10-index 1"
-  },
   publications: [
     {
       year: "2026",
@@ -101,8 +96,8 @@ export const profile = {
       venue: "Advanced Cancer Research 1 (2), 1-42",
       links: [
         {
-          label: "Scholar",
-          href: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=UYHlxe0AAAAJ&sortby=pubdate&citation_for_view=UYHlxe0AAAAJ:Y0pCki6q_DkC"
+          label: "Article",
+          href: "https://doi.org/10.55092/acr20260005"
         }
       ]
     },
@@ -114,8 +109,8 @@ export const profile = {
       venue: "Briefings in Bioinformatics 27 (2), bbag092",
       links: [
         {
-          label: "Scholar",
-          href: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=UYHlxe0AAAAJ&sortby=pubdate&citation_for_view=UYHlxe0AAAAJ:zYLM7Y9cAGgC"
+          label: "Article",
+          href: "https://doi.org/10.1093/bib/bbag092"
         }
       ]
     },
@@ -128,8 +123,8 @@ export const profile = {
       citations: "2 citations",
       links: [
         {
-          label: "Scholar",
-          href: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=UYHlxe0AAAAJ&sortby=pubdate&citation_for_view=UYHlxe0AAAAJ:qjMakFHDy7sC"
+          label: "Article",
+          href: "https://doi.org/10.1016/j.apsb.2026.01.039"
         }
       ]
     },
@@ -141,8 +136,8 @@ export const profile = {
       citations: "1 citation",
       links: [
         {
-          label: "Scholar",
-          href: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=UYHlxe0AAAAJ&sortby=pubdate&citation_for_view=UYHlxe0AAAAJ:Tyk-4Ss8FVUC"
+          label: "Article",
+          href: "https://doi.org/10.1360/SSC-2025-0118"
         }
       ]
     },
@@ -155,8 +150,8 @@ export const profile = {
       citations: "13 citations",
       links: [
         {
-          label: "Scholar",
-          href: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=UYHlxe0AAAAJ&sortby=pubdate&citation_for_view=UYHlxe0AAAAJ:IjCSPb-OGe4C"
+          label: "arXiv",
+          href: "https://arxiv.org/abs/2412.11618"
         }
       ]
     }

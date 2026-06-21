@@ -81,12 +81,6 @@ export default function AboutPage() {
       <section className="about-block publication-block">
         <div>
           <h2>Publications</h2>
-          <p className="about-block-note">{profile.scholar.metrics}</p>
-          {scholarLink ? (
-            <a className="about-block-link" href={scholarLink.href}>
-              Google Scholar
-            </a>
-          ) : null}
         </div>
         <div className="publication-list">
           {profile.publications.map((publication) => (

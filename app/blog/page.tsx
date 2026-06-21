@@ -26,13 +26,8 @@ export default function BlogPage() {
 
   return (
     <div className="blog-page blog-library-page">
-      <header className="blog-index-header">
+      <header className="blog-index-header compact-page-header">
         <p className="eyebrow">Blog</p>
-        <h1>Long-form writing, translations, and build logs.</h1>
-        <p>
-          Longer essays and structured writeups for illustrated explainers,
-          translated technical articles, and project-level research workflows.
-        </p>
       </header>
       <BlogSearch />
       <section className="blog-library-summary" aria-label="Blog summary">

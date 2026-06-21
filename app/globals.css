@@ -1940,31 +1940,9 @@ main,
   color: var(--accent);
 }
 
-.about-block-note {
-  margin: 10px 0 0;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 650;
-  line-height: 1.45;
-}
-
-.about-block-link {
-  display: inline-flex;
-  margin-top: 12px;
-  color: var(--accent);
-  font-size: 13px;
-  font-weight: 800;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-
 .publication-list {
   display: grid;
   border-top: 1px solid var(--line);
-}
-
-.publication-block {
-  grid-template-columns: 190px minmax(0, 1fr);
 }
 
 .publication-item {
@@ -2121,6 +2099,14 @@ main,
 
 .simple-page-header {
   padding-bottom: 26px;
+}
+
+.compact-page-header {
+  padding-bottom: 14px;
+}
+
+.compact-page-header .eyebrow {
+  margin-bottom: 0;
 }
 
 .simple-page-header h1 {
