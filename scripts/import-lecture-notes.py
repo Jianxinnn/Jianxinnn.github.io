@@ -385,7 +385,7 @@ def write_generated_files(segments: list[dict[str, str]]) -> None:
         '  date: "2026-06-21",\n'
         '  readingTime: "84 pages",\n'
         '  sourceType: "mdx",\n'
-        '  image: "/assets/visuals/notes-field.png",\n'
+        '  image: "/assets/visuals/profile-field.png",\n'
         '  category: "Paper notes",\n'
         '  language: "bilingual",\n'
         "  source: {\n"
@@ -394,7 +394,7 @@ def write_generated_files(segments: list[dict[str, str]]) -> None:
         f'    originalTitle: "{ORIGINAL_TITLE}",\n'
         f'    originalUrl: "{ORIGINAL_URL}"\n'
         "  },\n"
-        '  tags: ["diffusion models", "flow matching", "illustrated note"]\n'
+        '  tags: ["diffusion models", "flow matching"]\n'
         "} satisfies BlogPostMeta;\n\n"
         "export default meta;\n",
         encoding="utf-8",

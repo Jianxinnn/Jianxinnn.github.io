@@ -3,12 +3,12 @@ import { BlogList } from "@/components/blog-list";
 import { BlogPagination } from "@/components/blog-pagination";
 import { BlogSearch } from "@/components/blog-search";
 import {
-  blogPosts,
   getBlogArchive,
   getBlogCategories,
   getBlogPage,
   getBlogSourceStats,
-  getBlogTags
+  getBlogTags,
+  listedBlogPosts
 } from "@/content/blog/posts";
 import { formatDate } from "@/lib/content";
 
@@ -32,7 +32,7 @@ export default function BlogPage() {
       <BlogSearch />
       <section className="blog-library-summary" aria-label="Blog summary">
         <div>
-          <span>{blogPosts.length}</span>
+          <span>{listedBlogPosts.length}</span>
           <p>Posts</p>
         </div>
         <div>

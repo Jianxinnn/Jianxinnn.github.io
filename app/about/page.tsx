@@ -89,10 +89,7 @@ export default function AboutPage() {
               <div className="publication-main">
                 <h3>{publication.title}</h3>
                 <p className="publication-authors">{publication.authors}</p>
-                <p className="publication-venue">
-                  {publication.venue}
-                  {publication.citations ? ` · ${publication.citations}` : ""}
-                </p>
+                <p className="publication-venue">{publication.venue}</p>
                 {publication.links.length ? (
                   <div className="publication-links">
                     {publication.links.map((link) => (

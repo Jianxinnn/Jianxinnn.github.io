@@ -6,7 +6,7 @@ const meta = {
   date: "2026-06-21",
   readingTime: "84 pages",
   sourceType: "mdx",
-  image: "/assets/visuals/notes-field.png",
+  image: "/assets/visuals/profile-field.png",
   category: "Technical explainers",
   language: "bilingual",
   source: {
@@ -15,7 +15,7 @@ const meta = {
     originalTitle: "An Introduction to Flow Matching and Diffusion Models",
     originalUrl: "https://diffusion.csail.mit.edu/"
   },
-  tags: ["diffusion models", "flow matching", "illustrated note"]
+  tags: ["diffusion models", "flow matching"]
 } satisfies BlogPostMeta;
 
 export default meta;

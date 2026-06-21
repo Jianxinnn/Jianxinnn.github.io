@@ -5,7 +5,7 @@ import { BlogSourceMark } from "@/components/blog-source-mark";
 import { BlogTags } from "@/components/blog-tags";
 import { ViewCountBadge } from "@/components/view-count-badge";
 import { blogPostContent } from "@/content/blog/content";
-import { getBlogPost, sortBlogPosts } from "@/content/blog/posts";
+import { blogPosts, getBlogPost } from "@/content/blog/posts";
 import { formatDate } from "@/lib/content";
 
 type BlogPostPageProps = {
@@ -15,7 +15,7 @@ type BlogPostPageProps = {
 };
 
 export function generateStaticParams() {
-  return sortBlogPosts()
+  return blogPosts
     .filter((post) => post.sourceType === "mdx")
     .map((post) => ({
       slug: post.slug
@@ -48,12 +48,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
 
-  const tags = post.tags ?? [];
   const articleClassName = [
     "blog-article-page",
     `blog-article-${post.slug}`,
-    post.language === "bilingual" ? "is-bilingual-article" : undefined,
-    tags.includes("illustrated note") ? "is-illustrated-note" : undefined
+    post.language === "bilingual" ? "is-bilingual-article" : undefined
   ]
     .filter(Boolean)
     .join(" ");

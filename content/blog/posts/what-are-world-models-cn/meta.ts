@@ -13,7 +13,7 @@ const meta = {
     status: "original",
     note: "综合本地课件、Edmund Goodman 讲义和 NVIDIA Glossary 写成。"
   },
-  tags: ["world models", "physical AI", "reinforcement learning", "illustrated note"]
+  tags: ["world models", "physical AI", "reinforcement learning"]
 } satisfies BlogPostMeta;
 
 export default meta;

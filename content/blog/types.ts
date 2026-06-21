@@ -24,6 +24,7 @@ export type BlogPostMeta = {
   source?: BlogPostSource;
   tags?: string[];
   featured?: boolean;
+  listed?: boolean;
   updated?: string;
 };
 
@@ -32,7 +33,15 @@ export type BlogPost = Required<
 > &
   Pick<
     BlogPostMeta,
-    "image" | "badge" | "category" | "language" | "source" | "tags" | "featured" | "updated"
+    | "image"
+    | "badge"
+    | "category"
+    | "language"
+    | "source"
+    | "tags"
+    | "featured"
+    | "listed"
+    | "updated"
   > & {
     slug: string;
   };

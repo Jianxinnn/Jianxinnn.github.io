@@ -13,7 +13,6 @@ export type Reading = {
 
 export type Publication = {
   authors: string;
-  citations?: string;
   links: Array<{
     label: string;
     href: string;
@@ -120,7 +119,6 @@ export const profile = {
         "Artificial intelligence in biologic drug discovery: A review of methodological evolution and therapeutic applications",
       authors: "J Tang, D Gong, H Li, S Li",
       venue: "Acta Pharmaceutica Sinica B",
-      citations: "2 citations",
       links: [
         {
           label: "Article",
@@ -133,7 +131,6 @@ export const profile = {
       title: "Method development for potential drug target identification and drug discovery",
       authors: "D Gong, J Tang, B Wang, S Xiang, Z Feng, S Li, H Li",
       venue: "Scientia Sinica Chimica 55 (8), 2223-2242",
-      citations: "1 citation",
       links: [
         {
           label: "Article",
@@ -147,7 +144,6 @@ export const profile = {
         "EvoLlama: Enhancing LLMs' Understanding of Proteins via Multimodal Structure and Sequence Representations",
       authors: "N Liu, C Sun, T Ji, J Tian, J Tang, Y Wu, M Lan",
       venue: "arXiv preprint arXiv:2412.11618",
-      citations: "13 citations",
       links: [
         {
           label: "arXiv",

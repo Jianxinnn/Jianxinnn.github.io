@@ -56,15 +56,6 @@ const standaloneEntries: Entry[] = [
     image: "/assets/visuals/figure-field.png"
   },
   {
-    slug: "notes-on-ai-agents",
-    title: "Notes on agent reliability",
-    summary:
-      "Short observations on making agent workflows inspectable, resumable, and grounded in project-local conventions.",
-    date: "2026-04-12",
-    type: "note",
-    collaborators: "Research memo"
-  },
-  {
     slug: "adaworld-latent-actions",
     title: "AdaWorld latent actions",
     summary:
@@ -73,15 +64,6 @@ const standaloneEntries: Entry[] = [
     type: "note",
     collaborators: "Research memo",
     href: "/blog/adaworld-latent-actions/"
-  },
-  {
-    slug: "knowledge-interface-principles",
-    title: "Knowledge interface principles",
-    summary:
-      "A compact set of design principles for dense, repeat-use research interfaces that prioritize scanning, comparison, and revision.",
-    date: "2026-02-07",
-    type: "note",
-    collaborators: "Interface design"
   },
   {
     slug: "molecular-visualization-stack",

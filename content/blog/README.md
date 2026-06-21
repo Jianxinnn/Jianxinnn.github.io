@@ -27,13 +27,12 @@ const meta = {
   summary: "One sentence summary.",
   date: "2026-06-21",
   sourceType: "mdx",
-  image: "/assets/visuals/notes-field.png",
+  image: "/assets/visuals/profile-field.png",
   category: "Build logs",
   language: "en",
   source: {
     status: "original"
-  },
-  tags: ["research systems"]
+  }
 } satisfies BlogPostMeta;
 
 export default meta;
@@ -89,8 +88,7 @@ const meta = {
     label: "转载",
     originalTitle: "External Post",
     originalUrl: "https://example.com/post"
-  },
-  tags: ["research systems"]
+  }
 } satisfies BlogPostMeta;
 ```
 
@@ -120,7 +118,7 @@ Allowed `status` values:
 Allowed categories live in `content/blog/categories.ts`. Allowed tags live in
 `content/blog/tags.ts`. Add a value there before using it in `meta.ts`.
 
-`image` can be either a local asset such as `/assets/visuals/notes-field.png`
+`image` can be either a local asset such as `/assets/visuals/profile-field.png`
 or an external HTTPS image URL. Local assets should live under `public/assets/`.
 
 ## Scaling Rules

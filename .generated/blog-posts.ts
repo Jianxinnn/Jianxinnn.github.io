@@ -19,29 +19,9 @@ export const blogPosts: BlogPost[] = [
     },
     "tags": [
       "world models",
-      "reinforcement learning",
-      "illustrated note"
-    ]
-  },
-  {
-    "slug": "agentic-research-workbench",
-    "title": "Agentic Research Workbench",
-    "summary": "A modular workspace for reading papers, extracting structure, generating figures, and turning scattered research artifacts into reusable knowledge.",
-    "date": "2026-06-20",
-    "readingTime": "1 min read",
-    "sourceType": "mdx",
-    "href": "/blog/agentic-research-workbench/",
-    "image": "/assets/visuals/profile-field.png",
-    "category": "Research systems",
-    "language": "en",
-    "source": {
-      "status": "original"
-    },
-    "tags": [
-      "research systems",
-      "agents"
+      "reinforcement learning"
     ],
-    "featured": true
+    "listed": false
   },
   {
     "slug": "alphafold3-illustrated-cn",
@@ -51,7 +31,7 @@ export const blogPosts: BlogPost[] = [
     "readingTime": "78 min read",
     "sourceType": "html",
     "href": "/blog/alphafold3-illustrated-cn/",
-    "image": "/assets/visuals/notes-field.png",
+    "image": "/assets/visuals/profile-field.png",
     "category": "Technical explainers",
     "language": "zh",
     "source": {
@@ -61,8 +41,7 @@ export const blogPosts: BlogPost[] = [
       "originalUrl": "https://elanapearl.github.io/blog/2024/the-illustrated-alphafold/"
     },
     "tags": [
-      "AlphaFold3",
-      "illustrated note"
+      "AlphaFold3"
     ],
     "featured": true
   },
@@ -74,7 +53,7 @@ export const blogPosts: BlogPost[] = [
     "readingTime": "84 pages",
     "sourceType": "mdx",
     "href": "/blog/flow-matching-diffusion-models-cn/",
-    "image": "/assets/visuals/notes-field.png",
+    "image": "/assets/visuals/profile-field.png",
     "category": "Technical explainers",
     "language": "bilingual",
     "source": {
@@ -85,27 +64,7 @@ export const blogPosts: BlogPost[] = [
     },
     "tags": [
       "diffusion models",
-      "flow matching",
-      "illustrated note"
-    ]
-  },
-  {
-    "slug": "publication-profile-design",
-    "title": "A publication-first personal profile",
-    "summary": "Design notes on turning a personal site into a compact research index with separate spaces for papers, notes, projects, and profile context.",
-    "date": "2026-06-18",
-    "readingTime": "1 min read",
-    "sourceType": "mdx",
-    "href": "/blog/publication-profile-design/",
-    "image": "/assets/visuals/notes-field.png",
-    "category": "Site notes",
-    "language": "en",
-    "source": {
-      "status": "original"
-    },
-    "tags": [
-      "site design",
-      "content system"
+      "flow matching"
     ]
   },
   {
@@ -126,8 +85,7 @@ export const blogPosts: BlogPost[] = [
     "tags": [
       "world models",
       "physical AI",
-      "reinforcement learning",
-      "illustrated note"
+      "reinforcement learning"
     ]
   }
 ];

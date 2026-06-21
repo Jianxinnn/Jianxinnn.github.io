@@ -14,8 +14,9 @@ export type {
 export { blogPosts };
 
 export const BLOG_PAGE_SIZE = blogConfig.pageSize;
+export const listedBlogPosts = blogPosts.filter((post) => post.listed !== false);
 
-export function sortBlogPosts(posts: BlogPost[] = blogPosts) {
+export function sortBlogPosts(posts: BlogPost[] = listedBlogPosts) {
   return [...posts].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
@@ -26,7 +27,7 @@ export function getBlogPost(slug: string) {
 }
 
 export function getBlogPage(page: number, pageSize = BLOG_PAGE_SIZE) {
-  const posts = sortBlogPosts(blogPosts);
+  const posts = sortBlogPosts();
   const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
   const currentPage = Math.min(Math.max(page, 1), totalPages);
   const start = (currentPage - 1) * pageSize;
@@ -52,7 +53,7 @@ export function slugifyCategory(category: string) {
   return configured?.slug ?? slugifyTag(category);
 }
 
-export function getBlogTags(posts: BlogPost[] = blogPosts) {
+export function getBlogTags(posts: BlogPost[] = listedBlogPosts) {
   const tags = new Map<string, { label: string; slug: string; count: number }>();
 
   for (const post of posts) {
@@ -73,17 +74,17 @@ export function getBlogTags(posts: BlogPost[] = blogPosts) {
 
 export function getPostsByTagSlug(tagSlug: string) {
   return sortBlogPosts(
-    blogPosts.filter((post) =>
+    listedBlogPosts.filter((post) =>
       post.tags?.some((tag) => slugifyTag(tag) === tagSlug)
     )
   );
 }
 
-export function getFeaturedPosts(posts: BlogPost[] = blogPosts) {
+export function getFeaturedPosts(posts: BlogPost[] = listedBlogPosts) {
   return sortBlogPosts(posts.filter((post) => post.featured));
 }
 
-export function getBlogCategories(posts: BlogPost[] = blogPosts) {
+export function getBlogCategories(posts: BlogPost[] = listedBlogPosts) {
   const counts = new Map<string, number>();
 
   for (const post of posts) {
@@ -107,7 +108,7 @@ export function getPostsByCategorySlug(categorySlug: string) {
     return [];
   }
 
-  return sortBlogPosts(blogPosts.filter((post) => post.category === category.label));
+  return sortBlogPosts(listedBlogPosts.filter((post) => post.category === category.label));
 }
 
 export function getBlogSourceStatus(status: string) {
@@ -116,11 +117,11 @@ export function getBlogSourceStatus(status: string) {
 
 export function getPostsBySourceStatus(status: BlogSourceStatus) {
   return sortBlogPosts(
-    blogPosts.filter((post) => (post.source?.status ?? "original") === status)
+    listedBlogPosts.filter((post) => (post.source?.status ?? "original") === status)
   );
 }
 
-export function getBlogArchive(posts: BlogPost[] = blogPosts) {
+export function getBlogArchive(posts: BlogPost[] = listedBlogPosts) {
   return sortBlogPosts(posts).reduce<Array<{ year: string; posts: BlogPost[] }>>(
     (groups, post) => {
       const year = new Date(post.date).getFullYear().toString();
@@ -138,7 +139,7 @@ export function getBlogArchive(posts: BlogPost[] = blogPosts) {
   );
 }
 
-export function getBlogArchiveByMonth(posts: BlogPost[] = blogPosts) {
+export function getBlogArchiveByMonth(posts: BlogPost[] = listedBlogPosts) {
   return sortBlogPosts(posts).reduce<
     Array<{
       year: string;
@@ -176,7 +177,7 @@ export function getBlogArchiveByMonth(posts: BlogPost[] = blogPosts) {
   }, []);
 }
 
-export function getBlogSourceStats(posts: BlogPost[] = blogPosts) {
+export function getBlogSourceStats(posts: BlogPost[] = listedBlogPosts) {
   const counts = new Map<string, number>();
 
   for (const post of posts) {

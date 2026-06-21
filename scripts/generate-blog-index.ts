@@ -82,6 +82,7 @@ async function normalizePost(slug: string): Promise<BlogPost> {
     ...(meta.source ? { source: meta.source } : {}),
     ...(meta.tags?.length ? { tags: meta.tags } : {}),
     ...(meta.featured ? { featured: true } : {}),
+    ...(meta.listed === false ? { listed: false } : {}),
     ...(meta.updated ? { updated: meta.updated } : {})
   };
 }

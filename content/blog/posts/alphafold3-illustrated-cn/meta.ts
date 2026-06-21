@@ -8,7 +8,7 @@ const meta = {
   readingTime: "78 min read",
   sourceType: "html",
   href: "/blog/alphafold3-illustrated-cn/",
-  image: "/assets/visuals/notes-field.png",
+  image: "/assets/visuals/profile-field.png",
   category: "Technical explainers",
   language: "zh",
   source: {
@@ -17,7 +17,7 @@ const meta = {
     originalTitle: "The Illustrated AlphaFold",
     originalUrl: "https://elanapearl.github.io/blog/2024/the-illustrated-alphafold/"
   },
-  tags: ["AlphaFold3", "illustrated note"],
+  tags: ["AlphaFold3"],
   featured: true
 } satisfies BlogPostMeta;
 

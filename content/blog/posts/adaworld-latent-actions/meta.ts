@@ -13,7 +13,8 @@ const meta = {
     status: "original",
     note: "Reading note on arXiv:2503.18938."
   },
-  tags: ["world models", "reinforcement learning", "illustrated note"]
+  tags: ["world models", "reinforcement learning"],
+  listed: false
 } satisfies BlogPostMeta;
 
 export default meta;
