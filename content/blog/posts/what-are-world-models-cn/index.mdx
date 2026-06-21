@@ -1,25 +1,25 @@
 import { MathBlock, MathInline } from "@/components/math-block";
 
-世界模型的核心不是“生成一段看起来合理的视频”，而是**在内部模拟世界会如何变化**。更准确地说，它要回答一个行动问题：如果当前世界是这样，我做这个动作，下一步会怎样？
+世界模型的核心不是“生成一段看起来合理的视频”，而是**在内部模拟世界会如何变化**。更具体地说，它要回答一个行动问题：如果当前世界是这样，我做出某个动作，接下来会发生什么？
 
 <MathBlock tex={String.raw`s_{t+1} \sim p_{\theta}(s_{t+1} \mid s_t, a_t)`} />
 
-这里的 <MathInline tex={String.raw`s_t`} /> 是当前状态，<MathInline tex={String.raw`a_t`} /> 是动作，<MathInline tex={String.raw`s_{t+1}`} /> 是动作之后的下一状态。这个公式比“预测未来”多了一个关键条件：动作。没有动作条件，模型只是旁观未来；有了动作条件，模型才开始支持反事实推演。
+这里的 <MathInline tex={String.raw`s_t`} /> 是当前状态，<MathInline tex={String.raw`a_t`} /> 是动作，<MathInline tex={String.raw`s_{t+1}`} /> 是动作之后的下一状态。这个公式比“预测未来”多了一个关键条件：动作。没有动作条件，模型只是预测接下来可能出现的画面；有了动作条件，模型才开始支持“如果我这样做，会怎样”的反事实推演。
 
 <figure>
   <img src="/assets/blog/world-models-cn/state-action-transition.jpg" alt="World model state action transition definition" />
   <figcaption>图 1. 狭义世界模型的最小形式：给定状态和动作，预测下一状态。来源：CMU Generative AI Lecture 26，本地课件。</figcaption>
 </figure>
 
-## 先划清边界
+## 定义与边界
 
 “世界模型”这个词有两个常见用法。
 
-广义上，只要模型能预测接下来会发生什么，就可以被宽泛地叫作世界模型：
+在宽泛意义上，只要模型能根据已有信息预测接下来会发生什么，就可以被称为世界模型：
 
 <MathBlock tex={String.raw`y_{t+1} \sim p_{\theta}(y_{t+1} \mid y_{\le t})`} />
 
-语言模型预测下一个 token，视频模型预测下一帧，天气模型预测明天的气温，都属于这种“预测型模型”。这个定义很宽，适合谈智能系统的内部表征，但容易把概念说散。
+语言模型预测下一个 token，视频模型预测下一帧，天气模型预测明天的气温，都属于这种预测型模型。这个用法适合讨论“内部表征”，但范围很宽，容易把不同问题混在一起。
 
 在强化学习、机器人和控制语境里，世界模型通常指更窄的一类：**它必须建模动作如何改变世界**。
 
@@ -35,11 +35,11 @@ z_{t+1}, r_t &\sim p_{\theta}(z_{t+1}, r_t \mid z_t, a_t) \\
 \end{aligned}`}
 />
 
-这时，<MathInline tex={String.raw`E_{\phi}`} /> 是编码器，<MathInline tex={String.raw`p_{\theta}`} /> 是潜在动力学模型，<MathInline tex={String.raw`D_{\psi}`} /> 是可选的解码器。解码器能把 latent 还原成图像，但不是世界模型的必要条件；真正关键的是中间那条 action-conditioned transition。
+这里的 <MathInline tex={String.raw`E_{\phi}`} /> 是编码器，<MathInline tex={String.raw`p_{\theta}`} /> 是潜在动力学模型，<MathInline tex={String.raw`D_{\psi}`} /> 是可选的解码器。解码器可以把 latent 还原成图像，但不是世界模型的必要条件；关键在于中间的动作条件转移。
 
-### 什么不算狭义世界模型
+### 边界判断
 
-为了避免概念泛化，可以用下面的边界判断：
+因此，判断一个系统是不是狭义世界模型，重点不是它能不能生成内容，而是它是否显式建模“动作之后世界如何变化”。
 
 <table>
   <thead>
@@ -58,7 +58,7 @@ z_{t+1}, r_t &\sim p_{\theta}(z_{t+1}, r_t \mid z_t, a_t) \\
       <td>只识别当前输入，不预测动作后的变化。</td>
     </tr>
     <tr>
-      <td>纯 policy 模型</td>
+      <td>纯策略模型</td>
       <td><MathInline tex={String.raw`\pi(a_t \mid s_t)`} /></td>
       <td>不是</td>
       <td>直接选动作，但不模拟世界转移。</td>
@@ -76,7 +76,7 @@ z_{t+1}, r_t &\sim p_{\theta}(z_{t+1}, r_t \mid z_t, a_t) \\
       <td>预测文本序列，不一定有环境状态和动作条件。</td>
     </tr>
     <tr>
-      <td>纯 prompt-to-video 模型</td>
+      <td>纯提示词到视频模型</td>
       <td><MathInline tex={String.raw`p(x_{1:T} \mid prompt)`} /></td>
       <td>广义可以，狭义通常不是</td>
       <td>生成未来片段，但用户动作不一定进入转移方程。</td>
@@ -90,9 +90,9 @@ z_{t+1}, r_t &\sim p_{\theta}(z_{t+1}, r_t \mid z_t, a_t) \\
   </tbody>
 </table>
 
-所以，判断一个系统是否是这里讨论的世界模型，不要只问它能不能生成内容。更稳的检查是：它有没有状态？有没有动作条件？能不能滚动预测动作之后的变化？这个预测能不能服务于规划或策略学习？
+这个边界并不是为了排除 LLM、视频模型或奖励模型的价值，而是为了避免把“预测、评价、生成、控制”都混成同一个概念。狭义世界模型的核心对象始终是动作条件动力学。
 
-## V-M-C：图是静态的，过程是循环的
+## 一个经典样板：V-M-C
 
 Ha 与 Schmidhuber 的 World Models 把智能体拆成三块：
 
@@ -102,16 +102,16 @@ Ha 与 Schmidhuber 的 World Models 把智能体拆成三块：
 
 <figure>
   <img src="/assets/blog/world-models-cn/ha-schmidhuber-vmc.jpg" alt="Ha and Schmidhuber V M C world model architecture" />
-  <figcaption>图 2. 这张图把一个时间循环压成了静态图。更准确的读法是：M 的记忆给 C，C 的动作再反馈给 M。来源：Edmund Goodman, World Models slide deck。</figcaption>
+  <figcaption>图 2. V-M-C 架构把观测编码、世界记忆和动作控制拆开。读这张图时要带上时间维度：M 的记忆给 C，C 的动作再反馈给 M。来源：Edmund Goodman, World Models slide deck。</figcaption>
 </figure>
 
-容易误解的是 `M` 和 `C` 的顺序。它不是“先 M 决定动作，再 C 执行”，也不是同一时刻 `M` 和 `C` 互相依赖。展开一个时间步会清楚很多：
+这张图容易被读成“先 M 决定动作，再 C 执行”。更准确的理解是：当前动作由 `C` 产生，`M` 提供历史记忆，并在动作发生后更新下一步记忆。展开一个时间步会清楚很多：
 
 <MathBlock
   tex={String.raw`\begin{aligned}
 z_t &= V_{\phi}(x_t) \\
 a_t &= C_{\psi}(z_t, h_t) \\
-x_{t+1}, r_t &= \mathrm{Env}(x_t, a_t) \\
+x_{t+1}, r_t &\sim \mathrm{Env}(\cdot \mid x_t, a_t) \\
 h_{t+1}, \hat{z}_{t+1} &= M_{\theta}(z_t, a_t, h_t)
 \end{aligned}`}
 />
@@ -122,35 +122,35 @@ h_{t+1}, \hat{z}_{t+1} &= M_{\theta}(z_t, a_t, h_t)
 
 <MathBlock tex={String.raw`(z_t, a_t, h_t) \longrightarrow (h_{t+1}, \hat{z}_{t+1})`} />
 
-因此图里的循环应该按时间理解：
+因此，图里的循环应该按时间理解：
 
 <MathBlock tex={String.raw`h_t \xrightarrow{\text{给 } C} a_t \xrightarrow{\text{给 } M} h_{t+1}`} />
 
 一句话概括：**M 是记忆/世界预测器，C 是动作决策器。C 用 M 的记忆做动作，M 用 C 的动作更新世界状态。**
 
-真正的世界模型部分是 `V + M`；`C` 是利用世界模型行动的控制器。Ha 与 Schmidhuber 最有启发性的地方，就是让智能体在 `V + M` 生成的“梦境”中训练 `C`，再把学到的策略拿回真实环境测试。
+在这个架构里，真正的世界模型主要是 `V + M`；`C` 是利用世界模型行动的控制器。Ha 与 Schmidhuber 最有启发性的地方，是让智能体在 `V + M` 生成的“梦境”中训练 `C`，再把学到的策略拿回真实环境测试。
 
-## 和 RL、LLM、多模态模型的关系
+## 与 RL、LLM、多模态模型的关系
 
 强化学习本身不是世界模型。RL 问题通常可以写成：
 
 <MathBlock tex={String.raw`\max_{\pi} \; \mathbb{E}_{\pi}\left[\sum_{t=0}^{T} \gamma^t r_t\right]`} />
 
-如果一个 RL 方法只学习 policy 或 value：
+如果一个 RL 方法只学习策略或价值函数：
 
 <MathBlock tex={String.raw`\pi_{\psi}(a_t \mid s_t), \qquad Q_{\psi}(s_t, a_t)`} />
 
-它是 model-free RL，不需要显式模拟下一状态。世界模型对应的是另一个对象：
+它属于无模型强化学习（model-free RL），不需要显式模拟下一状态。世界模型对应的是另一个对象：
 
 <MathBlock tex={String.raw`\hat{P}_{\theta}(s_{t+1}, r_t \mid s_t, a_t)`} />
 
-有了这个模型，智能体可以在内部 rollout 多条未来轨迹，再用规划器或控制器选动作：
+有了这个模型，智能体可以在内部展开多条可能轨迹，再用规划器或控制器选动作：
 
 <MathBlock
   tex={String.raw`a_t = \arg\max_a \; \mathbb{E}_{\hat{P}_{\theta}}\left[\sum_{k=0}^{H} \gamma^k r_{t+k} \mid s_t, a\right]`}
 />
 
-LLM 和视觉多模态大模型也类似。纯文本 LLM 学的是：
+LLM 和视觉多模态大模型也需要分情况看。纯文本 LLM 学的是：
 
 <MathBlock tex={String.raw`p_{\theta}(w_{n+1} \mid w_{\le n})`} />
 
@@ -160,11 +160,11 @@ LLM 和视觉多模态大模型也类似。纯文本 LLM 学的是：
 
 也不算狭义世界模型。只有当它被接入动作条件，能持续预测“我做这个动作后观测如何变化”时，才进入机器人/RL 意义上的世界模型。
 
-## 历史脉络：四个阶段，不是四个盒子
+## 发展脉络
 
-Datawhale 把世界模型的发展讲成四个时代：理论奠基、Ha & Schmidhuber 的梦中学习、Dreamer 的潜在空间、视频即世界。这个分类适合做入门叙事，因为它抓住了每一阶段要解决的瓶颈；但它不是严格 taxonomy，因为这些阶段并不互斥。一个今天的系统可以同时使用 RSSM、Transformer、diffusion decoder 和 JEPA 式表征。
+Datawhale 把世界模型的发展讲成四个时代：理论奠基、Ha & Schmidhuber 的梦中学习、Dreamer 的潜在空间、视频即世界。这个分法适合入门，因为它抓住了每一阶段要解决的瓶颈；但它不是严格分类法，因为这些阶段并不互斥。一个今天的系统可以同时使用 RSSM、Transformer、diffusion decoder 和 JEPA 式表征。
 
-更稳的读法是：每个阶段都在回答一个不同问题。
+这四个阶段可以理解为一组逐步变化的问题意识：
 
 <table>
   <thead>
@@ -190,32 +190,31 @@ Datawhale 把世界模型的发展讲成四个时代：理论奠基、Ha & Schmi
     </tr>
     <tr>
       <td>Dreamer / 潜空间 RL</td>
-      <td>能不能不重建像素，直接在 latent space 里学习？</td>
+      <td>能不能在潜空间的想象轨迹中训练行为？</td>
       <td><MathInline tex={String.raw`p(z_{t+1}, r_t \mid z_t, a_t)`} /></td>
-      <td>对应狭义世界模型的主干：latent transition。</td>
+      <td>对应狭义世界模型的主干：潜在状态转移。</td>
     </tr>
     <tr>
       <td>视频 / 表征基础模型</td>
       <td>能不能从大规模视频中学到可迁移的世界表征？</td>
-      <td>JEPA、V-JEPA、Genie、视频 diffusion / transformer</td>
+      <td>JEPA、V-JEPA、Genie、视频扩散模型 / Transformer</td>
       <td>对应下面的交互式视频和潜空间表征路线。</td>
     </tr>
   </tbody>
 </table>
 
-如果要给一个更通用的定义，我会把世界模型拆成三件事：
+脱离具体年份看，世界模型通常包含三件事：把观测变成状态，学习状态如何随动作变化，再把这种预测交给生成、规划或策略学习使用。
 
 <MathBlock
   tex={String.raw`\begin{aligned}
 z_t &= E_{\phi}(o_{\le t}) \\
-z_{t+1}, r_t &\sim T_{\theta}(z_t, a_t) \\
-u_t &= U(z_t, z_{t+1}, r_t)
+(z_{t+1}, r_t) &\sim T_{\theta}(\cdot \mid z_t, a_t)
 \end{aligned}`}
 />
 
-其中 <MathInline tex={String.raw`E_{\phi}`} /> 负责把观测变成状态，<MathInline tex={String.raw`T_{\theta}`} /> 负责动作条件转移，<MathInline tex={String.raw`U`} /> 表示下游用途：重建、生成、规划、训练策略或评估风险。这样分类就不依赖年份，而是看模型到底学了什么、接受什么输入、被谁调用。
+其中 <MathInline tex={String.raw`E_{\phi}`} /> 负责表示学习，<MathInline tex={String.raw`T_{\theta}`} /> 负责动作条件转移。至于模型服务于重建、生成、规划、训练策略还是风险评估，是下游使用方式的差异。
 
-## 今天的三条工程路线
+## 当前的三条工程路线
 
 现代世界模型大致可以分成三条路线。它们都试图学习世界变化，但内部表示不同。
 
@@ -240,7 +239,7 @@ x_{t+1} &= D(z_{t+1})
   <figcaption>图 4. Genie-1 的核心组件：视频 tokenizer、latent action model 和 dynamics model。来源：CMU Generative AI Lecture 26，本地课件。</figcaption>
 </figure>
 
-它的体验像游戏引擎，但底层仍然主要是视频模型。优点是可以利用大量无动作标签视频；缺点是动作集合通常是封闭的 latent action，模型没有显式 mesh、点云或物理状态。
+它的体验像游戏引擎，但底层仍然主要是视频模型。优点是可以利用大量无动作标签视频；缺点是动作集合通常是封闭的潜动作（latent action），模型没有显式 mesh、点云或物理状态。
 
 第三类是潜空间世界表征，例如 V-JEPA 和 PAN。它们尽量不在像素上做长程预测，而是在 latent space 里预测，再按需要解码。
 
@@ -264,7 +263,7 @@ z_t &= h(o_t) \\
 
 ## 为什么现在重要
 
-NVIDIA 的 Glossary 把世界模型定义为理解真实世界动态、物理和空间性质的神经网络，并强调它们可以使用文本、图像、视频、声音和运动数据来预测接下来会发生什么。
+NVIDIA 的 Glossary 更偏工程和物理 AI（physical AI）语境：世界模型要理解真实世界的动态、物理和空间性质，并利用文本、图像、视频、声音、运动等数据预测接下来会发生什么。
 
 从工程流程看，世界基础模型通常包括四步：数据整理、tokenization、预训练、后训练与强化学习。对应到应用，核心价值也很直接：
 
@@ -272,15 +271,15 @@ NVIDIA 的 Glossary 把世界模型定义为理解真实世界动态、物理和
 2. 合成数据：长尾场景可以被可控生成，例如罕见交通冲突或危险工业动作。
 3. 规划：模型不只回答“我看到了什么”，还回答“如果我这样做，会发生什么”。
 
-但边界也要记住：视觉真实不等于物理真实；短期预测不等于长期规划；latent action 不等于可解释控制。
+同时要记住三个边界：视觉真实不等于物理真实；短期预测不等于长期规划；潜动作不等于可解释控制。
 
-## 一个实用定义
+## 判断标准
 
-如果只记一句话：
+如果只保留一句话：
 
 > 世界模型是一个可被智能体调用的内部模拟器：它把观测压成状态，根据动作预测状态如何变化，并把这种预测用于生成、训练、规划或控制。
 
-所以，最稳的判断标准不是“它生成得像不像”，而是：
+判断一个系统是否进入狭义世界模型的讨论，可以看四个问题：
 
 1. 是否有状态或 latent state？
 2. 是否显式接受动作？
