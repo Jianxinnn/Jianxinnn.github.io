@@ -502,6 +502,27 @@ main,
   text-transform: uppercase;
 }
 
+.view-count-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 16px;
+  line-height: 1;
+  text-transform: none;
+  vertical-align: -2px;
+}
+
+.view-count-badge img {
+  display: block;
+  width: auto;
+  height: 16px;
+  opacity: 0.62;
+  filter: grayscale(1);
+}
+
+.view-count-badge:hover img {
+  opacity: 0.82;
+}
+
 .text-link {
   margin-top: 22px;
   color: var(--accent);

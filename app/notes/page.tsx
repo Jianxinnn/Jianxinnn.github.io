@@ -18,7 +18,7 @@ export default function NotesPage() {
           research workflow fragments that do not need a full essay.
         </p>
       </header>
-      <EntryList entries={notes} showImages={false} />
+      <EntryList entries={notes} showImages={false} showViewCounts />
     </div>
   );
 }

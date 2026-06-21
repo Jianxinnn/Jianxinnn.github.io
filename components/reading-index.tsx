@@ -1,4 +1,6 @@
+import { ViewCountBadge } from "@/components/view-count-badge";
 import type { Reading } from "@/content/profile";
+import { normalizeViewCountKey } from "@/lib/view-count";
 
 type ReadingIndexProps = {
   readings: Reading[];
@@ -13,6 +15,11 @@ export function ReadingIndex({ readings }: ReadingIndexProps) {
           <div className="reading-main">
             <p className="reading-meta">
               {reading.type} · {reading.venue}
+              <span aria-hidden="true"> · </span>
+              <ViewCountBadge
+                scope="reading"
+                slug={normalizeViewCountKey(reading.title)}
+              />
             </p>
             <h3>{reading.title}</h3>
             <p>{reading.description}</p>
