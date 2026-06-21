@@ -9,7 +9,8 @@ export function SiteFooter() {
         <div className="footer-links">
           <Link href="/about">About</Link>
           <Link href="/blog">Blog</Link>
-          <Link href="/archive">Archive</Link>
+          <Link href="/notes">Notes</Link>
+          <Link href="/readings">Readings</Link>
           <a href={`mailto:${profile.email}`}>Contact</a>
         </div>
       </div>

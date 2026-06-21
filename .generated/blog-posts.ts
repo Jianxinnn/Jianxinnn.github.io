@@ -31,7 +31,7 @@ export const blogPosts: BlogPost[] = [
     "sourceType": "html",
     "href": "/blog/alphafold3-illustrated-cn/",
     "image": "/assets/visuals/notes-field.png",
-    "category": "Paper notes",
+    "category": "Technical explainers",
     "language": "zh",
     "source": {
       "status": "translation",
@@ -54,7 +54,7 @@ export const blogPosts: BlogPost[] = [
     "sourceType": "mdx",
     "href": "/blog/flow-matching-diffusion-models-cn/",
     "image": "/assets/visuals/notes-field.png",
-    "category": "Paper notes",
+    "category": "Technical explainers",
     "language": "bilingual",
     "source": {
       "status": "translation",

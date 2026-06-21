@@ -28,8 +28,8 @@ export default function BlogArchivePage() {
     <div className="blog-page">
       <header className="blog-index-header">
         <p className="eyebrow">Blog archive</p>
-        <h1>All notes by year and month.</h1>
-        <p>Static archive for scanning older notes as the site grows.</p>
+        <h1>All long-form posts by year and month.</h1>
+        <p>Static archive for scanning older essays, translations, and build logs as the site grows.</p>
         <Link className="back-link" href="/blog">
           Blog
         </Link>

@@ -77,6 +77,42 @@ export default function AboutPage() {
           ))}
         </div>
       </section>
+
+      <section className="about-block publication-block">
+        <div>
+          <h2>Publications</h2>
+          <p className="about-block-note">{profile.scholar.metrics}</p>
+          {scholarLink ? (
+            <a className="about-block-link" href={scholarLink.href}>
+              Google Scholar
+            </a>
+          ) : null}
+        </div>
+        <div className="publication-list">
+          {profile.publications.map((publication) => (
+            <article className="publication-item" key={`${publication.year}-${publication.title}`}>
+              <div className="publication-year">{publication.year}</div>
+              <div className="publication-main">
+                <h3>{publication.title}</h3>
+                <p className="publication-authors">{publication.authors}</p>
+                <p className="publication-venue">
+                  {publication.venue}
+                  {publication.citations ? ` · ${publication.citations}` : ""}
+                </p>
+                {publication.links.length ? (
+                  <div className="publication-links">
+                    {publication.links.map((link) => (
+                      <a href={link.href} key={link.label}>
+                        {link.label}
+                      </a>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

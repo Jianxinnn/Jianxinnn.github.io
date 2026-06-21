@@ -1,8 +1,8 @@
 export const blogCategories = [
   {
-    slug: "paper-notes",
-    label: "Paper notes",
-    description: "Paper readings, algorithm notes, and translated technical explainers."
+    slug: "technical-explainers",
+    label: "Technical explainers",
+    description: "Long-form translations, algorithm walkthroughs, and illustrated technical articles."
   },
   {
     slug: "research-systems",

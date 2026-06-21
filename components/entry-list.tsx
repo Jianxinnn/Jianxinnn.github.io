@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Entry } from "@/content/entries";
-import { formatDate } from "@/lib/content";
+import { formatDate, formatEntryType } from "@/lib/content";
 
 type EntryListProps = {
   entries: Entry[];
@@ -21,7 +21,7 @@ export function EntryList({ entries, showImages = true }: EntryListProps) {
             <div className="entry-meta">
               <time dateTime={entry.date}>{formatDate(entry.date)}</time>
               <span aria-hidden="true">·</span>
-              <span>{entry.type}</span>
+              <span>{formatEntryType(entry.type)}</span>
             </div>
           </div>
           {showImages && entry.image ? (

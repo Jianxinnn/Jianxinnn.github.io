@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { entries } from "@/content/entries";
-import { formatDate, groupEntriesByMonth } from "@/lib/content";
+import { formatDate, formatEntryType, groupEntriesByMonth } from "@/lib/content";
 
 export const metadata = {
   title: "Archive"
@@ -27,7 +27,7 @@ export default function ArchivePage() {
               <div className="entry-meta">
                 <time dateTime={entry.date}>{formatDate(entry.date)}</time>
                 <span aria-hidden="true">·</span>
-                <span>{entry.type}</span>
+                <span>{formatEntryType(entry.type)}</span>
               </div>
             </article>
           ))}

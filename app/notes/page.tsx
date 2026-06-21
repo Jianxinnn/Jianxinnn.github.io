@@ -13,7 +13,10 @@ export default function NotesPage() {
     <div className="notes-page">
       <header className="simple-page-header">
         <h1>Notes</h1>
-        <p>Short-form thinking, design observations, and research workflow notes.</p>
+        <p>
+          Short entries for formulas, small derivations, design observations, and
+          research workflow fragments that do not need a full essay.
+        </p>
       </header>
       <EntryList entries={notes} showImages={false} />
     </div>

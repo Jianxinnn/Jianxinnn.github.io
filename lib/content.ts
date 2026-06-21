@@ -14,6 +14,19 @@ export function formatDate(value: string) {
   }).format(new Date(value));
 }
 
+export function formatEntryType(type: Entry["type"]) {
+  const labels: Record<Entry["type"], string> = {
+    project: "Project",
+    note: "Note",
+    writing: "Blog",
+    reading: "Reading",
+    talk: "Talk",
+    publication: "Publication"
+  };
+
+  return labels[type];
+}
+
 export function monthLabel(value: string) {
   return new Intl.DateTimeFormat("en", {
     month: "long",

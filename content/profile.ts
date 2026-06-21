@@ -1,4 +1,4 @@
-export type Paper = {
+export type Reading = {
   year: string;
   type: string;
   venue: string;
@@ -11,6 +11,18 @@ export type Paper = {
   }>;
 };
 
+export type Publication = {
+  authors: string;
+  citations?: string;
+  links: Array<{
+    label: string;
+    href: string;
+  }>;
+  title: string;
+  venue: string;
+  year: string;
+};
+
 export const profile = {
   name: "Jianxin Tang",
   siteTitle: "Jianxin Tang",
@@ -20,8 +32,6 @@ export const profile = {
   location: "Shanghai",
   intro:
     "I build research-facing AI systems for scientific reading, biological data workflows, molecular visualization, and structured knowledge production.",
-  about:
-    "I work on practical AI-for-science systems and research tooling that help turn dense scientific material into usable software, figures, and decisions.",
   email: "jstangjianxin@163.com",
   assets: {
     logo: "/assets/brand/brand-mark.svg",
@@ -31,7 +41,7 @@ export const profile = {
     { label: "Home", href: "/" },
     { label: "Blog", href: "/blog" },
     { label: "Notes", href: "/notes" },
-    { label: "Papers", href: "/papers" },
+    { label: "Readings", href: "/readings" },
     { label: "About", href: "/about" }
   ],
   links: [
@@ -43,9 +53,9 @@ export const profile = {
   ],
   bio: [
     "I am interested in the tooling layer around scientific AI: literature workflows, biological data interfaces, molecular visualization, and agent systems that can operate inside real research projects.",
-    "This site is organized as a personal research index rather than a newsletter. It keeps projects, notes, papers, and profile context separate so each section can grow without forcing everything into one feed."
+    "This site is organized as a personal research index rather than a newsletter. It keeps long-form writing, short notes, paper readings, and profile context separate so each section can grow without forcing everything into one feed."
   ],
-  papers: [
+  readings: [
     {
       year: "2025",
       type: "Paper note",
@@ -76,7 +86,81 @@ export const profile = {
       tags: ["genome models", "biological sequences"],
       links: []
     }
-  ] satisfies Paper[],
+  ] satisfies Reading[],
+  scholar: {
+    affiliation: "East China Normal University",
+    interests: ["AI for protein design and engineering"],
+    metrics: "16 citations · h-index 2 · i10-index 1"
+  },
+  publications: [
+    {
+      year: "2026",
+      title:
+        "Artificial intelligence in oncology drug discovery: from target identification to therapeutic molecule generation",
+      authors: "J Tang, J Xu, W Zhang, D Gong, Q Huang, X Cheng, H Li",
+      venue: "Advanced Cancer Research 1 (2), 1-42",
+      links: [
+        {
+          label: "Scholar",
+          href: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=UYHlxe0AAAAJ&sortby=pubdate&citation_for_view=UYHlxe0AAAAJ:Y0pCki6q_DkC"
+        }
+      ]
+    },
+    {
+      year: "2026",
+      title:
+        "Transformer-based multidimensional feature fusion for accurate prediction of lipid nanoparticles transfection efficiency",
+      authors: "D Gong, X Xie, J Tang, S Li, H Li",
+      venue: "Briefings in Bioinformatics 27 (2), bbag092",
+      links: [
+        {
+          label: "Scholar",
+          href: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=UYHlxe0AAAAJ&sortby=pubdate&citation_for_view=UYHlxe0AAAAJ:zYLM7Y9cAGgC"
+        }
+      ]
+    },
+    {
+      year: "2026",
+      title:
+        "Artificial intelligence in biologic drug discovery: A review of methodological evolution and therapeutic applications",
+      authors: "J Tang, D Gong, H Li, S Li",
+      venue: "Acta Pharmaceutica Sinica B",
+      citations: "2 citations",
+      links: [
+        {
+          label: "Scholar",
+          href: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=UYHlxe0AAAAJ&sortby=pubdate&citation_for_view=UYHlxe0AAAAJ:qjMakFHDy7sC"
+        }
+      ]
+    },
+    {
+      year: "2025",
+      title: "Method development for potential drug target identification and drug discovery",
+      authors: "D Gong, J Tang, B Wang, S Xiang, Z Feng, S Li, H Li",
+      venue: "Scientia Sinica Chimica 55 (8), 2223-2242",
+      citations: "1 citation",
+      links: [
+        {
+          label: "Scholar",
+          href: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=UYHlxe0AAAAJ&sortby=pubdate&citation_for_view=UYHlxe0AAAAJ:Tyk-4Ss8FVUC"
+        }
+      ]
+    },
+    {
+      year: "2024",
+      title:
+        "EvoLlama: Enhancing LLMs' Understanding of Proteins via Multimodal Structure and Sequence Representations",
+      authors: "N Liu, C Sun, T Ji, J Tian, J Tang, Y Wu, M Lan",
+      venue: "arXiv preprint arXiv:2412.11618",
+      citations: "13 citations",
+      links: [
+        {
+          label: "Scholar",
+          href: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=UYHlxe0AAAAJ&sortby=pubdate&citation_for_view=UYHlxe0AAAAJ:IjCSPb-OGe4C"
+        }
+      ]
+    }
+  ] satisfies Publication[],
   experience: [
     {
       role: "AI-for-science tooling",

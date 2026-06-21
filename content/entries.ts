@@ -1,6 +1,7 @@
 import { blogPosts } from "@/content/blog/posts";
+import { profile } from "@/content/profile";
 
-export type EntryType = "project" | "note" | "writing" | "talk" | "publication";
+export type EntryType = "project" | "note" | "writing" | "reading" | "talk" | "publication";
 
 export type Entry = {
   slug: string;
@@ -14,6 +15,13 @@ export type Entry = {
   pinned?: boolean;
 };
 
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 const blogEntries: Entry[] = blogPosts.map((post) => ({
   slug: post.slug,
   title: post.title,
@@ -24,6 +32,16 @@ const blogEntries: Entry[] = blogPosts.map((post) => ({
   image: post.image,
   href: post.href,
   pinned: post.featured
+}));
+
+const readingEntries: Entry[] = profile.readings.map((reading) => ({
+  slug: `reading-${slugify(reading.title)}`,
+  title: reading.title,
+  summary: reading.description,
+  date: `${reading.year}-01-01`,
+  type: "reading",
+  collaborators: reading.tags.join(" / "),
+  href: "/readings"
 }));
 
 const standaloneEntries: Entry[] = [
@@ -66,4 +84,4 @@ const standaloneEntries: Entry[] = [
   }
 ];
 
-export const entries: Entry[] = [...blogEntries, ...standaloneEntries];
+export const entries: Entry[] = [...blogEntries, ...readingEntries, ...standaloneEntries];

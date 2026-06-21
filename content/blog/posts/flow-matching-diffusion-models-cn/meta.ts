@@ -7,7 +7,7 @@ const meta = {
   readingTime: "84 pages",
   sourceType: "mdx",
   image: "/assets/visuals/notes-field.png",
-  category: "Paper notes",
+  category: "Technical explainers",
   language: "bilingual",
   source: {
     status: "translation",

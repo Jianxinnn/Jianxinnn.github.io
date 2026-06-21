@@ -28,10 +28,10 @@ export default function BlogPage() {
     <div className="blog-page blog-library-page">
       <header className="blog-index-header">
         <p className="eyebrow">Blog</p>
-        <h1>Research notes, illustrated explainers, and build logs.</h1>
+        <h1>Long-form writing, translations, and build logs.</h1>
         <p>
-          A compact log of AI-for-science systems, paper readings, visual
-          explanations, and research workflow experiments.
+          Longer essays and structured writeups for illustrated explainers,
+          translated technical articles, and project-level research workflows.
         </p>
       </header>
       <BlogSearch />
