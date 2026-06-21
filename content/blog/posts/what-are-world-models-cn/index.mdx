@@ -160,7 +160,62 @@ LLM 和视觉多模态大模型也类似。纯文本 LLM 学的是：
 
 也不算狭义世界模型。只有当它被接入动作条件，能持续预测“我做这个动作后观测如何变化”时，才进入机器人/RL 意义上的世界模型。
 
-## 今天的三条路线
+## 历史脉络：四个阶段，不是四个盒子
+
+Datawhale 把世界模型的发展讲成四个时代：理论奠基、Ha & Schmidhuber 的梦中学习、Dreamer 的潜在空间、视频即世界。这个分类适合做入门叙事，因为它抓住了每一阶段要解决的瓶颈；但它不是严格 taxonomy，因为这些阶段并不互斥。一个今天的系统可以同时使用 RSSM、Transformer、diffusion decoder 和 JEPA 式表征。
+
+更稳的读法是：每个阶段都在回答一个不同问题。
+
+<table>
+  <thead>
+    <tr>
+      <th>阶段</th>
+      <th>核心问题</th>
+      <th>代表形式</th>
+      <th>本文中的位置</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>理论奠基</td>
+      <td>如何从历史中预测隐藏状态？</td>
+      <td>Kalman filter、HMM、RNN、状态空间模型</td>
+      <td>提供 <MathInline tex={String.raw`p(s_{t+1} \mid s_t, a_t)`} /> 这种动力学视角。</td>
+    </tr>
+    <tr>
+      <td>V-M-C / 梦中学习</td>
+      <td>能不能在学到的环境里训练策略？</td>
+      <td><MathInline tex={String.raw`V`} /> 编码，<MathInline tex={String.raw`M`} /> 预测，<MathInline tex={String.raw`C`} /> 控制</td>
+      <td>对应上面的 V-M-C 时间展开。</td>
+    </tr>
+    <tr>
+      <td>Dreamer / 潜空间 RL</td>
+      <td>能不能不重建像素，直接在 latent space 里学习？</td>
+      <td><MathInline tex={String.raw`p(z_{t+1}, r_t \mid z_t, a_t)`} /></td>
+      <td>对应狭义世界模型的主干：latent transition。</td>
+    </tr>
+    <tr>
+      <td>视频 / 表征基础模型</td>
+      <td>能不能从大规模视频中学到可迁移的世界表征？</td>
+      <td>JEPA、V-JEPA、Genie、视频 diffusion / transformer</td>
+      <td>对应下面的交互式视频和潜空间表征路线。</td>
+    </tr>
+  </tbody>
+</table>
+
+如果要给一个更通用的定义，我会把世界模型拆成三件事：
+
+<MathBlock
+  tex={String.raw`\begin{aligned}
+z_t &= E_{\phi}(o_{\le t}) \\
+z_{t+1}, r_t &\sim T_{\theta}(z_t, a_t) \\
+u_t &= U(z_t, z_{t+1}, r_t)
+\end{aligned}`}
+/>
+
+其中 <MathInline tex={String.raw`E_{\phi}`} /> 负责把观测变成状态，<MathInline tex={String.raw`T_{\theta}`} /> 负责动作条件转移，<MathInline tex={String.raw`U`} /> 表示下游用途：重建、生成、规划、训练策略或评估风险。这样分类就不依赖年份，而是看模型到底学了什么、接受什么输入、被谁调用。
+
+## 今天的三条工程路线
 
 现代世界模型大致可以分成三条路线。它们都试图学习世界变化，但内部表示不同。
 
@@ -237,6 +292,7 @@ NVIDIA 的 Glossary 把世界模型定义为理解真实世界动态、物理和
 ## 参考
 
 - Datawhale: [思想基石：Craik、预测编码与内模原理](https://datawhalechina.github.io/learn-world-model/zh/lectures/lecture-01-internal-simulation/01-foundations)
+- Datawhale: [四个时代的故事](https://datawhalechina.github.io/learn-world-model/zh/lectures/lecture-01-internal-simulation/03-four-eras)
 - NVIDIA Glossary: [What Is a World Model?](https://www.nvidia.com/en-us/glossary/world-models/)
 - David Ha and Jürgen Schmidhuber: [World Models](https://arxiv.org/abs/1803.10122)
 - Edmund Goodman: World Models, slide deck, Nov. 20, 2024.
