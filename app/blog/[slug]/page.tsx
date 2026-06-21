@@ -47,8 +47,18 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
 
+  const tags = post.tags ?? [];
+  const articleClassName = [
+    "blog-article-page",
+    `blog-article-${post.slug}`,
+    post.language === "bilingual" ? "is-bilingual-article" : undefined,
+    tags.includes("illustrated note") ? "is-illustrated-note" : undefined
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <article className="blog-article-page">
+    <article className={articleClassName}>
       <header className="blog-article-header">
         <Link className="back-link" href="/blog">
           Blog

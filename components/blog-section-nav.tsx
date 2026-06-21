@@ -1,6 +1,5 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 type Heading = {
@@ -95,22 +94,39 @@ export function BlogSectionNav({ targetSelector = ".mdx-body" }: BlogSectionNavP
       .map((heading) => document.getElementById(heading.id))
       .filter(Boolean) as HTMLElement[];
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+    let frame = 0;
 
-        if (visible?.target.id) {
-          setActiveId(visible.target.id);
+    const syncActiveHeading = () => {
+      const anchorLine = window.innerHeight * 0.28;
+      let nextActiveId = elements[0]?.id;
+
+      for (const element of elements) {
+        if (element.getBoundingClientRect().top <= anchorLine) {
+          nextActiveId = element.id;
+        } else {
+          break;
         }
-      },
-      { rootMargin: "-20% 0px -68% 0px", threshold: [0, 1] }
-    );
+      }
 
-    elements.forEach((element) => observer.observe(element));
+      if (nextActiveId) {
+        setActiveId(nextActiveId);
+      }
+    };
 
-    return () => observer.disconnect();
+    const scheduleSync = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(syncActiveHeading);
+    };
+
+    syncActiveHeading();
+    window.addEventListener("scroll", scheduleSync, { passive: true });
+    window.addEventListener("resize", scheduleSync);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", scheduleSync);
+      window.removeEventListener("resize", scheduleSync);
+    };
   }, [headings]);
 
   useEffect(() => {
@@ -147,33 +163,26 @@ export function BlogSectionNav({ targetSelector = ".mdx-body" }: BlogSectionNavP
     <aside
       className={`section-nav-shell${open ? " is-open" : ""}`}
       aria-label="Article sections"
+      onFocus={() => setOpen(true)}
+      onMouseEnter={() => setOpen(true)}
       ref={shellRef}
     >
-      <button
-        aria-controls="article-section-nav"
-        aria-expanded={open}
-        aria-label={open ? "Close article sections" : "Open article sections"}
-        className="section-nav-toggle"
-        onClick={() => setOpen((value) => !value)}
-        type="button"
-      >
-        {open ? <X size={17} strokeWidth={2} /> : <Menu size={17} strokeWidth={2} />}
-        <span>目录</span>
-      </button>
       <nav className="section-nav-panel" id="article-section-nav">
         <div className="section-nav-heading">
-          <p>Contents</p>
+          <p>目录</p>
           <span>{headings.length}</span>
         </div>
         {headings.map((heading) => (
           <a
+            aria-label={heading.text}
             aria-current={activeId === heading.id ? "location" : undefined}
             className={`section-nav-depth-${Math.min(heading.depth, 3)}`}
             href={`#${heading.id}`}
             key={heading.id}
             onClick={() => setOpen(false)}
           >
-            {heading.text}
+            <span aria-hidden="true" className="section-nav-marker" />
+            <span className="section-nav-label">{heading.text}</span>
           </a>
         ))}
       </nav>
