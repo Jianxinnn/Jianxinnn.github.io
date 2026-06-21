@@ -32,6 +32,10 @@ export const profile = {
   intro:
     "I build research-facing AI systems for scientific reading, biological data workflows, molecular visualization, and structured knowledge production.",
   email: "jstangjianxin@163.com",
+  newsletter: {
+    buttondownUsername: "ecnu_enzyme",
+    siteUrl: "https://jianxinnn.github.io"
+  },
   assets: {
     logo: "/assets/brand/brand-mark.svg",
     avatar: "/assets/brand/jianxin-tang.jpeg"

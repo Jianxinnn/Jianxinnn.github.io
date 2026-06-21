@@ -9,6 +9,7 @@
     "content:generate": "tsx scripts/generate-blog-index.ts",
     "content:validate": "tsx scripts/validate-content.ts",
     "content:audit-lecture-notes": "python3 scripts/audit-lecture-notes.py",
+    "notify:blog": "tsx scripts/send-blog-update.ts",
     "prebuild": "npm run content:generate && npm run content:validate",
     "build": "next build && pagefind --site out --output-subdir pagefind",
     "start": "next start",

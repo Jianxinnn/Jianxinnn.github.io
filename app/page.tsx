@@ -12,6 +12,7 @@ export default function HomePage() {
   const allEntries = sortEntries(entries);
   const currentWork = allEntries.slice(0, 2);
   const history = allEntries.slice(2);
+  const newsletterAction = `https://buttondown.com/api/emails/embed-subscribe/${profile.newsletter.buttondownUsername}`;
 
   return (
     <div className="page-shell">
@@ -112,8 +113,15 @@ export default function HomePage() {
           </div>
           <h2>Mail</h2>
           <p>Occasional updates on research systems, notes, readings, and project logs.</p>
-          <form action={`mailto:${profile.email}`} className="mail-form">
-            <input aria-label="Email address" name="email" placeholder="Email address" type="email" />
+          <form action={newsletterAction} className="mail-form" method="post">
+            <input
+              aria-label="Email address"
+              name="email"
+              placeholder="Email address"
+              required
+              type="email"
+            />
+            <input name="embed" type="hidden" value="1" />
             <button type="submit">Subscribe</button>
           </form>
         </aside>

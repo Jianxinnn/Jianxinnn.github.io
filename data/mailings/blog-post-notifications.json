@@ -1,0 +1,23 @@
+{
+  "alphafold3-illustrated-cn": {
+    "contentSha256": "seeded-before-auto-notify",
+    "notifiedAt": "2026-06-21T00:00:00.000Z",
+    "postTitle": "图解 AlphaFold",
+    "provider": "manual",
+    "status": "seeded"
+  },
+  "flow-matching-diffusion-models-cn": {
+    "contentSha256": "seeded-before-auto-notify",
+    "notifiedAt": "2026-06-21T00:00:00.000Z",
+    "postTitle": "流匹配与扩散模型导论",
+    "provider": "manual",
+    "status": "seeded"
+  },
+  "what-are-world-models-cn": {
+    "contentSha256": "seeded-before-auto-notify",
+    "notifiedAt": "2026-06-21T00:00:00.000Z",
+    "postTitle": "什么是世界模型",
+    "provider": "manual",
+    "status": "seeded"
+  }
+}
