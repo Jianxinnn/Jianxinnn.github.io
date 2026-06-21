@@ -1020,11 +1020,11 @@ main,
 .section-nav-panel {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  width: 34px;
-  max-height: min(74vh, 680px);
+  gap: 3px;
+  width: 28px;
+  max-height: min(58vh, 480px);
   overflow: hidden;
-  padding: 10px 0;
+  padding: 4px 0;
   border: 1px solid transparent;
   border-radius: 10px;
   background: transparent;
@@ -1039,7 +1039,7 @@ main,
 .section-nav-shell:focus-within .section-nav-panel {
   width: min(286px, calc(100vw - 36px));
   overflow: auto;
-  padding: 12px;
+  padding: 8px 10px;
   border-color: var(--line);
   background: color-mix(in srgb, var(--field) 96%, transparent);
   box-shadow: 0 18px 44px rgba(0, 0, 49, 0.12);
@@ -1062,7 +1062,7 @@ main,
 .section-nav-shell:hover .section-nav-heading,
 .section-nav-shell:focus-within .section-nav-heading {
   max-height: 28px;
-  padding: 0 4px 6px;
+  padding: 0 4px 3px;
   opacity: 1;
 }
 
@@ -1078,11 +1078,11 @@ main,
 
 .section-nav-panel a {
   display: grid;
-  grid-template-columns: 30px minmax(0, 1fr);
+  grid-template-columns: 24px minmax(0, 1fr);
   align-items: center;
-  gap: 9px;
-  min-height: 14px;
-  padding: 2px 0;
+  gap: 7px;
+  min-height: 8px;
+  padding: 1px 0;
   border-radius: 7px;
   color: var(--muted);
   font-family: var(--article-font);
@@ -1095,13 +1095,13 @@ main,
 .section-nav-shell.is-open .section-nav-panel a,
 .section-nav-shell:hover .section-nav-panel a,
 .section-nav-shell:focus-within .section-nav-panel a {
-  padding: 5px 7px 5px 0;
+  padding: 3px 6px 3px 0;
 }
 
 .section-nav-marker {
   display: block;
   justify-self: start;
-  width: 22px;
+  width: 16px;
   height: 2px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--muted) 30%, transparent);
@@ -1110,12 +1110,12 @@ main,
 
 .section-nav-depth-1 .section-nav-marker,
 .section-nav-depth-2 .section-nav-marker {
-  width: 26px;
+  width: 20px;
 }
 
 .section-nav-depth-3 .section-nav-marker {
-  width: 14px;
-  margin-left: 8px;
+  width: 10px;
+  margin-left: 6px;
 }
 
 .section-nav-label {
@@ -1143,8 +1143,8 @@ main,
 
 .section-nav-panel a:hover .section-nav-marker,
 .section-nav-panel a[aria-current="location"] .section-nav-marker {
-  width: 30px;
-  height: 3px;
+  width: 22px;
+  height: 2px;
   background: var(--article-link);
 }
 
@@ -1318,6 +1318,18 @@ main,
   overflow-x: auto;
 }
 
+.mdx-body mjx-container[display="true"] {
+  display: block;
+  margin: 14px auto 16px !important;
+  padding: 2px 0;
+  overflow-y: hidden;
+  line-height: 1.12;
+}
+
+.mdx-body mjx-container[jax="CHTML"][display="true"] mjx-math {
+  white-space: nowrap;
+}
+
 .mdx-body pre {
   margin: 30px auto;
   padding: 16px;
@@ -1471,7 +1483,7 @@ main,
   background: color-mix(in srgb, var(--article-link) 6%, var(--article-card));
 }
 
-.lecture-note-article .lecture-callout :is(h2, h3, h4, p):first-child {
+.lecture-note-article .lecture-callout-title :is(h2, h3, h4, p) {
   margin: 0 0 10px;
   color: var(--article-link);
   font-family: var(--article-font);
@@ -1481,11 +1493,34 @@ main,
   text-transform: uppercase;
 }
 
-.lecture-note-article .lecture-callout p:last-child {
-  margin-bottom: 0;
+.lecture-note-article .lecture-callout-body p {
+  margin: 0;
   color: var(--text);
   font-size: 18px;
   font-weight: 400;
+  line-height: 2.05;
+}
+
+.lecture-note-article .lecture-callout-body p + p {
+  margin-top: 12px;
+}
+
+.lecture-note-article .lecture-callout mjx-container:not([display="true"]) {
+  display: inline-block;
+  margin: 0 0.04em;
+  vertical-align: -0.12em;
+}
+
+.lecture-note-article .lecture-display-math {
+  width: min(1080px, 100%) !important;
+  margin-top: 12px;
+  margin-bottom: 18px;
+}
+
+.lecture-note-article .lecture-display-math p {
+  margin: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .lecture-note-article .lecture-caption {
@@ -1505,6 +1540,10 @@ main,
 .lecture-figure-strip {
   width: min(1080px, 100%);
   margin: 34px auto 26px;
+}
+
+.lecture-figure-strip.is-artifact {
+  display: none;
 }
 
 .lecture-figure-grid {
@@ -2204,7 +2243,7 @@ main,
 
   .section-nav-panel {
     width: 28px;
-    max-height: 62vh;
+    max-height: 52vh;
   }
 
   .section-nav-shell.is-open .section-nav-panel,

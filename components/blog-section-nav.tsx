@@ -24,6 +24,7 @@ export function BlogSectionNav({ targetSelector = ".mdx-body" }: BlogSectionNavP
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [activeId, setActiveId] = useState<string>();
   const [open, setOpen] = useState(false);
+  const panelRef = useRef<HTMLElement>(null);
   const shellRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -155,6 +156,18 @@ export function BlogSectionNav({ targetSelector = ".mdx-body" }: BlogSectionNavP
     };
   }, [open]);
 
+  useEffect(() => {
+    const panel = panelRef.current;
+    const activeLink = panel?.querySelector<HTMLElement>('a[aria-current="location"]');
+
+    if (!panel || !activeLink) {
+      return;
+    }
+
+    panel.scrollTop =
+      activeLink.offsetTop - panel.clientHeight / 2 + activeLink.clientHeight / 2;
+  }, [activeId, headings.length]);
+
   if (!headings.length) {
     return null;
   }
@@ -167,7 +180,7 @@ export function BlogSectionNav({ targetSelector = ".mdx-body" }: BlogSectionNavP
       onMouseEnter={() => setOpen(true)}
       ref={shellRef}
     >
-      <nav className="section-nav-panel" id="article-section-nav">
+      <nav className="section-nav-panel" id="article-section-nav" ref={panelRef}>
         <div className="section-nav-heading">
           <p>目录</p>
           <span>{headings.length}</span>

@@ -30,6 +30,8 @@ type MathJaxWindow = Window & {
   };
 };
 
+const MIN_ARTICLE_IMAGE_SIZE = 80;
+
 function ensureMathJax() {
   const win = window as MathJaxWindow;
 
@@ -86,6 +88,10 @@ function isImageOnlySegment(segment: BilingualSegment) {
   const values = [segment.zh, segment.en];
 
   return values.every((value) => /<img\b/i.test(value) && stripHtml(value) === "");
+}
+
+function hasDisplayMath(segment: BilingualSegment) {
+  return /\$\$|\\\[/.test(segment.zh) || /\$\$|\\\[/.test(segment.en);
 }
 
 function getCalloutType(segment: BilingualSegment): CalloutType | undefined {
@@ -166,6 +172,64 @@ function renderSegmentStack(segments: BilingualSegment[], mode: BilingualMode, k
   );
 }
 
+function renderCalloutStack(segments: BilingualSegment[], mode: BilingualMode, keyPrefix: string) {
+  const [titleSegment, ...bodySegments] = segments;
+
+  if (mode === "both") {
+    return (
+      <div className="bilingual-pair">
+        <div>
+          <div className="lecture-callout-title">
+            {renderSegment(titleSegment, titleSegment.zh, `${keyPrefix}-title-zh`)}
+          </div>
+          {bodySegments.length ? (
+            <div className="lecture-callout-body">
+              {bodySegments.map((segment, index) =>
+                renderSegment(segment, segment.zh, `${keyPrefix}-body-${index}-zh`)
+              )}
+            </div>
+          ) : null}
+        </div>
+        <div>
+          <div className="lecture-callout-title">
+            {renderSegment(titleSegment, titleSegment.en, `${keyPrefix}-title-en`)}
+          </div>
+          {bodySegments.length ? (
+            <div className="lecture-callout-body">
+              {bodySegments.map((segment, index) =>
+                renderSegment(segment, segment.en, `${keyPrefix}-body-${index}-en`)
+              )}
+            </div>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="lecture-callout-title">
+        {renderSegment(
+          titleSegment,
+          mode === "zh" ? titleSegment.zh : titleSegment.en,
+          `${keyPrefix}-title-${mode}`
+        )}
+      </div>
+      {bodySegments.length ? (
+        <div className="lecture-callout-body">
+          {bodySegments.map((segment, index) =>
+            renderSegment(
+              segment,
+              mode === "zh" ? segment.zh : segment.en,
+              `${keyPrefix}-body-${index}-${mode}`
+            )
+          )}
+        </div>
+      ) : null}
+    </>
+  );
+}
+
 function renderImageGroup(segments: BilingualSegment[], mode: BilingualMode) {
   const sourceMode = mode === "en" ? "en" : "zh";
 
@@ -203,6 +267,37 @@ export function BilingualArticle({ className, segments }: BilingualArticleProps)
     return () => {
       cancelled = true;
     };
+  }, [mode, segments]);
+
+  useEffect(() => {
+    const root = articleRef.current;
+
+    if (!root) {
+      return;
+    }
+
+    const hideTinyImage = (image: HTMLImageElement) => {
+      if (
+        image.complete &&
+        image.naturalWidth > 0 &&
+        image.naturalWidth < MIN_ARTICLE_IMAGE_SIZE &&
+        image.naturalHeight < MIN_ARTICLE_IMAGE_SIZE
+      ) {
+        image.closest(".lecture-figure-strip")?.classList.add("is-artifact");
+      }
+    };
+
+    const images = Array.from(root.querySelectorAll<HTMLImageElement>(".lecture-figure-strip img"));
+    const cleanups = images.map((image) => {
+      hideTinyImage(image);
+      const onLoad = () => hideTinyImage(image);
+
+      image.addEventListener("load", onLoad);
+
+      return () => image.removeEventListener("load", onLoad);
+    });
+
+    return () => cleanups.forEach((cleanup) => cleanup());
   }, [mode, segments]);
 
   return (
@@ -278,7 +373,7 @@ export function BilingualArticle({ className, segments }: BilingualArticleProps)
                 className={`bilingual-segment lecture-callout lecture-callout-${calloutType}`}
                 key={segment.id ?? index}
               >
-                {renderSegmentStack(calloutSegments, mode, `callout-${index}`)}
+                {renderCalloutStack(calloutSegments, mode, `callout-${index}`)}
               </section>
             );
 
@@ -291,7 +386,13 @@ export function BilingualArticle({ className, segments }: BilingualArticleProps)
 
           nodes.push(
             <section
-              className={`bilingual-segment${isFigureCaption(segment) ? " lecture-caption" : ""}`}
+              className={[
+                "bilingual-segment",
+                isFigureCaption(segment) ? "lecture-caption" : "",
+                hasDisplayMath(segment) ? "lecture-display-math" : ""
+              ]
+                .filter(Boolean)
+                .join(" ")}
               key={segment.id ?? index}
             >
               {renderSegmentStack([segment], mode, `segment-${index}`)}
