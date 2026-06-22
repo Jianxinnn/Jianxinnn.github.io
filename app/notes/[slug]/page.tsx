@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ViewCountBadge } from "@/components/view-count-badge";
-import { blogPostContent } from "@/content/blog/content";
-import { getBlogPost } from "@/content/blog/posts";
-import { entries } from "@/content/entries";
+import { getNote, notes } from "@/content/notes/notes";
 import { formatDate } from "@/lib/content";
 
 type NotePageProps = {
@@ -11,8 +9,6 @@ type NotePageProps = {
     slug: string;
   }>;
 };
-
-const notes = entries.filter((entry) => entry.type === "note");
 
 export const dynamicParams = false;
 
@@ -24,7 +20,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: NotePageProps) {
   const { slug } = await params;
-  const note = notes.find((entry) => entry.slug === slug);
+  const note = getNote(slug);
 
   if (!note) {
     return {
@@ -40,11 +36,10 @@ export async function generateMetadata({ params }: NotePageProps) {
 
 export default async function NotePage({ params }: NotePageProps) {
   const { slug } = await params;
-  const note = notes.find((entry) => entry.slug === slug);
-  const post = getBlogPost(slug);
-  const Content = post ? blogPostContent[post.slug] : undefined;
+  const note = getNote(slug);
+  const Content = note?.Content;
 
-  if (!note || !post || post.sourceType !== "mdx" || !Content) {
+  if (!note || !Content) {
     notFound();
   }
 

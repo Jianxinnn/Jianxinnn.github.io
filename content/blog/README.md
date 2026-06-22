@@ -27,7 +27,6 @@ const meta = {
   summary: "One sentence summary.",
   date: "2026-06-21",
   sourceType: "mdx",
-  image: "/assets/visuals/profile-field.png",
   category: "Build logs",
   language: "en",
   source: {
@@ -50,7 +49,7 @@ npm run blog:new -- --title="My Post" --slug="my-post"
 For a translated or reposted MDX article:
 
 ```bash
-npm run blog:new -- --title="My Translation" --slug="my-translation" --language="zh" --category="Paper notes" --source-status="translation"
+npm run blog:new -- --title="My Translation" --slug="my-translation" --language="zh" --category="Technical explainers" --source-status="translation"
 ```
 
 Then replace `originalTitle`, `originalUrl`, `summary`, and the article body.
@@ -81,7 +80,7 @@ const meta = {
   readingTime: "8 min read",
   sourceType: "external",
   href: "https://example.com/post",
-  category: "Paper notes",
+  category: "Technical explainers",
   language: "en",
   source: {
     status: "repost",
@@ -118,8 +117,10 @@ Allowed `status` values:
 Allowed categories live in `content/blog/categories.ts`. Allowed tags live in
 `content/blog/tags.ts`. Add a value there before using it in `meta.ts`.
 
-`image` can be either a local asset such as `/assets/visuals/profile-field.png`
-or an external HTTPS image URL. Local assets should live under `public/assets/`.
+If `image` is omitted, the generator uses the default blog image from
+`content/blog/config.ts`. A custom image can be either a local asset such as
+`/assets/visuals/profile-field.png` or an external HTTPS image URL. Local assets
+should live under `public/assets/`.
 
 ## Scaling Rules
 

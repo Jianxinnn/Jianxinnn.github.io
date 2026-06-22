@@ -5,6 +5,7 @@ import { profile } from "@/content/profile";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(profile.newsletter.siteUrl),
   title: {
     default: `${profile.name} | Personal Profile`,
     template: `%s | ${profile.name}`

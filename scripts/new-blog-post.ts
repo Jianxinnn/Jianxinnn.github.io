@@ -54,7 +54,7 @@ async function main() {
   await fs.mkdir(postDir, { recursive: false });
   await fs.writeFile(
     path.join(postDir, "meta.ts"),
-    `import type { BlogPostMeta } from "../../types";\n\nconst meta = {\n  title: ${JSON.stringify(title)},\n  summary: "Replace with a one-sentence summary.",\n  date: "${today()}",\n  sourceType: "mdx",\n  image: "/assets/visuals/profile-field.png",\n  category: ${JSON.stringify(category)},\n  language: ${JSON.stringify(language)},\n${source}\n} satisfies BlogPostMeta;\n\nexport default meta;\n`,
+    `import type { BlogPostMeta } from "../../types";\n\nconst meta = {\n  title: ${JSON.stringify(title)},\n  summary: "Replace with a one-sentence summary.",\n  date: "${today()}",\n  sourceType: "mdx",\n  category: ${JSON.stringify(category)},\n  language: ${JSON.stringify(language)},\n${source}\n} satisfies BlogPostMeta;\n\nexport default meta;\n`,
     "utf8"
   );
   await fs.writeFile(

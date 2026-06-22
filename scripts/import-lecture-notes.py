@@ -385,8 +385,7 @@ def write_generated_files(segments: list[dict[str, str]]) -> None:
         '  date: "2026-06-21",\n'
         '  readingTime: "84 pages",\n'
         '  sourceType: "mdx",\n'
-        '  image: "/assets/visuals/profile-field.png",\n'
-        '  category: "Paper notes",\n'
+        '  category: "Technical explainers",\n'
         '  language: "bilingual",\n'
         "  source: {\n"
         '    status: "translation",\n'

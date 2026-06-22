@@ -34,7 +34,7 @@ export const profile = {
   email: "jstangjianxin@163.com",
   newsletter: {
     buttondownUsername: "ecnu_enzyme",
-    siteUrl: "https://jianxinnn.github.io"
+    siteUrl: "https://jxtang.tech"
   },
   assets: {
     logo: "/assets/brand/brand-mark.svg",

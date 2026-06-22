@@ -3,27 +3,6 @@ import type { BlogPost } from "@/content/blog/types";
 
 export const blogPosts: BlogPost[] = [
   {
-    "slug": "adaworld-latent-actions",
-    "title": "AdaWorld: 把 action 写进 world model 预训练",
-    "summary": "一则短 note：AdaWorld 如何从无标注视频中抽取 latent action，并把世界模型适配问题改写成动作接口对齐问题。",
-    "date": "2026-06-21",
-    "readingTime": "2 min read",
-    "sourceType": "mdx",
-    "href": "/blog/adaworld-latent-actions/",
-    "image": "/assets/blog/adaworld-latent-actions/fig1-framework.jpg",
-    "category": "Technical explainers",
-    "language": "zh",
-    "source": {
-      "status": "original",
-      "note": "Reading note on arXiv:2503.18938."
-    },
-    "tags": [
-      "world models",
-      "reinforcement learning"
-    ],
-    "listed": false
-  },
-  {
     "slug": "alphafold3-illustrated-cn",
     "title": "图解 AlphaFold",
     "summary": "一篇 AlphaFold3 架构的中文可视化导览，梳理输入准备、表征学习、结构预测与置信度评估等模块。",

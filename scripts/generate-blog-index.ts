@@ -1,6 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { DEFAULT_BLOG_IMAGE } from "../content/blog/config";
 import type { BlogPost, BlogPostMeta } from "../content/blog/types";
 
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
@@ -75,7 +76,7 @@ async function normalizePost(slug: string): Promise<BlogPost> {
     readingTime: readingTime ?? "External",
     sourceType: meta.sourceType,
     href,
-    ...(meta.image ? { image: meta.image } : {}),
+    image: meta.image ?? DEFAULT_BLOG_IMAGE,
     ...(meta.badge ? { badge: meta.badge } : {}),
     ...(meta.category ? { category: meta.category } : {}),
     ...(meta.language ? { language: meta.language } : {}),

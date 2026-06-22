@@ -1,5 +1,7 @@
 import type { BlogSourceStatus } from "@/content/blog/types";
 
+export const DEFAULT_BLOG_IMAGE = "/assets/visuals/profile-field.png";
+
 export const blogConfig = {
   pageSize: 8,
   featuredLimit: 2,

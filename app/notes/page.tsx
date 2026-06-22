@@ -1,5 +1,5 @@
 import { EntryList } from "@/components/entry-list";
-import { entries } from "@/content/entries";
+import { notes } from "@/content/notes/notes";
 import { sortEntries } from "@/lib/content";
 
 export const metadata = {
@@ -7,7 +7,19 @@ export const metadata = {
 };
 
 export default function NotesPage() {
-  const notes = sortEntries(entries.filter((entry) => entry.type === "note"));
+  const noteEntries = sortEntries(
+    notes.map((note) => ({
+      slug: note.slug,
+      title: note.title,
+      summary: note.summary,
+      date: note.date,
+      type: "note" as const,
+      collaborators: note.tags?.join(" / ") ?? note.readingTime,
+      image: note.image,
+      href: `/notes/${note.slug}/`,
+      updated: note.updated
+    }))
+  );
 
   return (
     <div className="notes-page">
@@ -18,7 +30,7 @@ export default function NotesPage() {
           research workflow fragments that do not need a full essay.
         </p>
       </header>
-      <EntryList entries={notes} showImages={false} showViewCounts />
+      <EntryList entries={noteEntries} showImages={false} showViewCounts />
     </div>
   );
 }

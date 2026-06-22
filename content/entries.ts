@@ -1,4 +1,5 @@
 import { blogPosts } from "@/content/blog/posts";
+import { notes } from "@/content/notes/notes";
 import { profile } from "@/content/profile";
 
 export type EntryType = "project" | "note" | "writing" | "reading" | "talk" | "publication";
@@ -38,6 +39,18 @@ const blogEntries: Entry[] = blogPosts
     updated: post.updated
   }));
 
+const noteEntries: Entry[] = notes.map((note) => ({
+  slug: note.slug,
+  title: note.title,
+  summary: note.summary,
+  date: note.date,
+  type: "note",
+  collaborators: note.tags?.join(" / ") ?? note.readingTime,
+  image: note.image,
+  href: `/notes/${note.slug}/`,
+  updated: note.updated
+}));
+
 const readingEntries: Entry[] = profile.readings.map((reading) => ({
   slug: `reading-${slugify(reading.title)}`,
   title: reading.title,
@@ -60,18 +73,6 @@ const standaloneEntries: Entry[] = [
     image: "/assets/visuals/figure-field.png"
   },
   {
-    slug: "adaworld-latent-actions",
-    title: "AdaWorld latent actions",
-    summary:
-      "A short note on action-aware pretraining as a reusable control interface for adaptable world models.",
-    date: "2026-06-21",
-    type: "note",
-    collaborators: "Research memo",
-    image: "/assets/visuals/profile-field.png",
-    href: "/notes/adaworld-latent-actions/",
-    updated: "2026-06-21T23:59:00+08:00"
-  },
-  {
     slug: "molecular-visualization-stack",
     title: "Molecular visualization stack",
     summary:
@@ -82,4 +83,9 @@ const standaloneEntries: Entry[] = [
   }
 ];
 
-export const entries: Entry[] = [...blogEntries, ...readingEntries, ...standaloneEntries];
+export const entries: Entry[] = [
+  ...blogEntries,
+  ...noteEntries,
+  ...readingEntries,
+  ...standaloneEntries
+];

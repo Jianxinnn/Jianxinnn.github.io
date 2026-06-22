@@ -8,7 +8,6 @@ const meta = {
   readingTime: "78 min read",
   sourceType: "html",
   href: "/blog/alphafold3-illustrated-cn/",
-  image: "/assets/visuals/profile-field.png",
   category: "Technical explainers",
   language: "zh",
   source: {

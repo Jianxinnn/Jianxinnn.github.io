@@ -6,7 +6,6 @@ const meta = {
   date: "2026-06-21",
   readingTime: "84 pages",
   sourceType: "mdx",
-  image: "/assets/visuals/profile-field.png",
   category: "Technical explainers",
   language: "bilingual",
   source: {
