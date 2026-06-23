@@ -19,5 +19,13 @@
     "postTitle": "什么是世界模型",
     "provider": "manual",
     "status": "seeded"
+  },
+  "vla-wam-world-models-cn": {
+    "contentSha256": "637d613d28da4cbb9be8503cfd098423cbea55137f76a86d8df00f3392d9e68c",
+    "notifiedAt": "2026-06-23T06:02:47.317Z",
+    "postTitle": "VLA、世界模型与 WAM：机器人模型到底在学什么",
+    "provider": "buttondown",
+    "providerMessageId": "em_1m0xcj5va290b8dxct3j6vccdz",
+    "status": "about_to_send"
   }
 }
