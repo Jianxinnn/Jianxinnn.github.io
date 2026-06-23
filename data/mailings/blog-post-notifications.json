@@ -35,5 +35,13 @@
     "provider": "buttondown",
     "providerMessageId": "em_2zbfjdz0sw8v1r8ndsxydsm9wf",
     "status": "about_to_send"
+  },
+  "protein-sequence-diffusion-models-cn": {
+    "contentSha256": "ed97557736c195617b5b1382054f718e880a5389d995c74535cb4863fcec0ad5",
+    "notifiedAt": "2026-06-23T14:11:03.244Z",
+    "postTitle": "蛋白序列扩散模型详解",
+    "provider": "buttondown",
+    "providerMessageId": "em_2k5xcwxvbx96s82v6trqsxxr7q",
+    "status": "about_to_send"
   }
 }
