@@ -1,0 +1,185 @@
+import { MathBlock, MathInline } from "@/components/math-block";
+
+VLA、世界模型和 WAM 讨论的是同一个问题：机器人看见环境、理解任务之后，怎样做出可执行的动作。三者的区别不在模型名字，而在训练目标。VLA 学的是“现在该做什么”；世界模型学的是“如果这样做，世界会怎样变化”；WAM 则想把这两个问题放到同一个模型或同一个闭环里一起回答。这里的 WAM 指 World Action Model，比单独写 WA 更清楚，也更接近近期论文里的用法。([RT-2](https://arxiv.org/abs/2307.15818), [World Models](https://arxiv.org/abs/1803.10122), [World Action Models](https://arxiv.org/abs/2605.12090))
+
+更具体地说，VLA 更像策略模型，目的是从视觉观测、语言指令和机器人状态直接生成动作。世界模型更像动力学模型，目的是预测某个动作会把环境带到什么状态。WAM 是最近几年逐渐成形的联合建模方向，目的是让动作生成不只是模仿数据里的动作，还能被可达的未来状态约束。([RT-1](https://arxiv.org/abs/2212.06817), [PlaNet](https://arxiv.org/abs/1811.04551), [DreamZero](https://arxiv.org/abs/2602.15922))
+
+## 一个最小公式
+
+先用一个最小公式把边界固定住。这里的 <MathInline tex={String.raw`o_t`} /> 是当前观测，<MathInline tex={String.raw`l`} /> 是语言指令，<MathInline tex={String.raw`a_t`} /> 是动作，<MathInline tex={String.raw`z_t`} /> 是模型内部状态，<MathInline tex={String.raw`H`} /> 是一次控制或预测的时间长度。
+
+<MathBlock tex={String.raw`\begin{aligned}
+\text{VLA:} \quad &a_{t:t+H} \sim \pi_{\theta}(a_{t:t+H} \mid o_{\le t}, l) \\
+\text{World Model:} \quad &z_{t+1:t+H}, r_{t:t+H} \sim p_{\theta}(z_{t+1:t+H}, r_{t:t+H} \mid z_{\le t}, a_{t:t+H}) \\
+\text{WAM:} \quad &a_{t:t+H}, z_{t+1:t+H} \sim p_{\theta}(a_{t:t+H}, z_{t+1:t+H} \mid o_{\le t}, l)
+\end{aligned}`} />
+
+这组公式不是为了覆盖所有实现细节，而是说明动作和未来在三类模型中的角色不同。VLA 把动作当输出；世界模型把动作当条件；WAM 把动作和未来状态放在一起建模，或者至少让动作生成受到未来状态的监督和约束。([RT-2](https://arxiv.org/abs/2307.15818), [Dreamer](https://arxiv.org/abs/1912.01603), [World Action Models](https://arxiv.org/abs/2605.12090))
+
+<figure>
+  <img src="/assets/blog/vla-wam-world-models-cn/wam-concept.jpg" alt="Conceptual comparison of VLA WAM and world model" />
+  <figcaption>图 1. VLA 直接预测动作；world model 预测动作之后的下一观测；WAM 同时建模动作和未来观测。来源：Wang et al., <a href="https://arxiv.org/abs/2605.12090">World Action Models: The Next Frontier in Embodied AI</a>，论文 PDF 页面裁剪。</figcaption>
+</figure>
+
+## VLA 学的是动作策略
+
+VLA 的完整名称是 Vision-Language-Action model。它的输入通常是图像、语言指令，有时还包括机器人 proprioception 或历史观测；它的输出是动作，可以是末端执行器位姿、关节控制量、移动底盘动作，或者一段 action chunk。([RT-1](https://arxiv.org/abs/2212.06817), [OpenVLA](https://arxiv.org/abs/2406.09246), [π0](https://arxiv.org/abs/2410.24164))
+
+这类模型的核心目标可以写成：
+
+<MathBlock tex={String.raw`\pi_{\theta}(a_{t:t+H} \mid o_{\le t}, l)`} />
+
+RT-1 是早期代表，它把图像和自然语言指令映射到离散化的机器人动作。RT-2 进一步把动作表示成 token，并把视觉语言预训练与机器人轨迹数据放在一起微调，所以模型可以继承一部分 web-scale 视觉语言模型的语义泛化能力。([RT-1](https://arxiv.org/abs/2212.06817), [RT-2](https://arxiv.org/abs/2307.15818))
+
+<figure>
+  <img src="/assets/blog/vla-wam-world-models-cn/rt2-vla-overview.jpg" alt="RT-2 VLA overview" />
+  <figcaption>图 2. RT-2 将视觉语言预训练和机器人动作数据放在一起微调，动作被 token 化后与自然语言共享输出接口。来源：Brohan et al., <a href="https://arxiv.org/abs/2307.15818">RT-2</a>，论文 PDF 页面裁剪。</figcaption>
+</figure>
+
+后来的 OpenVLA、Octo、π0、GR00T N1、SmolVLA 等工作，基本都在回答同一个工程问题：如何把视觉语言 backbone、机器人数据、动作表示和实时控制接口接得更好。OpenVLA 强调开放权重和可微调性；π0、CogACT、GR00T N1 这类方法则把动作生成交给 diffusion 或 flow matching action expert；FAST 说明动作 tokenization 本身也会决定 VLA 能不能学好高频连续控制。([OpenVLA](https://arxiv.org/abs/2406.09246), [Octo](https://arxiv.org/abs/2405.12213), [π0](https://arxiv.org/abs/2410.24164), [FAST](https://arxiv.org/abs/2501.09747), [CogACT](https://arxiv.org/abs/2411.19650), [GR00T N1](https://arxiv.org/abs/2503.14734))
+
+VLA 的优点是路径短。推理时，模型看到当前画面和任务指令，就直接输出动作；它不一定需要显式展开未来视频，也不一定需要规划器。这让 VLA 在短程任务、数据覆盖较好的操作任务、以及需要自然语言泛化的场景里很有吸引力。([RT-2](https://arxiv.org/abs/2307.15818), [OpenVLA](https://arxiv.org/abs/2406.09246), [π0.5](https://arxiv.org/abs/2504.16054))
+
+VLA 的限制也来自这里。它的训练目标通常接近行为克隆：在相似观测和相似指令下复现相似动作。模型可以学到很多语义知识，但训练目标本身不强迫它回答“这个动作会造成什么物理后果”。所以在遮挡、接触失败、长程组合任务、未见过的运动技能或跨本体迁移里，直接动作预测容易变脆。([RT-2](https://arxiv.org/abs/2307.15818), [What Matters in Building VLAs](https://arxiv.org/abs/2412.14058), [VLA datasets survey](https://arxiv.org/abs/2604.23001))
+
+## 世界模型学的是动作后果
+
+世界模型的中心问题不是“该做什么”，而是“如果这样做，会发生什么”。在强化学习和机器人控制里，最常见的形式是动作条件的状态转移模型：
+
+<MathBlock tex={String.raw`p_{\theta}(z_{t+1}, r_t \mid z_t, a_t)`} />
+
+这个式子里的关键不是“未来”，而是“动作条件”。没有动作条件，模型只是预测接下来可能出现什么；有了动作条件，模型才开始支持反事实推演：如果我推、拉、转、抓，环境分别会怎样变化。([PlaNet](https://arxiv.org/abs/1811.04551), [Dreamer](https://arxiv.org/abs/1912.01603), [World Model for Robot Learning](https://arxiv.org/abs/2605.00080))
+
+<figure>
+  <img src="/assets/blog/vla-wam-world-models-cn/robot-world-model-survey.jpg" alt="Robot world model survey organization" />
+  <figcaption>图 3. 机器人世界模型既可以和策略耦合，也可以作为模拟器或视频生成器使用。来源：Hou et al., <a href="https://arxiv.org/abs/2605.00080">World Model for Robot Learning</a>，论文 PDF 页面裁剪。</figcaption>
+</figure>
+
+世界模型不一定要预测像素。Ha 和 Schmidhuber 的 World Models 把观测压到 latent，再用 recurrent model 建模时间演化；PlaNet 和 Dreamer 在 latent space 里做规划或想象；MuZero 甚至不重建原始观测，而是预测对规划有用的 reward、policy 和 value；TD-MPC2 则强调控制用的 latent dynamics 可以是 decoder-free 的。([World Models](https://arxiv.org/abs/1803.10122), [PlaNet](https://arxiv.org/abs/1811.04551), [Dreamer](https://arxiv.org/abs/1912.01603), [MuZero](https://arxiv.org/abs/1911.08265), [TD-MPC2](https://arxiv.org/abs/2310.16828))
+
+这也是为什么“世界模型 = 视频生成模型”这个说法不够准确。视频生成模型可能只学：
+
+<MathBlock tex={String.raw`p_{\theta}(x_{1:T} \mid \text{prompt})`} />
+
+而机器人语境里的世界模型至少要能表达：
+
+<MathBlock tex={String.raw`p_{\theta}(o_{t+1:t+H} \mid o_{\le t}, a_{t:t+H})`} />
+
+Genie 之所以重要，是因为它从无动作标签的视频里学习 latent action，并让生成环境可以被动作逐帧控制。UniSim、GAIA-1、Cosmos、PAN 等工作则把这种思路推向真实场景、自动驾驶或 Physical AI：模型不只是生成漂亮视频，而是尝试模拟动作或指令导致的世界演化。([Genie](https://arxiv.org/abs/2402.15391), [UniSim](https://arxiv.org/abs/2310.06114), [GAIA-1](https://arxiv.org/abs/2309.17080), [Cosmos WFM](https://arxiv.org/abs/2501.03575), [PAN](https://arxiv.org/abs/2511.09057))
+
+<figure>
+  <img src="/assets/blog/vla-wam-world-models-cn/genie-latent-action-training.jpg" alt="Genie latent action model and dynamics model" />
+  <figcaption>图 4. Genie 通过 video tokenizer、latent action model 和 dynamics model，将无标注视频转成可交互的动作条件世界模型。来源：Bruce et al., <a href="https://arxiv.org/abs/2402.15391">Genie</a>，论文 PDF 页面裁剪。</figcaption>
+</figure>
+
+世界模型的优势是前瞻能力。智能体可以在模型内部尝试不同动作，比较这些动作的后果，再把结果交给 planner、value function 或 policy 使用。它的限制是，预测未来本身不等于会行动；一个模型可以生成合理的未来，却仍然需要额外机制决定该执行哪一个动作。([DreamerV3](https://arxiv.org/abs/2301.04104), [TD-MPC](https://arxiv.org/abs/2203.04955), [World Models survey](https://arxiv.org/abs/2606.00133))
+
+## WAM 把动作和未来绑在一起
+
+WAM 的动机来自 VLA 和世界模型之间的空缺。VLA 会输出动作，但不一定显式预测动作后果；世界模型会预测后果，但不一定直接输出可执行动作。WAM 想把这两个方向合在一起，让模型在生成动作时同时理解这些动作会通向什么未来。([World Action Models](https://arxiv.org/abs/2605.12090), [DreamZero](https://arxiv.org/abs/2602.15922), [Motus](https://arxiv.org/abs/2512.13030))
+
+最简化的 WAM 目标可以写成：
+
+<MathBlock tex={String.raw`p_{\theta}(a_{t:t+H}, z_{t+1:t+H} \mid o_{\le t}, l)`} />
+
+这句话背后的要求很高：动作序列不只是要像训练数据里的动作，还要通向可达、稳定、符合任务目标的未来状态。换句话说，WAM 试图让“会动”和“知道动完会怎样”在同一个系统里相互约束。([World Action Models](https://arxiv.org/abs/2605.12090), [DreamZero](https://arxiv.org/abs/2602.15922), [MotuBrain](https://arxiv.org/abs/2604.27792))
+
+<figure>
+  <img src="/assets/blog/vla-wam-world-models-cn/dreamzero-wam-overview.jpg" alt="DreamZero world action model overview" />
+  <figcaption>图 5. DreamZero 从视频扩散 backbone 出发，将未来世界状态和动作联合建模，用世界演化信号增强零样本策略能力。来源：Ye et al., <a href="https://arxiv.org/abs/2602.15922">World Action Models are Zero-shot Policies</a>，论文 PDF 页面裁剪。</figcaption>
+</figure>
+
+近期文献里大致有两条路线。第一条是 joint WAM，在一个模型里联合学习动作和未来状态。DreamZero 联合预测 future video 和 action；Motus 把 VLA、world model、inverse dynamics、video generation 和 video-action joint prediction 都放进一个统一模型；MotuBrain 延续这条路线，把视频和动作作为连续模态一起建模。([DreamZero](https://arxiv.org/abs/2602.15922), [Motus](https://arxiv.org/abs/2512.13030), [MotuBrain](https://arxiv.org/abs/2604.27792))
+
+第二条是 cascaded 或 action-centered 路线。World-VLA-Loop 保留世界模型和 VLA policy 的分工，让二者闭环共同改进；VLA-MBPO 和 WMPO 用世界模型为 VLA 做 RL/post-training；GigaWorld-Policy 在训练时用未来视觉动态提供 dense supervision，但推理时可以只输出动作；Being-H0.7 则把未来信息压进 latent reasoning queries，不在推理时显式生成未来帧。([World-VLA-Loop](https://arxiv.org/abs/2602.06508), [VLA-MBPO](https://arxiv.org/abs/2603.20607), [WMPO](https://arxiv.org/abs/2511.09515), [GigaWorld-Policy](https://arxiv.org/abs/2603.17240), [Being-H0.7](https://arxiv.org/abs/2605.00078))
+
+<figure>
+  <img src="/assets/blog/vla-wam-world-models-cn/wam-taxonomy.jpg" alt="World Action Model taxonomy" />
+  <figcaption>图 6. WAM 文献大致分成 joint WAM 与 cascaded WAM：前者在一个模型中联合学习动作和未来，后者通过世界模型与策略模型的耦合实现类似目标。来源：Wang et al., <a href="https://arxiv.org/abs/2605.12090">World Action Models</a>，论文 PDF 页面裁剪。</figcaption>
+</figure>
+
+这里有一个重要区别：WAM 不一定要在推理时真的生成一段未来视频。显式生成未来视频可以提供更直观的中间结果，但它也带来延迟、显存和误差累积问题。很多新方法正在把“未来”从像素 rollout 转成训练监督、latent reasoning、value estimation 或 optional prediction。([GigaWorld-Policy](https://arxiv.org/abs/2603.17240), [Being-H0.7](https://arxiv.org/abs/2605.00078), [WAV](https://arxiv.org/abs/2604.14732))
+
+## 三者放在同一张表里
+
+如果只记一件事，可以记这张表：VLA 管动作输出，世界模型管动作后果，WAM 管二者之间的联合关系。
+
+<table>
+  <thead>
+    <tr>
+      <th>模型</th>
+      <th>最小目标</th>
+      <th>动作的角色</th>
+      <th>未来的角色</th>
+      <th>主要限制</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>VLA</td>
+      <td><MathInline tex={String.raw`\pi(a \mid o,l)`} /></td>
+      <td>直接输出</td>
+      <td>通常隐式存在于参数里</td>
+      <td>缺少显式物理前瞻，容易受数据分布限制</td>
+    </tr>
+    <tr>
+      <td>World Model</td>
+      <td><MathInline tex={String.raw`p(z' \mid z,a)`} /></td>
+      <td>作为条件输入</td>
+      <td>显式预测</td>
+      <td>预测结果还需要 planner、policy 或 value function 转成动作</td>
+    </tr>
+    <tr>
+      <td>WAM</td>
+      <td><MathInline tex={String.raw`p(a,z' \mid o,l)`} /></td>
+      <td>和未来状态一起生成，或被未来状态约束</td>
+      <td>参与动作生成</td>
+      <td>训练、推理、评估和数据对齐都更复杂</td>
+    </tr>
+  </tbody>
+</table>
+
+这三者不是互斥阵营，而是同一个机器人学习问题上的三个切面。VLA 让机器人“能做”；世界模型让机器人“能预判”；WAM 试图让机器人“边预判边决定怎么做”。([VLA survey](https://arxiv.org/abs/2405.14093), [World Model for Robot Learning](https://arxiv.org/abs/2605.00080), [World Action Models](https://arxiv.org/abs/2605.12090))
+
+## 读论文时怎么判断
+
+读一篇新论文时，不要先看标题里有没有 VLA、world 或 action，而要先看它到底优化了什么分布。主要优化 <MathInline tex={String.raw`\pi(a \mid o,l)`} /> 的，更接近 VLA；主要优化 <MathInline tex={String.raw`p(z' \mid z,a)`} /> 的，更接近世界模型；同时让动作和未来状态互相约束的，才更接近 WAM。([RT-2](https://arxiv.org/abs/2307.15818), [PlaNet](https://arxiv.org/abs/1811.04551), [World Action Models](https://arxiv.org/abs/2605.12090))
+
+第二个问题是动作在模型中扮演什么角色。动作如果只是输出，模型更像 policy；动作如果只是条件，模型更像 dynamics model；动作如果既参与未来预测，又被未来预测反过来约束，模型才有 WAM 的味道。([Dreamer](https://arxiv.org/abs/1912.01603), [DreamZero](https://arxiv.org/abs/2602.15922), [Motus](https://arxiv.org/abs/2512.13030))
+
+第三个问题是推理时是否使用未来。有些方法训练时用未来视觉动态增强动作学习，推理时直接出动作；有些方法推理时真的展开未来视频或 latent trajectory；有些方法把未来交给 value function 来评估。它们都可能属于 WAM 或 WAM-adjacent 方法，但工程代价和适用任务差别很大。([GigaWorld-Policy](https://arxiv.org/abs/2603.17240), [Being-H0.7](https://arxiv.org/abs/2605.00078), [WAV](https://arxiv.org/abs/2604.14732))
+
+可以把判断准则压成一句话：
+
+<MathBlock tex={String.raw`\text{模型类型} \approx \text{学习目标} + \text{动作角色} + \text{推理时是否使用未来}`} />
+
+## 二十篇核心论文
+
+如果只想先读一组关键论文，可以从下面二十篇开始。它们不是按时间完整覆盖所有工作，而是按“定义世界模型、理解 VLA、进入 WAM”三条线选出的核心入口。
+
+1. David Ha and Jürgen Schmidhuber, [World Models](https://arxiv.org/abs/1803.10122), 2018。理解现代世界模型这个说法的起点。
+2. Danijar Hafner et al., [Learning Latent Dynamics for Planning from Pixels](https://arxiv.org/abs/1811.04551), 2018。理解 latent dynamics 和 pixel-to-planning。
+3. Danijar Hafner et al., [Dream to Control](https://arxiv.org/abs/1912.01603), 2019。理解 imagined rollout 如何训练 actor 和 critic。
+4. Julian Schrittwieser et al., [MuZero](https://arxiv.org/abs/1911.08265), 2019。理解世界模型不一定要重建观测。
+5. Danijar Hafner et al., [DreamerV3](https://arxiv.org/abs/2301.04104), 2023。理解世界模型在多域控制中的通用化。
+6. Nicklas Hansen et al., [TD-MPC2](https://arxiv.org/abs/2310.16828), 2023。理解面向控制的 decoder-free latent world model。
+7. Jake Bruce et al., [Genie](https://arxiv.org/abs/2402.15391), 2024。理解无标注视频、latent action 和可交互世界模型。
+8. Yilun Yang et al., [UniSim](https://arxiv.org/abs/2310.06114), 2023。理解 action-in/video-out 的真实世界模拟器。
+9. Anthony Brohan et al., [RT-1](https://arxiv.org/abs/2212.06817), 2022。理解大规模真实机器人数据上的 transformer policy。
+10. Michael Ahn et al., [SayCan](https://arxiv.org/abs/2204.01691), 2022。理解语言模型为什么需要 affordance grounding。
+11. Danny Driess et al., [PaLM-E](https://arxiv.org/abs/2303.03378), 2023。理解 embodied multimodal language model。
+12. Cheng Chi et al., [Diffusion Policy](https://arxiv.org/abs/2303.04137), 2023。理解连续动作分布为什么适合 diffusion/flow 类方法。
+13. Anthony Brohan et al., [RT-2](https://arxiv.org/abs/2307.15818), 2023。理解 VLA 这个名称和动作 token 化。
+14. Open X-Embodiment Collaboration, [Open X-Embodiment](https://arxiv.org/abs/2310.08864), 2023。理解 VLA 的跨机器人数据基础。
+15. Moo Jin Kim et al., [OpenVLA](https://arxiv.org/abs/2406.09246), 2024。理解开放 VLA 的标准形态。
+16. Kevin Black et al., [π0](https://arxiv.org/abs/2410.24164), 2024。理解 VLM backbone 加 flow matching action expert 的路线。
+17. Karl Pertsch et al., [FAST](https://arxiv.org/abs/2501.09747), 2025。理解 action tokenization 为什么是 VLA 的关键工程问题。
+18. Siyin Wang et al., [World Action Models](https://arxiv.org/abs/2605.12090), 2026。理解 WAM 的定义和 taxonomy。
+19. Seonghyeon Ye et al., [DreamZero](https://arxiv.org/abs/2602.15922), 2026。理解 joint video-action WAM 的代表形态。
+20. Angen Ye et al., [GigaWorld-Policy](https://arxiv.org/abs/2603.17240), 2026。理解 action-centered WAM 为什么不一定要在推理时生成未来视频。
+
+## 结语
+
+VLA、世界模型和 WAM 的区别，最后还是回到一个朴素问题：机器人到底在学什么。VLA 学从观察和指令到动作的映射；世界模型学动作之后的状态变化；WAM 学动作和未来状态之间的联合关系。([RT-2](https://arxiv.org/abs/2307.15818), [World Model for Robot Learning](https://arxiv.org/abs/2605.00080), [World Action Models](https://arxiv.org/abs/2605.12090))
+
+短期内，VLA 仍然会是很多机器人系统的主干，因为它直接、高效、工程路径清楚。世界模型会继续在规划、仿真、离线评估、数据生成和 RL post-training 中发挥作用。WAM 的意义在于提出了更高的要求：机器人基础模型不只要理解任务、生成动作，还要让这些动作受到未来物理状态的约束。([OpenVLA](https://arxiv.org/abs/2406.09246), [World-VLA-Loop](https://arxiv.org/abs/2602.06508), [WMPO](https://arxiv.org/abs/2511.09515), [Being-H0.7](https://arxiv.org/abs/2605.00078))

@@ -47,6 +47,27 @@ export const blogPosts: BlogPost[] = [
     ]
   },
   {
+    "slug": "vla-wam-world-models-cn",
+    "title": "VLA、世界模型与 WAM：机器人模型到底在学什么",
+    "summary": "从学习目标区分 VLA、世界模型与 WAM：VLA 直接生成动作，世界模型预测动作后果，WAM 将动作和未来状态联合建模。",
+    "date": "2026-06-23",
+    "readingTime": "12 min read",
+    "sourceType": "mdx",
+    "href": "/blog/vla-wam-world-models-cn/",
+    "image": "/assets/blog/vla-wam-world-models-cn/wam-concept.jpg",
+    "category": "Technical explainers",
+    "language": "zh",
+    "source": {
+      "status": "original",
+      "note": "综合 arXiv、PMLR、OpenReview、NVIDIA Research 等公开论文与项目资料写成。"
+    },
+    "tags": [
+      "world models",
+      "physical AI",
+      "reinforcement learning"
+    ]
+  },
+  {
     "slug": "what-are-world-models-cn",
     "title": "什么是世界模型",
     "summary": "从 Ha 与 Schmidhuber 的 V-M-C 架构，到 Genie、V-JEPA、PAN 和 NVIDIA 的物理 AI 视角，梳理世界模型的定义、公式、路线和边界。",
