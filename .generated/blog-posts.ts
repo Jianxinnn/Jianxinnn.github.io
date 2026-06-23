@@ -54,7 +54,7 @@ export const blogPosts: BlogPost[] = [
     "readingTime": "10 min read",
     "sourceType": "mdx",
     "href": "/blog/protein-sequence-diffusion-models-cn/",
-    "image": "/assets/blog/protein-sequence-diffusion-models-cn/fig1-taxonomy.svg",
+    "image": "/assets/blog/protein-sequence-diffusion-models-cn/fig1-taxonomy.png",
     "category": "Technical explainers",
     "language": "zh",
     "source": {

@@ -6,7 +6,7 @@ const meta = {
     "从 token、PLM latent、结构 token 到进化编辑，梳理蛋白序列扩散模型的噪声空间、关键公式和代表论文。",
   date: "2026-06-23",
   sourceType: "mdx",
-  image: "/assets/blog/protein-sequence-diffusion-models-cn/fig1-taxonomy.svg",
+  image: "/assets/blog/protein-sequence-diffusion-models-cn/fig1-taxonomy.png",
   category: "Technical explainers",
   language: "zh",
   source: {
