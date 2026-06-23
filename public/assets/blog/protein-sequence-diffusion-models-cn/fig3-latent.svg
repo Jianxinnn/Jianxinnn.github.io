@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Continuous diffusion on protein language model representations</title>
+  <desc id="desc">A pipeline showing protein sequence encoding into a PLM latent vector, Gaussian diffusion in representation space, denoising, and decoding back into an amino acid sequence.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8f7f1; }
+      .ink { fill: #1f2933; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .muted { fill: #64707a; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .title { font-size: 42px; font-weight: 760; }
+      .h { font-size: 30px; font-weight: 720; }
+      .b { font-size: 24px; }
+      .box { stroke-width: 3; rx: 20; ry: 20; }
+      .seq { fill: #e7f0f5; stroke: #477e9f; }
+      .latent { fill: #e8f2e7; stroke: #5f9360; }
+      .noise { fill: #fbefd9; stroke: #c08a2d; }
+      .decode { fill: #eee9f7; stroke: #8467a8; }
+      .arrow { stroke: #7b8794; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+    </style>
+    <marker id="arrow" markerWidth="13" markerHeight="13" refX="10" refY="6.5" orient="auto">
+      <path d="M0,0 L13,6.5 L0,13 Z" fill="#7b8794" />
+    </marker>
+  </defs>
+  <rect class="bg" width="1280" height="720" />
+  <text class="ink title" x="80" y="84">连续 PLM latent diffusion：把扩散放到语义表征空间</text>
+  <text class="muted b" x="80" y="128">DiMA / PRO-LDM 的基本取舍：连续空间更平滑，但必须解决 latent 到序列的解码误差。</text>
+
+  <rect class="box seq" x="78" y="235" width="210" height="155" />
+  <text class="ink h" x="118" y="290">sequence</text>
+  <text class="muted b" x="114" y="330">M K L V A ...</text>
+  <text class="muted b" x="118" y="360">20 amino acids</text>
+
+  <path class="arrow" d="M288 312 L405 312" />
+  <text class="muted b" x="323" y="284">PLM encoder</text>
+
+  <rect class="box latent" x="405" y="235" width="220" height="155" />
+  <text class="ink h" x="457" y="290">z₀</text>
+  <text class="muted b" x="444" y="330">ESM / ESMc</text>
+  <text class="muted b" x="450" y="360">SaProt latent</text>
+
+  <path class="arrow" d="M625 312 L746 312" />
+  <text class="muted b" x="654" y="284">Gaussian</text>
+
+  <rect class="box noise" x="746" y="235" width="220" height="155" />
+  <text class="ink h" x="835" y="290">zₜ</text>
+  <text class="muted b" x="785" y="330">zₜ = αₜ z₀ + σₜ ε</text>
+  <text class="muted b" x="790" y="360">continuous noise</text>
+
+  <path class="arrow" d="M856 390 C856 482 735 514 625 474" />
+  <text class="muted b" x="703" y="518">denoiser predicts ε / x₀ / v</text>
+
+  <path class="arrow" d="M966 312 L1087 312" />
+  <text class="muted b" x="1000" y="284">decoder</text>
+
+  <rect class="box decode" x="1087" y="235" width="115" height="155" />
+  <text class="ink h" x="1126" y="290">x̂</text>
+  <text class="muted b" x="1110" y="330">tokens</text>
+  <text class="muted b" x="1108" y="360">again</text>
+
+  <rect class="box latent" x="330" y="480" width="620" height="112" />
+  <text class="ink h" x="374" y="526">条件可以进入 latent 空间</text>
+  <text class="muted b" x="374" y="562">family embedding、fold label、motif mask、property vector、mechanical response</text>
+</svg>

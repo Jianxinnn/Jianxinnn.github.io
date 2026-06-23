@@ -1,0 +1,303 @@
+import { MathBlock, MathInline } from "@/components/math-block"
+
+蛋白序列扩散模型，一言以蔽之，把序列弄乱（加噪），再恢复原样（去噪）。
+
+这不是针对序列的填空题，虽然看起来像。任意替换掉的残基，会影响远处的折叠、口袋、电荷、跨膜区。扩散模型的意义在于，它不按从左到右的顺序生成，而是在全局上下文里反复修正每个位置。
+
+把一条蛋白写成 <MathInline tex={String.raw`x=(x_1,\dots,x_L)`} />。<MathInline tex={String.raw`x_i`} /> 是 amino-acid token。前向过程把干净序列 <MathInline tex={String.raw`x_0`} /> 变成噪声序列 <MathInline tex={String.raw`x_t`} />。反向过程学习 <MathInline tex={String.raw`x_t\rightarrow x_0`} />。
+
+差别只在一件事：噪声落在哪里。落在 amino-acid token 上，就是离散序列扩散。落在 ESM、ESMc、SaProt 这类 PLM embedding 上，就是 latent diffusion。落在 sequence token 和 structure token 上，就是多模态 diffusion PLM。落在 substitution、insertion、deletion 上，就是 evolution-style edit diffusion。
+
+<figure>
+  <img src="/assets/blog/protein-sequence-diffusion-models-cn/fig1-taxonomy.svg" alt="Protein sequence diffusion model taxonomy" />
+  <figcaption>图 1. 四种生成空间：token、latent、structure token、edit trajectory。先看空间，再看模型名。</figcaption>
+</figure>
+
+## 为什么直接在序列上做
+
+结构优先的蛋白设计很强。先生成 backbone，再用 ProteinMPNN 一类模型配序列。RFdiffusion 就是这条路的代表。
+
+但不是所有蛋白都适合先问结构。IDR、低复杂度区域、短肽、跨膜蛋白，未必有稳定单一构象。此时 sequence prior 比 structure prior 更直接。
+
+[EvoDiff](https://github.com/microsoft/evodiff) 就从这里出发。它不先生成 3D backbone，而在 sequence space 中生成蛋白。Microsoft Research 对它的描述也强调两点：evolutionary-scale data，diffusion conditioning。
+
+EvoDiff 主要用了两类离散噪声。
+
+OADM（order-agnostic autoregressive diffusion）：每一步 mask 一个位置，直到全序列被 mask。反向时不固定顺序，任意位置都可恢复。
+
+D3PM（discrete denoising diffusion）：用转移矩阵腐化 token。uniform 版本走向均匀氨基酸分布。BLOSUM 版本偏向保守突变，更接近生物替换。
+
+EvoDiff 的要点不是模型规模，而是立场：序列本身已经带有进化、功能和可折叠性的统计痕迹。对很多对象，不必先绕到结构空间。
+
+## Mask diffusion 的基本形式
+
+连续 diffusion 通常写成：
+
+<MathBlock tex={String.raw`x_t=\sqrt{\bar{\alpha}_t}x_0+\sqrt{1-\bar{\alpha}_t}\epsilon,\qquad \epsilon\sim\mathcal{N}(0,I)`} />
+
+训练目标常写成噪声预测：
+
+<MathBlock tex={String.raw`\mathcal{L}_{\mathrm{DDPM}}=\mathbb{E}_{x_0,t,\epsilon}\left[\left\|\epsilon-\epsilon_\theta(x_t,t)\right\|_2^2\right]`} />
+
+这适合图像、坐标、连续 latent。氨基酸 token 不适合直接加 Gaussian noise。加噪后的点不是合法残基，也不一定能稳定投影回序列。
+
+离散扩散把 Gaussian kernel 换成转移矩阵：
+
+<MathBlock tex={String.raw`q(x_t\mid x_{t-1})=\mathrm{Cat}\left(x_t\mid x_{t-1}Q_t\right),\qquad \bar{Q}_t=Q_1Q_2\cdots Q_t`} />
+
+于是：
+
+<MathBlock tex={String.raw`q(x_t\mid x_0)=\mathrm{Cat}\left(x_t\mid x_0\bar{Q}_t\right)`} />
+
+[D3PM](https://arxiv.org/abs/2107.03006) 的贡献，是把 <MathInline tex={String.raw`Q_t`} /> 变成可设计对象。可以 uniform corruption。可以按 embedding 邻近关系腐化。也可以吸收到 absorbing state。
+
+蛋白 PLM 最常用的 absorbing state，就是 `[MASK]`：
+
+<MathBlock
+  tex={String.raw`\begin{aligned}
+q(x_t^i=x_0^i\mid x_0^i)&=\bar{\alpha}_t\\
+q(x_t^i=\mathrm{[MASK]}\mid x_0^i)&=1-\bar{\alpha}_t
+\end{aligned}`}
+/>
+
+训练目标接近带时间权重的 masked language modeling：
+
+<MathBlock tex={String.raw`\mathcal{L}_{\mathrm{mask}}=\mathbb{E}_{x_0,t,x_t}\left[\lambda(t)\sum_{i:x_t^i=\mathrm{[MASK]}}-\log p_\theta(x_0^i\mid x_t,t)\right]`} />
+
+普通 MLM 只学固定 mask ratio。masked diffusion 学整条时间轴。低噪声阶段补细节。高噪声阶段重建整体序列。[MDLM](https://arxiv.org/abs/2406.07524) 进一步说明，这类目标可以看成多组 masked cross entropy 的混合，也让 encoder-only model 有了明确采样过程。
+
+<figure>
+  <img src="/assets/blog/protein-sequence-diffusion-models-cn/fig2-discrete-mask.svg" alt="Absorbing masked diffusion for protein sequences" />
+  <figcaption>图 2. absorbing mask diffusion。前向把序列逐步 mask。反向从高 mask 比例开始，并行恢复残基。</figcaption>
+</figure>
+
+## DPLM：从 MLM 到生成式 pLM
+
+[DPLM](https://arxiv.org/abs/2402.18567) 的核心，是把 discrete diffusion 写成 protein language model pretraining。
+
+MLM 擅长表示学习，但没有完整生成路径。Autoregressive LM 能生成，但顺序是单向的。蛋白残基的依赖来自三维折叠，不天然服从左到右顺序。
+
+DPLM 保留双向 Transformer，再加入 discrete diffusion。模型既看全局上下文，也能从噪声采样序列。论文在 UniRef50 上训练，约 4500 万条序列，约 140 亿 amino-acid tokens。模型规模为 150M、650M、3B。
+
+采样过程可以写成：
+
+<MathBlock tex={String.raw`\underbrace{[\mathrm{MASK}],\ldots,[\mathrm{MASK}]}_{L\ \text{positions}}\longrightarrow x_T\longrightarrow x_{T-1}\longrightarrow\cdots\longrightarrow x_0`} />
+
+每一步预测所有 masked positions。高置信 token 固定。低置信 token 继续 remask。生成不是一次性输出，而是多轮重采样。
+
+motif scaffolding 也因此直接：
+
+<MathBlock tex={String.raw`x_{\mathrm{motif}}\ \text{clamped},\qquad x_{\mathrm{scaffold}}\sim p_\theta(x_{\mathrm{scaffold}}\mid x_{\mathrm{motif}})`} />
+
+固定 motif，重采样 scaffold。DPLM 的 Figure 1 应优先看。它把 unconditional generation、representation learning、conditional generation 放在同一模型下。
+
+DPLM 还处理 classifier guidance。离散 token 没有连续 score 的小步移动。做法是把 one-hot 放到概率单纯形，用属性模型改变 categorical sampling：
+
+<MathBlock tex={String.raw`p_\theta(x_{t-1}\mid x_t, y)\propto p_\theta(x_{t-1}\mid x_t)\exp\left(s\cdot f_\phi(x_{t-1},y)\right)`} />
+
+含义很直接：每轮重采样时，提高符合目标属性的残基概率。
+
+## DSM 和 MeMDLM：把已有 pLM 改成 diffusion
+
+[DSM](https://arxiv.org/abs/2506.08293) 不是重造 pLM，而是把 ESM2-style encoder 改成 masked diffusion sequence model。它使用 LLaDA-style masked forward diffusion。在 90% token corruption 下，模型仍要恢复序列。
+
+DSM 的 Figure 1 展示了两件事。普通 DSM 学序列恢复。DSM-ppi 加入 target sequence，让 binder 在目标蛋白上下文中去噪。目标不只是筛选条件，而是生成条件。
+
+[MeMDLM](https://arxiv.org/abs/2410.16735) 把 MDLM 用到 membrane protein design。它以 ESM-2-150M 为 denoising backbone，采用 SUBS parameterization。未 mask 的 token 保持不变。被 mask 的 token 必须 unmask。论文把最大 masking rate 设为 75%，避免全 mask 时上下文消失。
+
+膜蛋白适合这类模型。TM helix、loop、可溶区、motif 混在同一条序列里。结构数据少。局部改造又要保 topology。mask diffusion 可以固定 TM motif，只改周边序列。
+
+## Latent diffusion：连续空间的收益和代价
+
+离散 token 精确，但不平滑。guidance 难，长度变化也难。另一种做法，是先用 PLM encoder 把序列变成 continuous representation，再在 latent 上扩散。
+
+<figure>
+  <img src="/assets/blog/protein-sequence-diffusion-models-cn/fig3-latent.svg" alt="Continuous diffusion on protein language model representations" />
+  <figcaption>图 3. PLM latent diffusion。序列先编码成 latent，再做 Gaussian denoising，最后解码回 amino-acid token。</figcaption>
+</figure>
+
+[DiMA](https://arxiv.org/abs/2403.03726) 是这条线的代表。它把 protein sequence 映射到 PLM representation，在 representation 上训练 denoising diffusion，再解码回序列。论文比较了 ESM-2、ESMc、CHEAP、SaProt 等 encoder，规模从 8M 到 3B。
+
+公式就是连续 diffusion，只是对象换成 <MathInline tex={String.raw`z_0=E(x_0)`} />：
+
+<MathBlock tex={String.raw`z_t=\sqrt{\bar{\alpha}_t}z_0+\sqrt{1-\bar{\alpha}_t}\epsilon,\qquad \epsilon_\theta(z_t,t,c)\rightarrow\epsilon`} />
+
+条件 <MathInline tex={String.raw`c`} /> 可以是 family、fold、motif、property。采样得到 <MathInline tex={String.raw`\hat{z}_0`} />，再解码成 <MathInline tex={String.raw`\hat{x}_0`} />。
+
+DiMA 的实验说明，encoder 尺寸会影响生成质量。AFDBv4-90 上，ESM-2 从 8M 到 3B，pLDDT 从约 74.3 到约 83.4。质量上升，多样性未必同步上升。
+
+latent diffusion 适合 family generation、fold-specific design、属性条件生成。优势是连续、可微、条件好接。代价是 projection problem：采样出的 latent 不一定能解码成合理序列。
+
+[PRO-LDM](https://pubmed.ncbi.nlm.nih.gov/40586846/) 用 conditional latent diffusion 做 full-length sequence design。[AMP-Diffusion](https://github.com/programmablebio/amp-diffusion) 面向 antimicrobial peptide。ForceGen 和 VibeGen 把 mechanical response、unfolding curve、normal mode vibration 作为条件。它们说明 PLM latent 不只表达 fold，也能承载功能和物性目标。
+
+## 结构 token：把 3D 带进 pLM
+
+序列决定结构。结构也筛选序列。多模态 diffusion PLM 想把二者放进同一个去噪过程。
+
+<figure>
+  <img src="/assets/blog/protein-sequence-diffusion-models-cn/fig4-multimodal.svg" alt="Multimodal protein diffusion language model" />
+  <figcaption>图 4. 多模态 diffusion PLM。序列和结构共享上下文。结构可以是离散 token，也可以是连续 latent。</figcaption>
+</figure>
+
+[DPLM-2](https://arxiv.org/abs/2410.13782) 是 DPLM 的序列-结构版本。模型同时处理 amino-acid token 和 structure token。流程是：structure encoder 编码 backbone 3D coordinates，lookup-free quantization 量化成 structure token，decoder 重建坐标。
+
+DPLM-2 的 Figure 2 重点看 tokenizer。LFQ 比 VQ-VAE 更易训练，重构更好。论文报告 8192 codebook size 在压缩和重构之间较稳。
+
+Figure 3 重点看 co-generation。模型同时生成序列和结构，再用 ESMFold refold 生成序列。关键指标不是单看序列或结构，而是 refolded structure 是否接近 generated structure。
+
+DPLM-2 把任务统一成三个概率对象：
+
+<MathBlock tex={String.raw`p_\theta(x_{\mathrm{seq}},x_{\mathrm{str}}),\qquad p_\theta(x_{\mathrm{seq}}\mid x_{\mathrm{str}}),\qquad p_\theta(x_{\mathrm{str}}\mid x_{\mathrm{seq}})`} />
+
+co-generation、folding、inverse folding、motif scaffolding，只是条件不同。
+
+问题在于，structure token 有损失。[DPLM-2.1](https://arxiv.org/html/2504.11454v1) 指出，瓶颈不只来自 tokenizer reconstruction loss，也来自 PLM 对 structure token 的预测误差。结构被压成 index 后，错一个 token 可能造成明显几何偏差。
+
+DPLM-2 Bit 的思路是把结构监督拆细。不要只预测硬 index。用 bit-wise 或更细粒度的目标降低量化误差。
+
+[HD-Prot](https://arxiv.org/abs/2512.15133) 走得更直接：序列保留 categorical prediction，结构交给 continuous diffusion head。
+
+<MathBlock
+  tex={String.raw`\begin{aligned}
+p_\theta(x_i^{\mathrm{seq}}\mid \cdot)&=\mathrm{Cat}(\pi_\theta)\\
+p_\theta(x_i^{\mathrm{str}}\mid \cdot)&=\text{continuous diffusion head}
+\end{aligned}`}
+/>
+
+这比强行把所有结构信息压成 token 更合理。序列离散，结构连续，各自用适合的分布建模。
+
+## 条件设计：从能生成到能约束
+
+真实蛋白设计不是单条件任务。配体要结合。口袋要成形。motif 要固定。整体还要可折叠、可表达、可溶。
+
+[ProtLiD²](https://arxiv.org/abs/2605.27413) 把 ligand condition 加进离散 sequence-structure co-design。模型同时生成 amino-acid sequence 和 discrete structure tokens，并用 geometry-aware cross-attention 接入 ligand 的化学和几何信息。它还提出 ReMask decoding：保留高置信 token，重新 mask 低置信 token。
+
+[MMCP-GEN](https://openaccess.thecvf.com/content/CVPR2026/papers/An_MMCP-GEN_A_Modality-Extensible_Diffusion_Language_Model_for_Conditional_Protein_Sequence_CVPR_2026_paper.pdf) 处理多模态条件接口。structure、function、ligand、text 通过 learnable queries 和 modality indicator heads 进入 diffusion backbone。
+
+难点不是把条件拼进去，而是条件冲突。稳定性可能伤害功能。固定 motif 可能降低 foldability。配体口袋可能改变整体拓扑。diffusion PLM 需要学会在采样中协调约束，而不是只叠加 conditioning vectors。
+
+## DPLM-Evo：编辑，而不是重生
+
+masked diffusion 默认从全 mask 生成。真实进化不是这样。蛋白通常从已有序列出发，经过 substitution、insertion、deletion。
+
+[DPLM-Evo](https://arxiv.org/abs/2605.00182) 把 denoising action 改写成进化编辑：
+
+<MathBlock tex={String.raw`\mathcal{A}_{\mathrm{evo}}=\{\mathrm{substitute},\mathrm{insert},\mathrm{delete}\}`} />
+
+长度变化是核心难点。DPLM-Evo 引入 upsampled-length latent alignment space。观测序列 <MathInline tex={String.raw`x`} /> 对齐到带 gap 的 latent 序列 <MathInline tex={String.raw`z`} />：
+
+<MathBlock tex={String.raw`z=(z_1,\dots,z_M),\qquad z_j\in\mathcal{V}_{aa}\cup\{\mathrm{gap}\},\qquad M\ge L`} />
+
+删除是 amino acid 变 gap。插入是 gap 长出新 token。替换是非 gap 位置换残基。
+
+它还把 noising kernel 生物化。uniform mutation 不区分 Ile 到 Leu 和 Trp 到 Asp。BLOSUM-informed kernel 写成：
+
+<MathBlock tex={String.raw`Q_{ij}^{\mathrm{BLOSUM}}=\frac{\exp(S_{ij}/\tau)}{\sum_k\exp(S_{ik}/\tau)}`} />
+
+<MathInline tex={String.raw`S_{ij}`} /> 是 BLOSUM62 的 log-odds score。<MathInline tex={String.raw`\tau`} /> 控制熵。<MathInline tex={String.raw`\tau\rightarrow\infty`} /> 接近 uniform。<MathInline tex={String.raw`\tau\rightarrow 0`} /> 偏向保守突变。
+
+更进一步的是 contextualized kernel。同一个氨基酸，在不同序列上下文里，突变倾向不同。DPLM-Evo 把生成过程写成可解释的变体轨迹，更贴近 directed evolution 和 protein optimization。
+
+## 读论文先看哪些图
+
+<table>
+  <thead>
+    <tr>
+      <th>论文 / 项目</th>
+      <th>先看</th>
+      <th>看什么</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="https://github.com/microsoft/evodiff">EvoDiff</a></td>
+      <td>README overview 和论文方法图</td>
+      <td>OADM、D3PM、MSA diffusion 如何落在 sequence space。</td>
+    </tr>
+    <tr>
+      <td><a href="https://arxiv.org/abs/2402.18567">DPLM</a></td>
+      <td>Figure 1</td>
+      <td>generation、representation、conditional sampling 如何共用一个 diffusion PLM。</td>
+    </tr>
+    <tr>
+      <td><a href="https://arxiv.org/abs/2410.13782">DPLM-2</a></td>
+      <td>Figure 2 和 Figure 3</td>
+      <td>LFQ tokenizer，以及 sequence-structure co-generation。</td>
+    </tr>
+    <tr>
+      <td><a href="https://arxiv.org/abs/2403.03726">DiMA</a></td>
+      <td>Figure 1 和 encoder 表格</td>
+      <td>PLM encoder、denoiser、decoder 的三段式流程。</td>
+    </tr>
+    <tr>
+      <td><a href="https://arxiv.org/abs/2506.08293">DSM</a></td>
+      <td>Figure 1</td>
+      <td>ESM2-style pLM 如何改成 masked diffusion。</td>
+    </tr>
+    <tr>
+      <td><a href="https://arxiv.org/abs/2410.16735">MeMDLM</a></td>
+      <td>Figure 1</td>
+      <td>SUBS noising / denoising 如何服务膜蛋白设计。</td>
+    </tr>
+    <tr>
+      <td><a href="https://arxiv.org/abs/2605.00182">DPLM-Evo</a></td>
+      <td>Figure 1 和 sampling algorithm</td>
+      <td>mask recovery 如何变成 substitution / insertion / deletion。</td>
+    </tr>
+    <tr>
+      <td><a href="https://arxiv.org/abs/2605.27413">ProtLiD²</a></td>
+      <td>model overview 和 ReMask decoding</td>
+      <td>ligand geometry 如何进入 token-space co-design。</td>
+    </tr>
+  </tbody>
+</table>
+
+## 怎么选
+
+固定 motif、补 loop、局部重设计：优先离散 masked diffusion。约束是 token 级，直接 clamp。
+
+family generation、fold-specific design、属性控制：优先 latent diffusion。连续空间平滑，条件容易接，代价是 decoder 风险。
+
+序列和结构同时生成：看 DPLM-2、HD-Prot、PLAID、ProtLiD²。重点是 refold 后是否仍接近生成结构。
+
+已有蛋白优化：看 DPLM-Evo、guided discrete diffusion、LaMBO-2。目标是编辑轨迹，不是从全 mask 重生。
+
+膜蛋白：看 MeMDLM / MemDLM。短肽和 AMP：看 AMP-Diffusion、PepTune、High-PepBinder。配体口袋：看 ProtLiD²、MMCP-GEN，以及 RFdiffusion3、BoltzGen 这类 all-atom 方法。
+
+## 当前瓶颈
+
+评价间接。pLDDT、TM-score、scRMSD 能筛 foldability，不能替代表达、活性、毒性、免疫原性和真实 binding。
+
+结构 token 有损失。DPLM-2 证明路线可行。DPLM-2.1 和 HD-Prot 说明离散 index 还不够。
+
+guidance 会冲突。稳定性、功能、溶解性、口袋几何、motif 保真，往往不能同时最优。
+
+长度变化难。mask diffusion 天然偏固定长度。DPLM-Evo 是进展，但 variable-length generation 仍不成熟。
+
+PLM prior 和 all-atom geometry 尚未合拢。前者懂进化统计。后者懂空间相互作用。后续强模型大概率会把二者接起来。
+
+## 最后一层抽象
+
+蛋白序列扩散模型，不是一种算法，而是一组关于噪声空间的选择。
+
+<MathBlock tex={String.raw`\text{token}\rightarrow\text{latent}\rightarrow\text{structure token}\rightarrow\text{edit trajectory}`} />
+
+EvoDiff 证明 sequence-space diffusion 可行。DPLM 把 diffusion 变成 pLM pretraining。DiMA 把噪声放进 PLM latent。DPLM-2 和 HD-Prot 把结构并入生成过程。DPLM-Evo 把去噪改写成进化编辑。
+
+读模型时，先问它在哪里加噪声。这个问题回答清楚，公式、条件接口、优势和失败模式都会清楚。
+
+## 参考文献
+
+1. Austin et al., [Structured Denoising Diffusion Models in Discrete State-Spaces](https://arxiv.org/abs/2107.03006), 2021.
+2. Sahoo et al., [Simple and Effective Masked Diffusion Language Models](https://arxiv.org/abs/2406.07524), 2024.
+3. Alamdari et al., [Protein generation with evolutionary diffusion: sequence is all you need](https://www.microsoft.com/en-us/research/publication/protein-generation-with-evolutionary-diffusion-sequence-is-all-you-need/), bioRxiv 2024, [EvoDiff GitHub](https://github.com/microsoft/evodiff).
+4. Wang et al., [Diffusion Language Models Are Versatile Protein Learners](https://arxiv.org/abs/2402.18567), ICML 2024.
+5. Wang et al., [DPLM-2: A Multimodal Diffusion Protein Language Model](https://arxiv.org/abs/2410.13782), 2024.
+6. Meshchaninov et al., [Diffusion on Language Model Encodings for Protein Sequence Generation](https://arxiv.org/abs/2403.03726), 2024.
+7. Hallee et al., [Diffusion Sequence Models for Enhanced Protein Representation and Generation](https://arxiv.org/abs/2506.08293), 2025.
+8. Goel et al., [MeMDLM: De Novo Membrane Protein Design with Masked Discrete Diffusion Protein Language Models](https://arxiv.org/abs/2410.16735), 2024.
+9. Wang et al., [Towards A Generative Protein Evolution Machine with DPLM-Evo](https://arxiv.org/abs/2605.00182), 2026.
+10. Zhou et al., [HD-Prot: A Protein Language Model for Joint Sequence-Structure Modeling with Continuous Structure Tokens](https://arxiv.org/abs/2512.15133), 2025.
+11. Wei et al., [Ligand-Conditioned Discrete Diffusion for Protein Sequence-Structure Co-Design](https://arxiv.org/abs/2605.27413), 2026.
+12. Yin et al., [CFP-Gen: Combinatorial Functional Protein Generation via Diffusion Language Models](https://arxiv.org/abs/2505.22869), 2025.
+13. An et al., [MMCP-GEN: A Modality-Extensible Diffusion Language Model for Conditional Protein Sequence Generation](https://openaccess.thecvf.com/content/CVPR2026/html/An_MMCP-GEN_A_Modality-Extensible_Diffusion_Language_Model_for_Conditional_Protein_Sequence_CVPR_2026_paper.html), CVPR 2026.

@@ -47,6 +47,27 @@ export const blogPosts: BlogPost[] = [
     ]
   },
   {
+    "slug": "protein-sequence-diffusion-models-cn",
+    "title": "蛋白序列扩散模型详解",
+    "summary": "从 token、PLM latent、结构 token 到进化编辑，梳理蛋白序列扩散模型的噪声空间、关键公式和代表论文。",
+    "date": "2026-06-23",
+    "readingTime": "10 min read",
+    "sourceType": "mdx",
+    "href": "/blog/protein-sequence-diffusion-models-cn/",
+    "image": "/assets/blog/protein-sequence-diffusion-models-cn/fig1-taxonomy.svg",
+    "category": "Technical explainers",
+    "language": "zh",
+    "source": {
+      "status": "original",
+      "note": "基于截至 2026-06-23 的本地调研报告，并核对 EvoDiff、DPLM、DPLM-2、DiMA、DSM、MeMDLM、DPLM-Evo 等一手论文和项目页面写成。"
+    },
+    "tags": [
+      "protein design",
+      "diffusion models",
+      "protein language models"
+    ]
+  },
+  {
     "slug": "vla-wam-world-models-cn",
     "title": "VLA、世界模型与 WAM：机器人模型到底在学什么",
     "summary": "从学习目标区分 VLA、世界模型与 WAM：VLA 直接生成动作，世界模型预测动作后果，WAM 将动作和未来状态联合建模。",
