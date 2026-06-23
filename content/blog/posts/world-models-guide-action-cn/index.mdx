@@ -1,0 +1,127 @@
+import { MathBlock, MathInline } from "@/components/math-block";
+
+讨论世界模型时，人们常先看生成效果：未来画面是否连贯，物体运动是否逼真，长视频会不会崩。对机器人和具身智能来说，这些当然重要，但还不是核心问题。真正关键的是：模型预测出来的未来，能不能帮助智能体选择下一步动作。
+
+一个机器人面对同一张桌子，可以抓杯子、推盒子、绕开障碍，也可以先移动视角。世界模型的价值，是在动作发生之前估计这些选择会带来什么后果。动作还没有执行，系统已经能比较几个可能的未来，再把更合适的一步交给策略、规划器、价值函数或奖励模型。([Dyna](https://dl.acm.org/doi/10.1145/122344.122377), [PlaNet](https://arxiv.org/abs/1811.04551), [Dreamer](https://arxiv.org/abs/1912.01603))
+
+沿着这条线看，世界模型的发展不是从低清视频走向高清视频，而是从被动预测走向行动闭环。
+
+## 行动需要可查询的未来
+
+能指导行动的世界模型，至少要支持一种查询：在当前状态下，如果执行某个动作或动作序列，未来会怎样变化。这个未来可以是像素，可以是 latent state，可以是奖励、价值、可达性，也可以是几何关系和接触状态。形式不同，但接口是同一个：用动作问未来。
+
+<MathBlock tex={String.raw`\begin{aligned}
+\hat{\tau}_{t:t+H} &\sim p_{\theta}(z_{t+1:t+H}, r_{t:t+H} \mid z_{\le t}, a_{t:t+H}) \\
+a_t &= \arg\max_{a \in \mathcal{A}} U(\hat{\tau}_{t:t+H}(a), l)
+\end{aligned}`} />
+
+这里的 <MathInline tex={String.raw`z_t`} /> 是内部状态，<MathInline tex={String.raw`a_t`} /> 是动作，<MathInline tex={String.raw`r_t`} /> 是奖励或任务反馈，<MathInline tex={String.raw`l`} /> 是语言目标，<MathInline tex={String.raw`U`} /> 是评估未来好坏的函数。这个式子不对应某个固定算法，只是说明世界模型在行动系统里的位置：模型回答“会怎样”，行动系统判断“哪一个未来更值得执行”。([Model-based RL Survey](https://arxiv.org/abs/2006.16712), [MuZero](https://arxiv.org/abs/1911.08265), [TD-MPC2](https://arxiv.org/abs/2310.16828))
+
+<figure>
+  <img src="/assets/blog/world-models-guide-action-cn/three-paradigms.jpg" alt="Three paradigms for world models" />
+  <figcaption>图 1. 世界模型可以是 3D 场景模拟、交互式视频，也可以是 latent world representation。放到行动问题里看，形式不是第一位的，关键是模型能否稳定回答动作条件下的未来。来源：CMU Generative AI Lecture，本地课件。</figcaption>
+</figure>
+
+## 从控制问题开始
+
+世界模型不是视频生成时代才出现的概念。Sutton 的 Dyna 已经把 learning、planning 和 reacting 放在同一个框架里：智能体从真实交互中学习模型，再用模型生成假想经验，更新价值或策略。真实交互昂贵，所以先在内部模型里多走几步，这是世界模型指导行动最早也最清楚的思想。([Dyna](https://dl.acm.org/doi/10.1145/122344.122377))
+
+PILCO 把这个思想带进连续控制。它学习概率动力学模型，把不确定性带入长程规划，因此能用很少的真实试验学习控制策略。这里已经能看到世界模型的基本承诺：如果模型足够可靠，智能体就能少试错、多规划。([PILCO](https://dl.acm.org/doi/10.5555/3104482.3104541))
+
+深度学习之后，Ha 和 Schmidhuber 的 World Models 用视觉编码器、记忆模型和控制器重讲了这件事。PlaNet 和 Dreamer 继续把重点放到 latent dynamics 上：模型不必重建每个像素，只要内部状态足够支持规划或策略学习，就能帮助行动。([World Models](https://arxiv.org/abs/1803.10122), [PlaNet](https://arxiv.org/abs/1811.04551), [Dreamer](https://arxiv.org/abs/1912.01603))
+
+Dreamer 的关键一步，是把“想象未来”变成可训练的接口。模型学习：
+
+<MathBlock tex={String.raw`p_{\theta}(z_{t+1}, r_t \mid z_t, a_t)`} />
+
+actor 和 critic 再在 latent rollout 中学习行为。这里的未来不是给人看的演示片，而是一批可以估值、可以反向传播、可以训练策略的内部轨迹。([Dreamer](https://arxiv.org/abs/1912.01603), [DreamerV3](https://arxiv.org/abs/2301.04104))
+
+## 预测什么由任务决定
+
+很多有效的世界模型并不追求像素重建。MuZero 学的是对搜索有用的 reward、policy 和 value；Value Prediction Network 学抽象动态来预测未来价值；TD-MPC 和 TD-MPC2 学面向控制的 latent dynamics，并不要求把观测完整解码回来。([MuZero](https://arxiv.org/abs/1911.08265), [Value Prediction Network](https://proceedings.neurips.cc/paper/2017/hash/ffbd6cbb019a1413183c8d08f2929307-Abstract.html), [TD-MPC](https://arxiv.org/abs/2203.04955), [TD-MPC2](https://arxiv.org/abs/2310.16828))
+
+所以，“世界模型预测什么”要由行动任务决定。游戏控制可能更需要奖励和价值；机器人操作可能更需要接触、遮挡、物体关系和任务进度；自动驾驶可能更需要轨迹、占用、风险和多智能体交互。像素很直观，但不总是最有效的训练目标。([World Models survey](https://arxiv.org/abs/2606.00133), [World Models for Robotic Manipulation](https://arxiv.org/abs/2606.00113))
+
+JEPA 路线也在强调这一点。I-JEPA 和 V-JEPA 不生成完整图像或视频，而是在表征空间预测缺失部分或未来片段。V-JEPA 2 进一步把大规模视频自监督和少量机器人交互数据结合，目标指向理解、预测、规划和机器人控制。([I-JEPA](https://arxiv.org/abs/2301.08243), [V-JEPA](https://arxiv.org/abs/2404.08471), [V-JEPA 2](https://arxiv.org/abs/2506.09985))
+
+## 视频世界模型的关键是动作接口
+
+视频世界模型重新变重要，不是因为视频更漂亮，而是很多真实任务的状态变化本来就藏在视觉里：门有没有被推开，杯子有没有滑动，机械臂有没有碰到目标，车道里有没有新障碍。对机器人、自动驾驶、游戏环境和开放世界智能体来说，视觉未来承载了空间、接触和对象运动。([UniSim](https://arxiv.org/abs/2310.06114), [GAIA-1](https://arxiv.org/abs/2309.17080), [Cosmos WFM](https://arxiv.org/abs/2501.03575))
+
+但视频模型要进入行动系统，必须接入动作。PAN 这类工作把观测编码成 latent world state，再在动作和历史条件下预测未来 latent，最后用 decoder 还原视觉结果。读这类模型时，应把视频输出和动作条件 latent transition 分开看：decoder 决定未来长什么样，latent transition 决定动作怎样改变世界。([PAN](https://arxiv.org/abs/2511.09057), [Interactive Video World Modeling](https://arxiv.org/abs/2606.01164))
+
+<figure>
+  <img src="/assets/blog/world-models-guide-action-cn/pan-latent-world-model.jpg" alt="PAN latent world model" />
+  <figcaption>图 2. PAN 将观测映射到 latent world state，在动作条件下做长时预测，再由 decoder 生成视觉结果。图里的黄色模块是行动问题最关心的部分：它把历史、动作和未来状态连接起来。来源：PAN Team, <a href="https://arxiv.org/abs/2511.09057">PAN</a>，本地课件裁剪。</figcaption>
+</figure>
+
+Genie 解决的是另一个入口：互联网上有大量视频，却没有动作标签。它从无动作标签视频中学习 latent action，让生成环境可以被逐帧控制。它学的不是单纯的 <MathInline tex={String.raw`p(x_{1:T} \mid prompt)`} />，而是开始靠近 <MathInline tex={String.raw`p(x_{t+1:t+H} \mid x_{\le t}, a_{t:t+H})`} />。([Genie](https://arxiv.org/abs/2402.15391))
+
+<figure>
+  <img src="/assets/blog/world-models-guide-action-cn/genie-latent-action.jpg" alt="Genie latent action architecture" />
+  <figcaption>图 3. Genie 用 video tokenizer、latent action model 和 dynamics model，把无标注视频转成可交互环境。这里真正值得注意的是黄色的 latent action model：动作接口可以从视频中自监督学出来。来源：Bruce et al., <a href="https://arxiv.org/abs/2402.15391">Genie</a>，本地课件裁剪。</figcaption>
+</figure>
+
+## 和机器人基础模型的关系
+
+机器人里还有一条更短的路线：VLA 直接从视觉、语言和机器人状态输出动作。它的优点是推理路径短，工程上容易接到真实机器人，语义泛化也能从视觉语言预训练中受益。它的限制也清楚：训练目标通常不强迫模型显式回答“这个动作之后世界会怎样”。([RT-1](https://arxiv.org/abs/2212.06817), [RT-2](https://arxiv.org/abs/2307.15818), [OpenVLA](https://arxiv.org/abs/2406.09246), [π0](https://arxiv.org/abs/2410.24164))
+
+WAM 可以看成世界模型向动作生成靠近之后的结果。它希望动作不只是从数据里拟合出来，而是和预测到的未来绑定在一起。这里不再展开 VLA、世界模型和 WAM 的完整区别；那更适合作为概念辨析单独讲。这篇文章只保留一个判断：当任务需要长程前瞻、失败预判和物理可达性时，世界模型才真正有机会进入机器人行动链路。([World Action Models](https://arxiv.org/abs/2605.12090), [DreamZero](https://arxiv.org/abs/2602.15922), [GigaWorld-Policy](https://arxiv.org/abs/2603.17240))
+
+## 当前研究在补什么
+
+第一，世界模型正在和搜索结合。FLIP 用 flow proposal、video dynamics 和 value model 做长程视觉规划；STORM 让 VLA 提出候选动作，再用视频世界模型模拟后果，最后用 MCTS 筛选。关键链条是：动作候选、后果模拟、搜索筛选。([FLIP](https://arxiv.org/abs/2412.08261), [STORM](https://arxiv.org/abs/2512.18477))
+
+第二，世界模型正在成为策略训练环境。World-Gymnast、WMPO 和 VLA-MBPO 都在把 video-generative world model 接到 VLA 的 RL 或 post-training 流程中。这个方向很像 Dyna 的现代版本：真实交互少，就在世界模型里多训练。([World-Gymnast](https://arxiv.org/abs/2602.02454), [WMPO](https://arxiv.org/abs/2511.09515), [VLA-MBPO](https://arxiv.org/abs/2603.20607))
+
+第三，价值和奖励重新变成核心。世界模型回答“会发生什么”，但行动还要回答“哪个未来更好”。未来预测如果没有 value 或 reward 接口，很难直接变成可靠行动。([World-Value-Action Model](https://arxiv.org/abs/2604.14732), [ViVa](https://arxiv.org/abs/2604.08168))
+
+第四，latent action learning 正在解决动作标签稀缺。要让互联网视频成为世界模型训练数据，就必须从视频里抽取可迁移、可对齐、可控制的 latent action。Genie、AdaWorld、Olaf-World、DiLA 都在处理这个问题。([AdaWorld](https://arxiv.org/abs/2503.18938), [Olaf-World](https://arxiv.org/abs/2602.10104), [DiLA](https://arxiv.org/abs/2605.15725))
+
+<figure>
+  <img src="/assets/blog/world-models-guide-action-cn/adaworld-framework.jpg" alt="AdaWorld action-aware pretraining framework" />
+  <figcaption>图 4. AdaWorld 把 action-agnostic pretraining 改成 action-aware pretraining。它的重点不是生成更好看的视频，而是在预训练阶段学出 latent action interface，让世界模型更容易迁移到新的机器人动作空间。来源：Gao et al., <a href="https://arxiv.org/abs/2503.18938">AdaWorld</a>，论文 PDF 页面裁剪。</figcaption>
+</figure>
+
+第五，几何一致性和可验证性会越来越重要。视频 rollout 可能看起来合理，却在点级运动、接触和可达性上出错。GEM-4D 和 World Action Verifier 都在提醒同一件事：世界模型要进入行动闭环，不能只靠视觉逼真，还要能被验证。([GEM-4D](https://arxiv.org/abs/2605.22882), [World Action Verifier](https://arxiv.org/abs/2604.01985))
+
+## 论文顺序
+
+下面这组论文按文章的叙述顺序排列，读下来可以看到这条路线怎样从 model-based RL 走到机器人世界模型。
+
+1. Sutton, [Dyna](https://dl.acm.org/doi/10.1145/122344.122377), 1991。理解 learning、planning、reacting 的早期统一框架。
+2. Deisenroth and Rasmussen, [PILCO](https://dl.acm.org/doi/10.5555/3104482.3104541), 2011。理解概率动力学模型和数据高效控制。
+3. Moerland et al., [Model-based Reinforcement Learning: A Survey](https://arxiv.org/abs/2006.16712), 2020。理解 MBRL 的大框架。
+4. Ha and Schmidhuber, [World Models](https://arxiv.org/abs/1803.10122), 2018。理解 V-M-C 和梦中训练控制器。
+5. Hafner et al., [PlaNet](https://arxiv.org/abs/1811.04551), 2018。理解从像素学习 latent dynamics 并规划。
+6. Hafner et al., [Dreamer](https://arxiv.org/abs/1912.01603), 2019。理解 imagined rollout 如何训练 actor 和 critic。
+7. Schrittwieser et al., [MuZero](https://arxiv.org/abs/1911.08265), 2019。理解世界模型不一定要重建观测。
+8. Hansen et al., [TD-MPC](https://arxiv.org/abs/2203.04955), 2022。理解 task-oriented latent dynamics 和 MPC。
+9. Hansen et al., [TD-MPC2](https://arxiv.org/abs/2310.16828), 2023。理解 decoder-free world model。
+10. Wu et al., [DayDreamer](https://arxiv.org/abs/2206.14176), 2022。理解世界模型在真实机器人上的早期应用。
+11. Assran et al., [I-JEPA](https://arxiv.org/abs/2301.08243), 2023。理解非生成式表征预测。
+12. Bardes et al., [V-JEPA](https://arxiv.org/abs/2404.08471), 2024。理解视频 feature prediction。
+13. Assran et al., [V-JEPA 2](https://arxiv.org/abs/2506.09985), 2025。理解视频世界模型如何接到 planning 和 robot control。
+14. Bruce et al., [Genie](https://arxiv.org/abs/2402.15391), 2024。理解 latent action 和可交互生成环境。
+15. Yang et al., [UniSim](https://arxiv.org/abs/2310.06114), 2023。理解 action-in/video-out learned simulator。
+16. Hu et al., [GAIA-1](https://arxiv.org/abs/2309.17080), 2023。理解自动驾驶里的 generative world model。
+17. NVIDIA et al., [Cosmos WFM](https://arxiv.org/abs/2501.03575), 2025。理解 world foundation model 平台化。
+18. PAN Team, [PAN](https://arxiv.org/abs/2511.09057), 2025。理解长时交互式 latent world simulation。
+19. Liu et al., [Towards Interactive Video World Modeling](https://arxiv.org/abs/2606.01164), 2026。理解 interactive video world model 的综述脉络。
+20. Ahn et al., [SayCan](https://arxiv.org/abs/2204.01691), 2022。理解语言计划需要可执行性约束。
+21. Brohan et al., [RT-2](https://arxiv.org/abs/2307.15818), 2023。理解 VLA 和动作 token 化。
+22. Kim et al., [OpenVLA](https://arxiv.org/abs/2406.09246), 2024。理解开放 VLA 的标准形态。
+23. Wang et al., [World Action Models](https://arxiv.org/abs/2605.12090), 2026。理解 WAM 定义和 taxonomy。
+24. Ye et al., [GigaWorld-Policy](https://arxiv.org/abs/2603.17240), 2026。理解 action-centered WAM。
+25. Gao et al., [FLIP](https://arxiv.org/abs/2412.08261), 2024。理解 flow proposal、world rollout 和 value model 的组合。
+26. Lin et al., [STORM](https://arxiv.org/abs/2512.18477), 2025。理解视频 rollout + MCTS 的搜索路线。
+27. Sharma et al., [World-Gymnast](https://arxiv.org/abs/2602.02454), 2026。理解在世界模型里训练机器人策略。
+28. Gao et al., [AdaWorld](https://arxiv.org/abs/2503.18938), 2025。理解 latent action pretraining。
+29. Liu et al., [World Action Verifier](https://arxiv.org/abs/2604.01985), 2026。理解世界模型的自我验证。
+30. Zhou et al., [GEM-4D](https://arxiv.org/abs/2605.22882), 2026。理解几何一致性为什么影响行动。
+
+## 小结
+
+世界模型的主线不是把未来画得更像，而是让未来预测进入动作选择。Dyna、PlaNet、Dreamer 说明世界模型可以用来规划和训练策略；MuZero、TD-MPC、JEPA 说明有用的未来不一定是像素；Genie、PAN、AdaWorld 说明视频模型只有接入动作接口，才更接近可交互世界模型。
+
+所以，世界模型不是策略模型的替代品。它在行动系统里的位置更具体：让智能体在真正执行之前，先比较几个可能的未来。能做到这一点，世界模型才从预测器变成行动的一部分。
