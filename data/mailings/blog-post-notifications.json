@@ -27,5 +27,13 @@
     "provider": "buttondown",
     "providerMessageId": "em_1m0xcj5va290b8dxct3j6vccdz",
     "status": "about_to_send"
+  },
+  "world-models-guide-action-cn": {
+    "contentSha256": "484c94e2dfb55c6f88dc99e2184e26ed29ca43a9f4bd129c36fdeec80faa1fa0",
+    "notifiedAt": "2026-06-23T07:10:56.051Z",
+    "postTitle": "世界模型如何指导行动",
+    "provider": "buttondown",
+    "providerMessageId": "em_2zbfjdz0sw8v1r8ndsxydsm9wf",
+    "status": "about_to_send"
   }
 }
