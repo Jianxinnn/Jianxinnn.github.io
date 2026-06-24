@@ -4,6 +4,7 @@ import FlowMatchingDiffusionModelsCn from "@/content/blog/posts/flow-matching-di
 import ProteinSequenceDiffusionModelsCn from "@/content/blog/posts/protein-sequence-diffusion-models-cn/index.mdx";
 import VlaWamWorldModelsCn from "@/content/blog/posts/vla-wam-world-models-cn/index.mdx";
 import WhatAreWorldModelsCn from "@/content/blog/posts/what-are-world-models-cn/index.mdx";
+import WorldModelVideoRoutesCn from "@/content/blog/posts/world-model-video-routes-cn/index.mdx";
 import WorldModelsGuideActionCn from "@/content/blog/posts/world-models-guide-action-cn/index.mdx";
 
 export const blogPostContent: Record<string, ComponentType> = {
@@ -11,5 +12,6 @@ export const blogPostContent: Record<string, ComponentType> = {
   "protein-sequence-diffusion-models-cn": ProteinSequenceDiffusionModelsCn,
   "vla-wam-world-models-cn": VlaWamWorldModelsCn,
   "what-are-world-models-cn": WhatAreWorldModelsCn,
+  "world-model-video-routes-cn": WorldModelVideoRoutesCn,
   "world-models-guide-action-cn": WorldModelsGuideActionCn
 };

@@ -110,6 +110,27 @@ export const blogPosts: BlogPost[] = [
     ]
   },
   {
+    "slug": "world-model-video-routes-cn",
+    "title": "Sora、JEPA、Genie、Marble 的技术路线",
+    "summary": "比较 Sora、JEPA、Genie、Marble 的变量、目标和接口，围绕 video latent、表征预测、latent action dynamics 与 3D world state。",
+    "date": "2026-06-24",
+    "readingTime": "5 min read",
+    "sourceType": "mdx",
+    "href": "/blog/world-model-video-routes-cn/",
+    "image": "/assets/blog/world-model-video-routes-cn/fig1-sora.png",
+    "category": "Technical explainers",
+    "language": "zh",
+    "source": {
+      "status": "original",
+      "note": "基于 OpenAI、Meta、Google DeepMind、World Labs 官方资料及相关论文整理，信息核对至 2026-06-24。"
+    },
+    "tags": [
+      "world models",
+      "physical AI",
+      "diffusion models"
+    ]
+  },
+  {
     "slug": "world-models-guide-action-cn",
     "title": "世界模型如何指导行动",
     "summary": "以动作闭环为主线，梳理世界模型从 model-based RL、latent dynamics 到交互式视频模型和机器人行动接口的发展脉络。",

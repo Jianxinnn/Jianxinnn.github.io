@@ -1,0 +1,190 @@
+import { MathBlock, MathInline } from "@/components/math-block";
+
+Sora、JEPA、Genie、Marble 是四条从视觉数据学习世界结构的路线。Sora 在 video latent 上生成 observation，JEPA 预测 representation，Genie 学 latent-action dynamics，Marble 生成 3D world state。
+
+<MathBlock tex={String.raw`\begin{aligned}
+\text{Sora}&\quad c \rightarrow x_{1\ldots T} \\
+\text{JEPA}&\quad (x_A, B) \rightarrow h_B \\
+\text{Genie}&\quad (z_{\le t}, a_t^\ell) \rightarrow z_{t+1} \\
+\text{Marble}&\quad c \rightarrow W
+\end{aligned}`} />
+
+容易混的是两件事。生成 observation，不等于建模 action-conditioned transition。前者问“画面会是什么”。后者问“我做了动作以后，状态怎么变”。
+
+<MathBlock tex={String.raw`p_\theta(x_{1\ldots T}\mid c) \quad \neq \quad p_\theta(s_{t+1}\mid s_t,a_t)`} />
+
+## Sora 的 video latent renderer
+
+Sora 的问题是给定条件 <MathInline tex={String.raw`c`} />，生成一段视频 <MathInline tex={String.raw`x_{1\ldots T}`} />。它先把视频压到 latent，再切成 spacetime patches，最后用 diffusion Transformer 在 patch 序列上去噪。
+
+<MathBlock tex={String.raw`y = E_{\mathrm{vid}}(x_{1\ldots T}), \qquad p = \mathrm{Patchify}(y)`} />
+
+<MathBlock tex={String.raw`\mathcal{L}_{\mathrm{diff}}=\mathbb{E}_{p,\epsilon,\tau,c}\left[\lVert \epsilon-\epsilon_\theta(\tilde p_\tau,c,\tau)\rVert_2^2\right]`} />
+
+<MathBlock tex={String.raw`\hat{x}_{1\ldots T}=D_{\mathrm{vid}}\left(\mathrm{Unpatchify}(\hat p_0)\right)`} />
+
+OpenAI 公开的技术路线是视频压缩到 latent space，切成 spacetime patches，Transformer 学习从 noisy patches 预测 clean patches。([OpenAI Sora report](https://openai.com/index/video-generation-models-as-world-simulators/))
+
+<figure>
+  <img src="/assets/blog/world-model-video-routes-cn/fig1-sora.png" alt="Sora route as diffusion transformer video generation in latent space" />
+  <figcaption>图 1. Sora 路线。视频压缩到 latent，切成时空 patch，由 diffusion Transformer 去噪，再解码成视频 observation。</figcaption>
+</figure>
+
+Sora 的能力来自大规模视频生成目标。3D consistency、object permanence、简单交互痕迹，都被压在 latent 和 denoising network 里。OpenAI 也说这些能力不是显式 3D、物体或物理模块带来的，而是规模化训练后的现象。([OpenAI Sora simulation capabilities](https://openai.com/index/video-generation-models-as-world-simulators/))
+
+问题也在这里。Sora 没有公开的状态变量 <MathInline tex={String.raw`z_t`} />，也没有动作输入 <MathInline tex={String.raw`a_t`} />。它能回答这个问题。
+
+<MathBlock tex={String.raw`\text{given } c,\ \text{what video is likely?}`} />
+
+它不能以环境模型的形式回答另一个问题。
+
+<MathBlock tex={String.raw`\text{given } (s_t,a_t),\ \text{what is } s_{t+1}?`} />
+
+所以 Sora 更像 renderer。把它叫 world simulator 可以，但含义必须很窄。它在视频生成中隐式吸收了世界规律。按机器人或 model-based RL 的接口，它缺的是 transition。
+
+## JEPA 不画像素，只预测表征
+
+JEPA 的问题是给定可见部分，预测被遮住或未来部分的 representation。它不生成 pixels。它让 predictor 在 embedding space 里对齐 target encoder 的输出。
+
+<MathBlock tex={String.raw`h_A = E_\phi(x_A), \qquad h_B = E_{\bar\phi}(x_B)`} />
+
+<MathBlock tex={String.raw`\hat h_B=P_\theta(h_A,\mathrm{pos}(B)), \qquad \mathcal{L}_{\mathrm{JEPA}}=d(\hat h_B,\mathrm{sg}(h_B))`} />
+
+Meta 对 V-JEPA 的说法很清楚。这是 non-generative model，在 abstract representation space 里预测 video 的 missing 或 masked parts，不预测像素。([Meta V-JEPA](https://ai.meta.com/blog/v-jepa-yann-lecun-ai-model-video-joint-embedding-predictive-architecture/))
+
+<figure>
+  <img src="/assets/blog/world-model-video-routes-cn/fig2-jepa.png" alt="JEPA route as representation prediction with context encoder target encoder and predictor" />
+  <figcaption>图 2. JEPA 路线。context encoder 编码可见部分，predictor 预测 target encoder 给出的目标表征。</figcaption>
+</figure>
+
+Sora 追求 observation quality。JEPA 追求 representation predictability。这个差别比“生成式”和“非生成式”更重要。
+
+<MathBlock tex={String.raw`\text{Sora}\quad p_\theta(x_{1\ldots T}\mid c), \qquad \text{JEPA}\quad p_\theta(h_B\mid h_A,\mathrm{pos}(B))`} />
+
+普通 V-JEPA 不是动作条件世界模型。它没有显式学习 <MathInline tex={String.raw`p(z_{t+1}\mid z_t,a_t)`} />。它学的是“世界在表征空间里哪些部分可预测”。代价是没有自然的可视输出，也没有天然的动作闭环。
+
+V-JEPA 2-AC 才把动作接进去。V-JEPA 2 先用超过 100 万小时互联网视频做 action-free 预训练，再用少于 62 小时 DROID 机器人视频训练 action-conditioned world model，用于 image-goal planning。([V-JEPA 2](https://arxiv.org/abs/2506.09985))
+
+动作版 JEPA 可以写成
+
+<MathBlock tex={String.raw`\hat z_{t+1}=F_\psi(z_{\le t},a_{\le t},q_{\le t})`} />
+
+这里 <MathInline tex={String.raw`q_t`} /> 可以理解为机器人状态或末端执行器信息。JEPA 路线的价值不是“生成一个世界画面”，而是先学一个紧的预测表征，再把 action dynamics 接到这个表征上。
+
+## Genie 把动作接到 video tokens 上
+
+Genie 补的是 Sora 缺的动作接口。它不是一次性生成一段视频，而是在每一步接收 action，再生成下一帧 observation。
+
+<MathBlock tex={String.raw`z_t=\mathrm{Tokenizer}(o_t)`} />
+
+<MathBlock tex={String.raw`a_t^\ell=\mathrm{LAM}(o_t,o_{t+1})`} />
+
+<MathBlock tex={String.raw`p_\theta(z_{t+1}\mid z_{\le t},a_t^\ell)`} />
+
+Genie 的三块结构是 spatiotemporal video tokenizer、latent action model、autoregressive dynamics model。训练数据是无标签互联网视频，没有真实 action labels。因此 latent action model 从相邻帧变化里学离散动作代码。([Genie](https://arxiv.org/abs/2402.15391))
+
+<figure>
+  <img src="/assets/blog/world-model-video-routes-cn/fig3-genie.png" alt="Genie route as latent action model and dynamics model for interactive environment generation" />
+  <figcaption>图 3. Genie 路线。从视频中学 latent action，用动作和历史 video tokens 预测下一帧 tokens。</figcaption>
+</figure>
+
+Genie 的强点很明确。它把视频生成改造成 action-conditioned observation prediction。
+
+<MathBlock tex={String.raw`(o_{\le t},a_t^\ell)\rightarrow o_{t+1}`} />
+
+但 Genie 的 state 仍是 video tokens。它不是显式几何状态，不是刚体状态，不是接触、材料、力的状态。动作也是 learned latent action，不是真实机器人控制量。
+
+因此 Genie 比 Sora 更接近 world model 的接口，但它仍更像 action-conditioned renderer。它解决了“能不能控制下一帧”的问题，没有完全解决“状态能不能被物理和规划系统直接查询”的问题。
+
+## Marble 把输入 lift 成 3D world state
+
+Marble 的问题不是下一帧，而是空间。给定文本、图像、视频或粗 3D layout，它生成一个可浏览、可编辑、可导出的 3D world。
+
+<MathBlock tex={String.raw`W\sim G_\theta(c)`} />
+
+<MathBlock tex={String.raw`W=\{\mathrm{3DGS},\mathrm{mesh},\mathrm{collider},\mathrm{camera\ paths}\}`} />
+
+World Labs 写明 Marble 可以从 text、image、video、coarse 3D layouts 创建 3D worlds，并支持编辑、扩展、组合、导出。导出格式包括 Gaussian splats、meshes、videos。mesh 里还包括 collider meshes，用于粗物理仿真。([Marble](https://www.worldlabs.ai/blog/marble-world-model))
+
+<figure>
+  <img src="/assets/blog/world-model-video-routes-cn/fig4-marble.png" alt="Marble route as multimodal input to editable and exportable 3D world generation" />
+  <figcaption>图 4. Marble 路线。把多模态输入 lift 到 3D world state，再做编辑、扩展、组合和导出。</figcaption>
+</figure>
+
+Marble 和 Sora 的核心差别是输出对象。Sora 输出 observation。Marble 输出空间对象 <MathInline tex={String.raw`W`} />。这个对象可以被浏览、编辑、扩展，也可以导出到后续 3D 或仿真管线。
+
+但公开资料没有给出动作条件动态。
+
+<MathBlock tex={String.raw`W_{t+1}\sim T_\theta(W_t,a_t)`} />
+
+也没有说明模型本身如何学习连续动作、接触、力和材料变化。Marble 强在 state generation。弱点不是视觉，而是 transition 还没有被公开成核心接口。
+
+## 四条路线怎么比较
+
+这四条路线的差别，不是“谁更像世界”。差别是各自把世界压成什么变量。
+
+<table>
+  <thead>
+    <tr>
+      <th>路线</th>
+      <th>核心算子</th>
+      <th>强项</th>
+      <th>缺口</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Sora</td>
+      <td><MathInline tex={String.raw`c\rightarrow x_{1\ldots T}`} /></td>
+      <td>高保真 video renderer</td>
+      <td>没有显式 action 和 state</td>
+    </tr>
+    <tr>
+      <td>JEPA</td>
+      <td><MathInline tex={String.raw`(x_A,B)\rightarrow h_B`} /></td>
+      <td>抽象表征预测</td>
+      <td>普通 V-JEPA 没有动作闭环</td>
+    </tr>
+    <tr>
+      <td>Genie</td>
+      <td><MathInline tex={String.raw`(z_{\le t},a_t^\ell)\rightarrow z_{t+1}`} /></td>
+      <td>latent action control</td>
+      <td>state 仍是 video tokens</td>
+    </tr>
+    <tr>
+      <td>Marble</td>
+      <td><MathInline tex={String.raw`c\rightarrow W`} /></td>
+      <td>3D world state</td>
+      <td>缺公开的 action-conditioned transition</td>
+    </tr>
+  </tbody>
+</table>
+
+换句话说，Sora 解决“看起来是什么”。JEPA 解决“表征里可预测的是什么”。Genie 解决“动作之后下一帧是什么”。Marble 解决“空间对象是什么”。
+
+<MathBlock tex={String.raw`\text{Sora}\quad x_{1\ldots T},\qquad \text{JEPA}\quad h,\qquad \text{Genie}\quad (z,a^\ell),\qquad \text{Marble}\quad W`} />
+
+## 和 world model 的关系
+
+如果 world model 指“模型内部有世界规律”，四条路线都能被放进去。这个定义太宽，区分度不够。
+
+如果 world model 指“可供 agent 查询的环境动态”，核心接口是 transition。
+
+<MathBlock tex={String.raw`T_\theta(s_t,a_t)\rightarrow s_{t+1}`} />
+
+按这个接口看，Sora 不满足。普通 V-JEPA 不满足。Genie 部分满足，因为它有 latent action dynamics。V-JEPA 2-AC 更接近，因为 action 进入了 representation dynamics。Marble 有显式空间状态，但公开资料还没有把 <MathInline tex={String.raw`T(W_t,a_t)`} /> 作为核心模型接口。
+
+更准确的判断是，它们不是四个等价的 world model，而是四个可能组合的算子。
+
+<MathBlock tex={String.raw`\underbrace{D(z)}_{\text{Sora-like renderer}}+\underbrace{E(o)}_{\text{JEPA representation}}+\underbrace{T(z,a)}_{\text{Genie / V-JEPA 2-AC dynamics}}+\underbrace{W}_{\text{Marble 3D state}}`} />
+
+完整路线需要这些接口同时存在。可渲染，可预测，可动作控制，可计算空间状态。Sora、JEPA、Genie、Marble 各自只把其中一块做强了。
+
+## 参考资料
+
+1. OpenAI, [Video generation models as world simulators](https://openai.com/index/video-generation-models-as-world-simulators/), 2024。
+2. Meta AI, [V-JEPA](https://ai.meta.com/blog/v-jepa-yann-lecun-ai-model-video-joint-embedding-predictive-architecture/), 2024。
+3. Assran et al., [V-JEPA 2](https://arxiv.org/abs/2506.09985), 2025。
+4. Bruce et al., [Genie](https://arxiv.org/abs/2402.15391), 2024。
+5. World Labs, [Marble](https://www.worldlabs.ai/blog/marble-world-model), 2025。
+6. World Labs, [A Functional Taxonomy of World Models](https://www.worldlabs.ai/blog/taxonomy-of-world-models), 2026。
