@@ -5,6 +5,7 @@ import { ensureMathJax, type MathJaxWindow } from "@/components/mathjax";
 
 type MathBlockProps = {
   className?: string;
+  numbered?: boolean;
   tex: string;
 };
 
@@ -13,7 +14,7 @@ type MathInlineProps = {
   tex: string;
 };
 
-export function MathBlock({ className, tex }: MathBlockProps) {
+export function MathBlock({ className, numbered = true, tex }: MathBlockProps) {
   const blockRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -38,7 +39,16 @@ export function MathBlock({ className, tex }: MathBlockProps) {
   }, [tex]);
 
   return (
-    <div className={["math-block", className].filter(Boolean).join(" ")} ref={blockRef}>
+    <div
+      className={[
+        "math-block",
+        !numbered ? "math-block-unnumbered" : "",
+        className
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      ref={blockRef}
+    >
       {`\\[${tex}\\]`}
     </div>
   );

@@ -114,7 +114,7 @@ export const blogPosts: BlogPost[] = [
     "title": "Sora、JEPA、Genie、Marble 的技术路线",
     "summary": "比较 Sora、JEPA、Genie、Marble 的变量、目标和接口，围绕 video latent、表征预测、latent action dynamics 与 3D world state。",
     "date": "2026-06-24",
-    "readingTime": "5 min read",
+    "readingTime": "6 min read",
     "sourceType": "mdx",
     "href": "/blog/world-model-video-routes-cn/",
     "image": "/assets/blog/world-model-video-routes-cn/fig1-sora.png",
