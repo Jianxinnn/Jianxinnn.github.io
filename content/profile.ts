@@ -55,8 +55,8 @@ export const profile = {
     }
   ],
   bio: [
-    "I am interested in the tooling layer around scientific AI: literature workflows, biological data interfaces, molecular visualization, and agent systems that can operate inside real research projects.",
-    "This site is organized as a personal research index rather than a newsletter. It keeps long-form writing, short notes, paper readings, and profile context separate so each section can grow without forcing everything into one feed."
+    "I work at the intersection of AI for science, analytical chemistry, and biological data. My background spans pharmaceutical engineering, computational chemistry and biology, and current doctoral training in analytical chemistry.",
+    "I use this site as a compact research index for writing, paper notes, tool-building, and selected work around scientific AI systems."
   ],
   readings: [
     {
@@ -158,25 +158,25 @@ export const profile = {
   ] satisfies Publication[],
   experience: [
     {
-      role: "AI-for-science tooling",
-      place: "Independent research and engineering",
-      period: "2025 - Present",
+      role: "Doctoral research",
+      place: "East China University of Science and Technology",
+      period: "2023 - Present",
       description:
-        "Building systems for paper reading, figure generation, molecular visualization, biological data workflows, and agent-assisted research operations."
+        "Studying analytical chemistry with a focus on AI-assisted scientific workflows, biological data, and research-facing software."
     },
     {
-      role: "Agent workflow design",
-      place: "Personal systems stack",
-      period: "2024 - Present",
+      role: "Computational science training",
+      place: "East China Normal University",
+      period: "2020 - 2023",
       description:
-        "Designing reusable workflows for coding agents, research assistants, and structured project automation."
+        "Built a foundation in computational chemistry and computational biology, with work around molecular data and modeling-oriented research."
     },
     {
-      role: "Scientific information design",
-      place: "Research communication",
-      period: "Ongoing",
+      role: "Applied R&D internships",
+      place: "Industry and data projects",
+      period: "2021 - 2023",
       description:
-        "Turning dense technical material into readable interfaces, diagrams, slides, and publication-style artifacts."
+        "Worked on model development, materials data analysis, and structured data processing across applied research settings."
     }
   ]
 };
