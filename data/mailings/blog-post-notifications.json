@@ -43,5 +43,13 @@
     "provider": "buttondown",
     "providerMessageId": "em_2k5xcwxvbx96s82v6trqsxxr7q",
     "status": "about_to_send"
+  },
+  "world-model-video-routes-cn": {
+    "contentSha256": "7976a08c96a5c286c4b702a9a5572d1c870166a2690efc19ac97dd9423afeae0",
+    "notifiedAt": "2026-06-24T03:34:17.391Z",
+    "postTitle": "Sora、JEPA、Genie、Marble 的技术路线",
+    "provider": "buttondown",
+    "providerMessageId": "em_5a589kemrh8dd8mjr8x7j951yb",
+    "status": "about_to_send"
   }
 }
