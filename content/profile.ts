@@ -55,7 +55,7 @@ export const profile = {
     }
   ],
   bio: [
-    "I work at the intersection of AI for science, analytical chemistry, and biological data. My background spans pharmaceutical engineering, computational chemistry and biology, and current doctoral training in analytical chemistry.",
+    "I work at the intersection of AI for science, computational biology, and protein design. I am currently a PhD student at East China Normal University, with prior master's training in computational chemistry at East China University of Science and Technology.",
     "I use this site as a compact research index for writing, paper notes, tool-building, and selected work around scientific AI systems."
   ],
   readings: [
@@ -159,24 +159,24 @@ export const profile = {
   experience: [
     {
       role: "Doctoral research",
-      place: "East China University of Science and Technology",
+      place: "East China Normal University",
       period: "2023 - Present",
       description:
-        "Studying analytical chemistry with a focus on AI-assisted scientific workflows, biological data, and research-facing software."
+        "Working on computational biology, protein design, and protein engineering."
     },
     {
-      role: "Computational science training",
-      place: "East China Normal University",
+      role: "Master's research",
+      place: "East China University of Science and Technology",
       period: "2020 - 2023",
       description:
-        "Built a foundation in computational chemistry and computational biology, with work around molecular data and modeling-oriented research."
+        "Focused on computational chemistry and molecular modeling-oriented research."
     },
     {
-      role: "Applied R&D internships",
-      place: "Industry and data projects",
+      role: "Industry internships",
+      place: "BASF / Sinovation Ventures",
       period: "2021 - 2023",
       description:
-        "Worked on model development, materials data analysis, and structured data processing across applied research settings."
+        "Completed applied research and data-oriented internships."
     }
   ]
 };
