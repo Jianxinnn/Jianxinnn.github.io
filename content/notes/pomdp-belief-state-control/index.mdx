@@ -1,0 +1,52 @@
+import { MathBlock, MathInline } from "@/components/math-block";
+
+POMDP 不是“信息不完整版 MDP”的口头说法，而是把隐藏状态下的序列决策改写成 belief state 上的控制问题。
+
+<figure>
+  <img src="/assets/notes/pomdp-belief-state-control.png" alt="POMDP belief-state control loop" />
+  <figcaption>Figure 1. A POMDP loop: observations update belief, belief selects actions, and actions change the next state.</figcaption>
+</figure>
+
+## 定义
+
+一个 POMDP 可以写成 <MathInline tex={String.raw`(S,A,T,R,\Omega,O,\gamma)`} />。<MathInline tex={String.raw`S`} /> 是真实状态，<MathInline tex={String.raw`A`} /> 是动作，<MathInline tex={String.raw`T(s' \mid s,a)`} /> 是状态转移，<MathInline tex={String.raw`R(s,a)`} /> 是奖励，<MathInline tex={String.raw`\Omega`} /> 是观测集合，<MathInline tex={String.raw`O(o \mid s',a)`} /> 是观测模型，<MathInline tex={String.raw`\gamma`} /> 是折扣因子。
+
+MDP 假设 agent 看到 <MathInline tex={String.raw`s_t`} />。POMDP 假设 agent 只能看到 <MathInline tex={String.raw`o_t`} />，并用历史 <MathInline tex={String.raw`h_t=(o_0,a_0,\ldots,a_{t-1},o_t)`} /> 推断当前状态分布：
+
+<MathBlock tex={String.raw`b_t(s)=\Pr(s_t=s \mid h_t)`} />
+
+这个分布就是 belief state。它把越来越长的历史压缩成一个对隐藏状态的后验。
+
+## 机制
+
+每一步动作有两个效果。它改变世界，也改变下一次观测会告诉 agent 什么。给定上一时刻 belief、动作和新观测，belief 用 Bayes rule 更新：
+
+<MathBlock tex={String.raw`b'(s')=\eta\,O(o\mid s',a)\sum_s T(s'\mid s,a)b(s)`} />
+
+其中 <MathInline tex={String.raw`\eta`} /> 是归一化常数。POMDP 因此可以转成 belief MDP：状态从真实 <MathInline tex={String.raw`s`} /> 变成分布 <MathInline tex={String.raw`b`} />，奖励变成期望奖励：
+
+<MathBlock tex={String.raw`R_B(b,a)=\sum_s b(s)R(s,a)`} />
+
+最优值函数写在 belief space 上：
+
+<MathBlock tex={String.raw`V^*(b)=\max_a\left[R_B(b,a)+\gamma\sum_o \Pr(o\mid b,a)V^*(\tau(b,a,o))\right]`} />
+
+难点也在这里。即使 <MathInline tex={String.raw`S`} /> 有限，belief space 也是连续的。精确求解通常只适合小问题。工程上常用 point-based、DESPOT、POMCP 这类近似或 online planning 方法。POMCP 用粒子近似 belief，并在历史树上做 Monte Carlo tree search，只需要黑箱 simulator 就能滚动规划。
+
+## 适用场景
+
+POMDP 适合“真实状态不可直接读出，但动作和观测会共同改变后验”的任务。
+
+- Robotics 和自动驾驶：定位、跟踪、避障、交互式导航。传感器噪声、遮挡、他车意图都让状态只能被估计。
+- Dialogue 和 agent 交互：用户目标、情绪、约束是隐藏状态。ASR/NLU 输出是 noisy observation。系统动作是追问、确认或执行。
+- 医疗诊疗和设备维护：疾病阶段或机器健康状态是 latent。检查有成本，治疗或维修有风险。策略要在“获取信息”和“立即干预”之间取舍。
+- 搜索、生态保护和安全巡检：目标是否存在、在哪里、是否已被发现都不确定。观测动作本身消耗预算，也会改变下一步策略。
+
+Takeaway: POMDP 的价值不在于把不确定性写进模型，而在于把“该不该先观察”也写进决策。只要观测会影响后续动作，belief 就是控制状态。
+
+## 参考
+
+- 指定材料：[POMDP 基础入门（上）](https://zhuanlan.zhihu.com/p/694923980)、[POMDP 与 MDP 的区别](https://www.zhihu.com/question/27693760/answer/3485439826)、[Partially Observable MonteCarlo Planning](https://zhuanlan.zhihu.com/p/1915457010251573121)
+- Formalism: [Kaelbling, Littman, Cassandra, 1998](https://people.csail.mit.edu/lpk/papers/aij98-pomdp.pdf)
+- Online solver: [Silver and Veness, 2010](https://papers.nips.cc/paper/4031-monte-carlo-planning-in-large-pomdps)
+- Applications: [POMDPs in Robotics survey](https://arxiv.org/abs/2209.10342), [POMDP-based spoken dialogue systems review](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/young2013procieee.pdf), [ischemic heart disease planning](https://people.cs.pitt.edu/~milos/research/AIMJ-2000.pdf)
