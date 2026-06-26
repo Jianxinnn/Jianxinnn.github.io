@@ -118,7 +118,7 @@ export default function HomePage() {
             <Mail size={20} strokeWidth={2} />
           </div>
           <h2>Mail</h2>
-          <p>Occasional updates on research systems, notes, readings, and project logs.</p>
+          <p>Occasional blog updates on research systems and technical writing.</p>
           <form action={newsletterAction} className="mail-form" method="post">
             <input
               aria-label="Email address"

@@ -37,6 +37,14 @@ function postUrl(post: BlogPost) {
   return `${siteUrl()}${post.href}`;
 }
 
+function isNotifiablePost(post: BlogPost) {
+  return (
+    post.listed !== false &&
+    post.sourceType !== "encrypted" &&
+    !post.href.startsWith("/protected/")
+  );
+}
+
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en", {
     month: "long",
@@ -143,7 +151,7 @@ async function main() {
   const draft = hasArg("draft");
   const records = await readRecords();
   const postsToNotify = blogPosts
-    .filter((post) => post.listed !== false)
+    .filter(isNotifiablePost)
     .filter((post) => !records[post.slug])
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
