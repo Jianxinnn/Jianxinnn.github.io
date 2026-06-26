@@ -33,7 +33,6 @@ export default function AboutPage() {
           />
           <div className="profile-card-body">
             <h2>{profile.name}</h2>
-            <p>{profile.shortRole}</p>
             <div className="contact-icon-links" aria-label="Contact links">
               {githubLink ? (
                 <a aria-label="GitHub" href={githubLink.href} title="GitHub">

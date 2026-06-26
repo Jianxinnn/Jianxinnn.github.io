@@ -10,8 +10,11 @@ import { viewCountTargetForEntry } from "@/lib/view-count";
 
 export default function HomePage() {
   const allEntries = sortEntries(entries);
-  const currentWork = allEntries.slice(0, 3);
-  const history = allEntries.slice(3);
+  const currentWork = allEntries
+    .filter((entry) => !entry.href?.startsWith("/protected/"))
+    .slice(0, 3);
+  const currentWorkSlugs = new Set(currentWork.map((entry) => entry.slug));
+  const history = allEntries.filter((entry) => !currentWorkSlugs.has(entry.slug));
   const newsletterAction = `https://buttondown.com/api/emails/embed-subscribe/${profile.newsletter.buttondownUsername}`;
 
   return (
@@ -33,7 +36,10 @@ export default function HomePage() {
 
           <div className="current-work-list">
             {currentWork.map((entry, index) => (
-              <article className="current-work-item" key={entry.slug}>
+              <article
+                className={`current-work-item ${entry.image ? "has-image" : "no-image"}`}
+                key={entry.slug}
+              >
                 {entry.image ? (
                   entry.href?.startsWith("http") ? (
                     <a

@@ -4,6 +4,7 @@ __pycache__/
 node_modules
 out
 .vercel
+private/
 *.log
 .DS_Store
 tsconfig.tsbuildinfo

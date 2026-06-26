@@ -38,7 +38,7 @@ export const profile = {
   },
   assets: {
     logo: "/assets/brand/brand-mark.svg",
-    avatar: "/assets/brand/jianxin-tang.jpeg"
+    avatar: "/assets/brand/jianxin-tang.png"
   },
   nav: [
     { label: "Home", href: "/" },
@@ -58,38 +58,7 @@ export const profile = {
     "I work at the intersection of AI for science, computational biology, and protein design. I am currently a PhD student at East China Normal University, with prior master's training in computational chemistry at East China University of Science and Technology.",
     "I use this site as a compact research index for writing, paper notes, tool-building, and selected work around scientific AI systems."
   ],
-  readings: [
-    {
-      year: "2025",
-      type: "Paper note",
-      venue: "AAAI 2025",
-      title: "Controllable Protein Sequence Generation with LLM Preference Optimization",
-      description:
-        "Reading and implementation notes around controllable generation, preference signals, and protein sequence design.",
-      tags: ["protein design", "preference optimization"],
-      links: []
-    },
-    {
-      year: "2025",
-      type: "Paper note",
-      venue: "arXiv",
-      title: "A Variational Perspective on Generative Protein Fitness Optimization",
-      description:
-        "Notes on fitness optimization, generative modeling, and how optimization objectives shape sequence search.",
-      tags: ["generative modeling", "fitness optimization"],
-      links: []
-    },
-    {
-      year: "2025",
-      type: "Paper note",
-      venue: "arXiv",
-      title: "Genome modeling and design across all domains of life with Evo 2",
-      description:
-        "A running note on large biological sequence models and their implications for design workflows.",
-      tags: ["genome models", "biological sequences"],
-      links: []
-    }
-  ] satisfies Reading[],
+  readings: [] as Reading[],
   publications: [
     {
       year: "2026",

@@ -11,6 +11,7 @@ export const notes = [
     date: "2026-06-25",
     updated: "2026-06-25T16:59:00+08:00",
     readingTime: "3 min read",
+    image: "/assets/notes/pomdp-belief-state-control.png",
     tags: ["reinforcement learning", "planning under uncertainty"],
     Content: PomdpBeliefStateControl
   },

@@ -6,6 +6,8 @@
     "predev": "npm run content:generate",
     "dev": "next dev",
     "blog:new": "tsx scripts/new-blog-post.ts",
+    "protected:new": "tsx scripts/new-protected-post.ts",
+    "protected:encrypt": "tsx scripts/encrypt-protected-post.ts",
     "content:generate": "tsx scripts/generate-blog-index.ts",
     "content:validate": "tsx scripts/validate-content.ts",
     "content:audit-lecture-notes": "python3 scripts/audit-lecture-notes.py",
@@ -23,7 +25,8 @@
     "lucide-react": "1.21.0",
     "next": "16.2.9",
     "react": "19.2.7",
-    "react-dom": "19.2.7"
+    "react-dom": "19.2.7",
+    "react-markdown": "^10.1.0"
   },
   "devDependencies": {
     "@types/node": "latest",

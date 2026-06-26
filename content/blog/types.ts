@@ -1,4 +1,4 @@
-export type BlogSourceType = "mdx" | "html" | "external";
+export type BlogSourceType = "mdx" | "html" | "external" | "encrypted";
 export type BlogLanguage = "en" | "zh" | "bilingual";
 export type BlogSourceStatus = "original" | "translation" | "repost" | "imported";
 

@@ -7,6 +7,10 @@ type ReadingIndexProps = {
 };
 
 export function ReadingIndex({ readings }: ReadingIndexProps) {
+  if (!readings.length) {
+    return <p className="empty-state">No readings yet.</p>;
+  }
+
   return (
     <div className="reading-index">
       {readings.map((reading) => (
