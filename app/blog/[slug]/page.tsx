@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { BlogSectionNav } from "@/components/blog-section-nav";
 import { BlogSourceMark } from "@/components/blog-source-mark";
 import { BlogTags } from "@/components/blog-tags";
+import { ReadingProgress } from "@/components/reading-progress";
 import { ViewCountBadge } from "@/components/view-count-badge";
 import { blogPostContent } from "@/content/blog/content";
 import { getBlogPost, listedBlogPosts } from "@/content/blog/posts";
@@ -59,36 +60,39 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     .join(" ");
 
   return (
-    <article className={articleClassName}>
-      <header className="blog-article-header">
-        <Link className="back-link" href="/blog">
-          Blog
-        </Link>
-        <div className="blog-article-title-line">
-          <h1>{post.title}</h1>
-          {post.badge ? <span className="blog-badge">{post.badge}</span> : null}
+    <>
+      <ReadingProgress />
+      <article className={articleClassName}>
+        <header className="blog-article-header">
+          <Link className="back-link" href="/blog">
+            Blog
+          </Link>
+          <div className="blog-article-title-line">
+            <h1>{post.title}</h1>
+            {post.badge ? <span className="blog-badge">{post.badge}</span> : null}
+          </div>
+          <p>{post.summary}</p>
+          <div className="entry-meta">
+            <span>{post.readingTime}</span>
+            <span aria-hidden="true">·</span>
+            <time dateTime={post.date}>{formatDate(post.date)}</time>
+            {post.category ? (
+              <>
+                <span aria-hidden="true">·</span>
+                <span>{post.category}</span>
+              </>
+            ) : null}
+            <span aria-hidden="true">·</span>
+            <ViewCountBadge scope="blog" slug={post.slug} />
+          </div>
+          <BlogSourceMark source={post.source} variant="article" />
+          <BlogTags tags={post.tags} />
+        </header>
+        <div className="mdx-body" data-pagefind-body>
+          <Content />
         </div>
-        <p>{post.summary}</p>
-        <div className="entry-meta">
-          <span>{post.readingTime}</span>
-          <span aria-hidden="true">·</span>
-          <time dateTime={post.date}>{formatDate(post.date)}</time>
-          {post.category ? (
-            <>
-              <span aria-hidden="true">·</span>
-              <span>{post.category}</span>
-            </>
-          ) : null}
-          <span aria-hidden="true">·</span>
-          <ViewCountBadge scope="blog" slug={post.slug} />
-        </div>
-        <BlogSourceMark source={post.source} variant="article" />
-        <BlogTags tags={post.tags} />
-      </header>
-      <div className="mdx-body" data-pagefind-body>
-        <Content />
-      </div>
-      <BlogSectionNav />
-    </article>
+        <BlogSectionNav />
+      </article>
+    </>
   );
 }

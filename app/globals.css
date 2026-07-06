@@ -117,6 +117,19 @@ main,
   backdrop-filter: blur(8px);
 }
 
+.reading-progress-bar {
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: 60;
+  width: 100%;
+  height: 3px;
+  background: var(--article-link);
+  pointer-events: none;
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+}
+
 .topbar {
   position: relative;
   display: grid;

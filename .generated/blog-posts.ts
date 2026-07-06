@@ -25,6 +25,28 @@ export const blogPosts: BlogPost[] = [
     "featured": true
   },
   {
+    "slug": "diffusion-models-math-intro-cn",
+    "title": "扩散模型的数学导论",
+    "summary": "Jianfeng Lu 关于扩散模型数学基础的中文网页稿，按采样视角串联朗之万动力学、score-based diffusion、离散化误差、离散扩散和推理时控制。",
+    "date": "2026-07-06",
+    "readingTime": "63 pages",
+    "sourceType": "html",
+    "href": "/blog/diffusion-models-math-intro-cn/",
+    "image": "/assets/visuals/profile-field.png",
+    "category": "Technical explainers",
+    "language": "zh",
+    "source": {
+      "status": "translation",
+      "label": "转载 / 翻译",
+      "originalTitle": "A Mathematical Introduction to Diffusion Models",
+      "originalUrl": "https://arxiv.org/abs/2607.01693"
+    },
+    "tags": [
+      "diffusion models",
+      "flow matching"
+    ]
+  },
+  {
     "slug": "flow-matching-diffusion-models-cn",
     "title": "流匹配与扩散模型导论",
     "summary": "MIT 6.S184 课程讲义的中文翻译与双语对照版本，系统介绍 flow matching、扩散模型、score matching、guidance、latent diffusion 和离散扩散语言模型。",
