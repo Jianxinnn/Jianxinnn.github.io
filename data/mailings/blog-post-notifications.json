@@ -51,5 +51,13 @@
     "provider": "buttondown",
     "providerMessageId": "em_5a589kemrh8dd8mjr8x7j951yb",
     "status": "about_to_send"
+  },
+  "diffusion-models-math-intro-cn": {
+    "contentSha256": "b54da7cf6996423235167f27b019dbfb2f761dd2583b7910ee56c33f578aec5f",
+    "notifiedAt": "2026-07-06T02:55:06.232Z",
+    "postTitle": "扩散模型的数学导论",
+    "provider": "buttondown",
+    "providerMessageId": "em_5pap633aws92tvnjr5b3dz7hzf",
+    "status": "about_to_send"
   }
 }
