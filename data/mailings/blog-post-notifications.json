@@ -59,5 +59,13 @@
     "provider": "buttondown",
     "providerMessageId": "em_5pap633aws92tvnjr5b3dz7hzf",
     "status": "about_to_send"
+  },
+  "harness-engineering-self-improvement-cn": {
+    "contentSha256": "ecc9a8823fcc3e4f7b1bad4ab0de5c05f38970b3ee91090bb8b1dfd265ebcba1",
+    "notifiedAt": "2026-07-30T09:48:14.768Z",
+    "postTitle": "面向自我改进的 Harness 工程",
+    "provider": "buttondown",
+    "providerMessageId": "em_6x9edcc5dg8avv8fxnevtrqm8r",
+    "status": "about_to_send"
   }
 }
