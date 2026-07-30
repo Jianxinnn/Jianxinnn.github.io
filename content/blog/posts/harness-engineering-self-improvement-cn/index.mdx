@@ -1,0 +1,548 @@
+import { MathBlock } from "@/components/math-block";
+
+> <strong>转载说明：</strong>本文经作者 Lilian Weng 授权翻译转载，仅供个人学习。原文：[Harness Engineering for Self-Improvement](https://lilianweng.github.io/posts/2026-07-04-harness/)，发布于 2026 年 7 月 4 日。作者可能持续更新原文，技术细节以原文为准。
+
+<strong>递归自我改进（recursive self-improvement，RSI）</strong>可以追溯到 [I. J. Good（1965）](https://philpapers.org/rec/GOOSCT)。他把“超级智能机器”定义为一种能在所有智力活动上超过人类，并能设计出更好的机器来改进自身的系统。[Yudkowsky（2008）](https://www.lesswrong.com/posts/JBadX7rwdcRFzGuju/recursive-self-improvement)则用“递归自我改进”描述一个具体反馈回路：AI 用当前智能改进产生这种智能的认知机器。
+
+在现代 AI 中，这个回路可以指模型直接改写自己的权重。更广义地说，也可以是模型改进**训练流水线**与**部署系统**，后者再产生一个更强的继任模型，使其在有经济价值的任务上取得更好表现。前沿实验室的 AI 研发速度已经显著加快（[Anthropic](https://www.anthropic.com/institute/recursive-self-improvement)、[OpenAI](https://openai.com/index/how-agents-are-transforming-work/)）。
+
+这里特意强调“部署系统”，因为连接原始模型与真实世界上下文的系统层，似乎和模型的原始智能同样关键（后者可由预训练后立即进行的评测衡量）。Claude Code、Codex 等成功的编码智能体产品已经表明，Harness 是 AI 部署的重要组成部分。**Harness 是围绕基础模型搭建的系统。它编排执行，并决定模型如何思考与规划、如何调用工具与行动、如何感知与管理上下文、如何保存产物，以及如何评价结果。**
+
+本文聚焦 Harness 工程及其对 RSI 的贡献。近期关于自动化研究、自改进智能体和进化式程序搜索的许多工作，都可以围绕这个问题组织起来。模型自博弈、合成数据、测试时训练和更广义的持续学习同样符合 RSI 愿景（如 [Yuan et al. 2024](https://arxiv.org/abs/2401.10020)、[Chen et al. 2024](https://arxiv.org/abs/2401.01335)、[Zhao et al. 2025](https://arxiv.org/abs/2505.03335)、[Choi et al. 2026](https://openreview.net/forum?id=lTbBFAoPSA)），但不属于本文重点。
+
+## Harness 的设计模式
+
+早期智能体框架常写作“agent = LLM + memory + tools + planning + action”。相比之下，Harness 工程还包含**工作流设计（如循环工程）、评测、权限控制和持久状态管理**。它不再只是提示词模板，而更接近运行时与软件系统设计：模型如何观察、行动、记忆、自检和改进。
+
+设计应当有意保持简单、通用，以获得更好的泛化。它也应参考既有的软件工程实践，利用模型在预训练阶段获得的知识。Harness 与操作系统有很强的类比关系：它应像 OS 一样封装复杂逻辑，同时保持接口简单。配置、工具接口和其他协议也可能逐步形成行业标准。
+
+### 模式一：工作流自动化
+
+自动化的关键，是定义一个模型可以在其中运行、测试和迭代的工作流。Karpathy 的 [autoresearch](https://github.com/karpathy/autoresearch) 是一个干净的例子。常见工作流围绕目标循环：计划、执行、观察或测试、改进，再次执行，直到目标达成。过程中也可以主动向用户澄清任务规格或执行偏好。
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/openai-agent-loop.png" alt="Codex 智能体循环：模型调用工具，工具响应进入下一次生成" />
+  <figcaption>图 1. 简化的 Codex 智能体循环。智能体调用工具，工具响应影响模型的下一次生成。来源：<a href="https://openai.com/index/unrolling-the-codex-agent-loop/">OpenAI Codex agent loop</a>。</figcaption>
+</figure>
+
+这个工作流图还强调：模型应通过“智能体运行时”分析自己的轨迹和失败案例，再迭代推进，而不是停留在静态提示词模板中。
+
+### 模式二：以文件系统作为持久记忆
+
+长时程智能体系统反复出现一种模式：用简单控制面管理丰富的状态与产物。Harness 不应把整个工作流和全部日志都塞进上下文，而应把持久状态放在文件里。长时程智能体 rollout 中的实验日志、代码 diff、论文摘要、错误轨迹和历史执行路径，很容易超过模型训练时见过的上下文长度。
+
+读、写、编辑文件系统（通常通过 `bash` 命令）是 LLM 的基础能力。因此，用文件作为持久记忆，会自然受益于基础模型能力的提升。
+
+### 模式三：子智能体与后台任务
+
+Harness 可以生成多个子智能体并行执行，并监控后台任务。这适合并行搜索多个假设、同时运行实验，或把隔离的子任务委派出去，避免污染主上下文。父智能体需要一个小型进程管理器：启动任务、检查日志、取消失败运行，再把结果合并回主任务。
+
+关键是让并行显式、可检查。若子智能体输出只存在于短暂的聊天上下文中，它们很快会变得陈旧、隐蔽。若输出被保存为文件、日志和状态记录，模型就能在中断后恢复，并对自己的执行历史进行推理。
+
+### 案例：编码智能体的 Harness
+
+Claude Code、Codex、OpenCode 和 Cursor 风格智能体的核心界面已经趋于稳定。它们通常遵循如下循环：
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/coding-harness-loop.png" alt="编码智能体利用仓库、工具和执行反馈完成开发与调试" />
+  <figcaption>图 2. 编码智能体通过一组工具在仓库中开发和调试，类似开发者使用 IDE。图中只作示例，并非完整清单。</figcaption>
+</figure>
+
+| 分组 | 工具定义 |
+| --- | --- |
+| 文件系统 | 文件发现：`glob`、`grep`、`ls`。文件读取：`read`、`read_many`。文件修改：`write`、`edit`、`multi_edit`、`apply_patch` |
+| Shell 执行 | `bash`、`PowerShell` |
+| IO | `lsp`，以及 `git_status`、`git_diff`、`git_commit` 等 Git 工具 |
+| 外部上下文 | MCP 工具、Skills |
+| Web 搜索 | `web_search`、`web_fetch`、浏览器工具 |
+| 产物 | 读取文档和图片，生成 HTML、图片 |
+| 后台进程 | 如 `CronCreate`、`CronDelete`、`CronList` |
+| 智能体委派 | 如 `spawn_agent`、`resume_agent`、`wait_agent`、`list_agents`、`close_agent`、`interrupt_agent` |
+
+更完整的工具清单可参考[这个仓库](https://github.com/yasasbanukaofficial/claude-code)。
+
+### Harness 层与核心智能
+
+未来的 RSI 会在多大程度上依赖 Harness 工程，目前很难预测。但近期可行的 RSI 路径，大概率不会从模型直接改写权重开始。我对近期路径的判断是：
+
+1. Harness 工程会朝元方法论（meta-methodology）发展。目标不只是得到更好的答案，而是改进获得答案的机器。Harness 本身会成为优化对象，启发式规则更少，通用机制更多。
+2. 成熟的 Harness 会支持面向模型自改进的自动化研究回路。更聪明的模型也会减少 Harness 的过度工程化，使系统保持可持续。
+
+许多 Harness 改进最终可能被**内化**为模型的核心行为，但连接外部上下文与工具的接口仍会存在。提示词工程已经出现过较温和的版本：随着指令微调和模型推理能力增强，手工提示技巧的重要性下降，但**目标、约束、上下文和评测仍然需要被明确指定**。
+
+## Harness 优化
+
+Harness 中被优化的对象大致沿着这条路径演进：指令[提示词](https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/) → 结构化上下文 → 工作流 → Harness 代码 → 优化器代码。模型越强，我们越能处理复杂目标，并使用更通用的方法。
+
+### 上下文工程
+
+随着智能体任务时程显著增长，简单地把所有工具响应和模型生成追加到上下文中，很快就会失控。上下文管理负责为 LLM 构造更有结构、更精炼的上下文，并管理持久状态。长上下文研究会继续进步，但现阶段，长上下文智能与上下文工程仍然交织在一起。
+
+**Agentic Context Engineering**（ACE，[Zhang et al. 2025](https://arxiv.org/abs/2510.04618)）把上下文视为不断演化的操作手册，而不是越来越长的提示词。它用三个组件维护一份由条目组成的上下文手册，每条包含标识符和描述：
+
+1. **Generator**：参考已有条目，生成任务轨迹。
+2. **Reflector**：从成功与失败轨迹中提炼洞见。
+3. **Curator**：以增量、条目化的方式更新结构化上下文。
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/ace.png" alt="ACE 通过 Generator、Reflector 和 Curator 演化上下文手册" />
+  <figcaption>图 3. Agentic Context Engineering（ACE）框架。来源：<a href="https://arxiv.org/abs/2510.04618">Zhang et al. 2025</a>。</figcaption>
+</figure>
+
+ACE 的关键设计是：Curator 不重写整块提示词，而是输出一组结构化条目 `(identifier, description)`，再用确定性逻辑把条目并入上下文日志。条目会被定期精炼和去重。这可以减轻反复重写造成的上下文坍缩与简洁偏差。
+
+ACE 从 rollout 中学习洞见，向自管理记忆迈出了一步，但更新规则和整体工作流仍由人手工设计。为了进入更强的自改进回路，**Meta Context Engineering**（MCE，[Ye et al. 2026](https://arxiv.org/abs/2601.21557)）把机制（如何管理上下文）与产物内容（上下文里有什么）分开：元优化层演化 skill，基础层优化上下文。
+
+MCE skill `s ∈ 𝒮` 定义上下文函数 `c_s = (ρ_s, F_s)`，把输入 `x` 映射为上下文 `c = F_s(x; ρ_s)`：
+
+- `ρ_s = {ρ_1, …, ρ_m}` 是静态组件，如提示词、知识库、代码库。
+- `F_s = {F_1, …, F_k}` 是动态算子，如搜索、选择、过滤、格式化。
+
+双层优化先在给定 skill `s` 时，从训练数据中找到最优上下文，再在验证集上寻找能提供最佳表现的 skill：
+
+<MathBlock
+  tex={String.raw`\text{Inner: }c_s^*=\arg\max_{c_s}J_{\text{train}}(c_s;s)\qquad \text{Outer: }s^*=\arg\max_{s\in\mathcal{S}}J_{\text{val}}(c_s^*)`}
+/>
+
+skill 数据库保存历史 skill、上下文函数与评测指标：
+
+<MathBlock tex={String.raw`\mathcal{H}_{k-1}=\{(s_i,c_i,J_i^{\text{train}},J_i^{\text{val}})\}_{i=1}^{k-1}`} />
+
+元层智能体通过 [crossover](https://en.wikipedia.org/wiki/Crossover_(evolutionary_algorithm)) 组合既有 skill，为任务 `τ` 生成新 skill：
+
+<MathBlock tex={String.raw`s_k=\operatorname{crossover}(\tau,\mathcal{H}_{k-1})`} />
+
+随后，基础层上下文工程师执行 `s_k`，并在当前 skill 的指导下，根据 rollout 反馈 `𝓡_k` 学习上下文函数：
+
+<MathBlock tex={String.raw`c_k=\operatorname{engineer}(\tau,s_k;c_{k-1}^*,\mathcal{R}_k)`} />
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/mce.png" alt="MCE 在元层演化上下文管理 skill，在基础层优化任务上下文" />
+  <figcaption>图 4. Meta Context Engineering（MCE）。元层 skill 演化搜索上下文管理机制，基础层优化任务上下文。来源：<a href="https://arxiv.org/abs/2601.21557">Ye et al. 2026</a>。</figcaption>
+</figure>
+
+MCE 不像 ACE 那样规定上下文的启发式结构。它用自由形式的 skill 保存任务中最重要的知识，再共同演化 skill 与受 skill 约束的上下文。实现上，一个上下文函数是一组专用目录中的文件，既包含静态部分（`skill.md`），也包含动态部分（上下文与数据 rollout）。元层与基础层优化都运行在带有标准工具集的智能体编码环境中：
+
+<MathBlock tex={String.raw`\mathcal{T}=\{\texttt{Read},\texttt{Write},\texttt{Edit},\texttt{Bash},\texttt{Glob},\texttt{Grep},\texttt{TodoWrite}\}`} />
+
+**Meta-Harness**（[Lee et al. 2026](https://arxiv.org/abs/2603.28052)）又向下深入一层：被优化的对象变成了**决定并优化哪些信息应被存储、检索和呈现给模型的代码**。“Meta”表示它是一个用来优化 Harness 的 Harness。
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/meta-harness-outer-loop.png" alt="Meta-Harness 外循环提出、评估并保留 Harness 候选" />
+  <figcaption>图 5. Meta-Harness 的外循环优化算法。来源：<a href="https://arxiv.org/abs/2603.28052">Lee et al. 2026</a>。</figcaption>
+</figure>
+
+提出新 Harness 的 proposer 本身就是编码智能体，最终输出位于 Pareto 前沿上的一组 Harness 候选：
+
+- 完整执行历史可通过文件系统访问。编码智能体用 `grep`、`cat` 等命令读取它，而不是把所有内容塞进一个提示词。
+- 每个候选 Harness 都是文件系统中的一个目录，包含自己的源代码、得分、rollout 轨迹和状态更新。
+- Meta-Harness 循环持续生成新 Harness，只保留合格候选。
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/meta-harness.png" alt="Meta-Harness 在文本分类与 TerminalBench-2 上的性能" />
+  <figcaption>图 6. Meta-Harness 在少量迭代的文本分类（左）和 TerminalBench-2（右）上的表现。TerminalBench-2 搜索从 Terminus-KIRA 与 Terminus-2 两个强 Harness 初始化。来源：<a href="https://arxiv.org/abs/2603.28052">Lee et al. 2026</a>。</figcaption>
+</figure>
+
+结论很直接：一旦 Harness 设计变成可执行的搜索空间，强编码智能体就能利用与人类工程师相同的设计空间。
+
+### 工作流设计
+
+Harness 的工作流可以由领域专家手工设计。以自动化研究为例，已经有多种框架被提出和测试。**AI Scientist**（[Lu et al. 2026](https://www.nature.com/articles/s41586-026-10265-5)）构建了一条流水线：提出研究想法、编写代码、运行实验、分析结果、撰写论文，再进行同行评审。**ScientistOne**（[Meng et al. 2026](https://arxiv.org/abs/2605.26340)）则把可验证性设为核心约束。每个主张——引用、数值、方法或结论——都必须追溯到证据来源，并接受证据链（Chain-of-Evidence）审计。
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/ai-scientist.png" alt="AI Scientist 从选题、实验、写作到评审的自动化研究流水线" />
+  <figcaption>图 7. AI Scientist 的想法生成、实验、论文写作和评审流水线。来源：<a href="https://www.nature.com/articles/s41586-026-10265-5">Lu et al. 2026</a>。</figcaption>
+</figure>
+
+**Autodata** 智能体（[Kulikov et al. 2026](https://arxiv.org/abs/2606.25996)）面向训练和评测数据生成，扮演数据科学家。主智能体管理四个角色：提出问题的 challenger、弱 solver、强 solver，以及 verifier 或 judge。目标是合成难度“恰到好处”的数据，即强 solver 能成功，弱 solver 会失败。
+
+Autodata 会根据 solver 和 verifier 的反馈，迭代更新 challenger 的提示词。问题在于，合成任务只用于微调弱 solver，不用于改进强 solver。若循环无法持续提升强模型，它更像是在生成的提示词分布上做间接蒸馏，RSI 色彩较弱。
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/autodata.png" alt="Autodata 围绕 challenger、强弱 solver 与 verifier 合成数据" />
+  <figcaption>图 8. Autodata 的智能体工作流围绕 challenger、solver 与 verifier 生成合成训练和评测数据。来源：<a href="https://arxiv.org/abs/2606.25996">Kulikov et al. 2026</a>。</figcaption>
+</figure>
+
+工作流设计空间极大。自然的下一步，是把工作流设计视为搜索问题，用算法寻找方案，而不只依赖手工构造。**Automated Design of Agentic Systems**（ADAS，[Hu et al. 2025](https://arxiv.org/abs/2408.08435)）把智能体设计本身表述成优化问题：由元智能体提出新的智能体工作流。
+
+1. 用 CoT、self-refine 等简单智能体初始化工作流档案库。
+2. 让元智能体参考档案库中的已有方案，用**代码**编写新智能体。
+   - 元智能体先生成新工作流的高层描述，再用代码实现。
+   - 草稿程序接受两轮 self-refine：同一个模型先给反馈，再根据反馈改进上一轮输出（[Madaan et al. 2023](https://arxiv.org/abs/2303.17651)），同时检查新颖性。
+3. 评测每个候选，把成功候选加入档案库。
+4. 重复第 2、3 步，直到达到最大迭代次数。
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/adas.png" alt="ADAS 使用元智能体生成、评估并归档新的智能体工作流" />
+  <figcaption>图 9. Automated Design of Agentic Systems（ADAS）。来源：<a href="https://arxiv.org/abs/2408.08435">Hu et al. 2025</a>。</figcaption>
+</figure>
+
+**AFlow**（[Zhang et al. 2025](https://arxiv.org/abs/2410.10762)）把智能体工作流表示成图。节点是调用 LLM 的动作，边用代码实现逻辑操作。工作流优化依赖 [MCTS](https://en.wikipedia.org/wiki/Monte_Carlo_tree_search)（Monte Carlo Tree Search）：
+
+1. 用模板初始化树中的起始工作流 `W_0`。
+2. 以得分和均匀探索的软混合策略选择工作流节点。
+3. 根据当前评测表现，让 LLM 生成一个修改后的工作流并扩展节点。
+4. 执行并评测新工作流。
+5. 若新工作流在 `N` 轮预算内取得提升，就把它加入搜索树。
+6. 重复第 2 至第 5 步，直到 top-`k` 平均得分停滞，或预算耗尽。
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/aflow.png" alt="AFlow 在工作流候选树上执行 MCTS 优化" />
+  <figcaption>图 10. AFlow 在工作流候选树上的优化过程。来源：<a href="https://arxiv.org/abs/2410.10762">Zhang et al. 2025</a>。</figcaption>
+</figure>
+
+AFlow 在问答、代码和数学任务上的实验表明，它相对手工工作流和 ADAS 都有明显提升。
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/aflow-exp.png" alt="AFlow 与手工方法和 ADAS 的实验结果对比" />
+  <figcaption>图 11. AFlow 与手工方法、ADAS 的实验结果对比。来源：<a href="https://arxiv.org/abs/2410.10762">Zhang et al. 2025</a>。</figcaption>
+</figure>
+
+### 自改进 Harness
+
+上下文工程和工作流设计都只是 Harness 的一部分。完整优化需要搜索整个设计空间，同时调整上下文管理逻辑、工作流、权限和其他 Harness 组件。Meta-Harness、ADAS 和 AFlow 已经揭示一个共同点：**代码是定义程序与系统的通用语言**。Harness 本质上是一段程序，规定提示词、工具调用、子智能体、控制流、记忆和工作流逻辑如何协同。若 LLM 能优化执行智能体的代码，它能触及的设计空间远大于手写提示词。
+
+**Self-Taught Optimizer**（STOP，[Zelikman et al. 2023](https://arxiv.org/abs/2310.02304)）是递归改进脚手架的早期例子之一。初始 improver `I_0` 在 `t = 0` 时接收初始解 `s`、效用函数 `u` 和黑盒语言模型 `M`，返回改进后的解 `s'`：
+
+<MathBlock tex={String.raw`s'=I(u,s;M)`} />
+
+STOP 的目标不是直接改进 `s`，而是**改进 improver `I` 本身**。先把 improver 在下游任务集合 `𝒟` 上的平均效用定义为 meta-utility：
+
+<MathBlock
+  tex={String.raw`\hat{u}(I)\triangleq\frac{1}{\lvert\mathcal{D}\rvert}\mathbb{E}_{(u,s)\sim\mathcal{D}}\left[u(I(u,s;M))\right]`}
+/>
+
+改进 improver 本身也是一个优化问题，因此可以根据 `I_{t-1}` 的 meta-utility，递归得到新版本：
+
+<MathBlock tex={String.raw`I_t=I_{t-1}(\hat{u},I_{t-1};M)`} />
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/stop-algo.png" alt="STOP 递归调用 improver 以改进 improver 本身" />
+  <figcaption>图 12. Self-Taught Optimizer（STOP）算法。来源：<a href="https://arxiv.org/abs/2310.02304">Zelikman et al. 2023</a>。</figcaption>
+</figure>
+
+实验中的 improver 自动发现了多种策略：遗传算法、拆分并分别改进组件、多臂提示词 bandit、模拟退火、改变 temperature，以及 beam search 或 tree search。这与把 Harness 工作流表示成可优化对象相呼应。
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/stop-patterns.png" alt="STOP 自动发现的多种自改进策略" />
+  <figcaption>图 13. STOP 发现的自改进策略示例。来源：<a href="https://arxiv.org/abs/2310.02304">Zelikman et al. 2023</a>。</figcaption>
+</figure>
+
+STOP 也给出一项警示结果：使用 GPT-4 时，平均下游表现会随迭代提升。换成 GPT-3.5、Mixtral 等较弱模型时，表现反而下降。递归结构本身不够。基础模型必须足够强，才有能力改进机制。Harness 改进能让模型被更好地部署，但智能仍是核心。
+
+[Lin et al.（2026）](https://arxiv.org/abs/2605.30621)进一步研究了 Harness 演化对模型能力的依赖，并拆开两个维度：
+
+1. **Harness-updating**：生成有效 Harness 修改的能力。
+2. **Harness-benefit**：正确利用更新后 Harness，从而更好解决任务的能力。
+
+实验覆盖从 Qwen3.5-9B 到 Claude Opus 4.6 的不同规模与智能水平。它们的 Harness 更新能力出人意料地接近。9B proposer 或 evolver 能写出在程序结构上与 Opus 同构的 skill。要真正从 Harness 获益，模型还必须能正确、及时地调用 skill 和工具，并擅长长时程指令遵循。
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/harness-update.png" alt="不同模型的 Harness 更新能力与 Harness 获益能力对比" />
+  <figcaption>图 14. 主要结果。（A）从 Qwen2-32B 到 Opus 4.6，Harness 更新能力近乎持平。（B）Harness 获益能力并不单调，中等能力模型获益最多。来源：<a href="https://arxiv.org/abs/2605.30621">Lin et al. 2026</a>。</figcaption>
+</figure>
+
+更近期的 **Self-Harness**（[Zhang et al. 2026](https://arxiv.org/abs/2606.09498)）让 LLM 智能体通过“提出—评测—接受”循环改进自己的 Harness。
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/self-harness.png" alt="Self-Harness 通过弱点挖掘、受限修改提案和验证更新 Harness" />
+  <figcaption>图 15. Self-Harness 通过弱点挖掘、受限 Harness 提案和验证组成更新循环。来源：<a href="https://arxiv.org/abs/2606.09498">Zhang et al. 2026</a>。</figcaption>
+</figure>
+
+Self-Harness 包含三个阶段：
+
+1. **弱点挖掘**
+   - 用当前 Harness 运行评测任务，收集执行轨迹。
+   - 根据 verifier 证据，把失败聚类成失败模式。
+   - 两次运行可能表面上拥有相同的 verifier 结果，如超时或缺少产物，但因果机制不同。因此，失败记录应包含终端 verifier 原因、相关智能体行为的因果状态，以及轨迹暴露出的抽象智能体机制。
+2. **Harness 提案**
+   - 同一个模型以 proposer 身份运行。
+   - 模型只获得有边界的提案上下文：当前 Harness 的可编辑表面、来自评测系统的失败模式、应保留的成功行为、历史修改摘要。
+   - 修改优先处理反复出现、可由 Harness 解决，而非由任务本身难度造成的问题。
+   - 候选修改应彼此不同，保持多样性。
+3. **提案验证**
+   - 用 held-in 数据检查弱点是否解决，用 held-out 数据检查是否引入未知问题。
+   - 候选只有在两个数据集上都不发生回归时才被接受。
+   - 接受的候选被合并到新 Harness。拒绝候选只记录日志，不改变活动版本。
+
+在 Terminal-Bench-2 上运行 `MiniMax M2.5`、`Qwen3.5-35B-A3B` 和 `GLM-5` 时，Self-Harness 学到了针对不同基础模型弱点的专用指令，并提高了 held-out 通过率。
+
+这类工作也带来一个问题：若程序可以编辑 OS，抽象边界就被打破。可编辑表面必须被谨慎设计，权限控制和安全层需要位于演化循环之外。[Reward hacking](https://lilianweng.github.io/posts/2024-11-28-reward-hacking/) 的挑战依然存在。
+
+**Agentic Harness Engineering**（AHE，[Lin et al. 2026](https://arxiv.org/abs/2604.25850)）把 Harness 演化的瓶颈定位为**可观察性（observability）**。rollout 失败时，系统需要知道哪个组件负责。每次修改也必须有证据支撑。AHE 通过三类可观察性构成闭环：
+
+1. **组件可观察性**
+   - 每个可编辑 Harness 组件都在文件系统中有明确表示，使动作空间显式、可追踪。
+   - Harness 包含七类组件：system prompt、tool description、tool implementation、middleware、skill、sub-agent configuration、long-term memory。
+   - 每个失败模式被映射到一个组件，使修改更有针对性。
+2. **经验可观察性**
+   - 把大量原始轨迹分析并压缩为分层证据和失败模式。
+   - 每个 Harness 产生轨迹。Agent debugger 分析逐文件保存的轨迹，为每个任务生成成败根因报告。
+   - 单任务报告被聚合成 benchmark 概览，供下一步使用。需要时仍可下钻原始轨迹。这种分层访问更节省 token。
+3. **决策可观察性**
+   - 每次修改都附带下一轮可验证的预测。
+   - Evolve agent 读取仓库，决定修改哪个组件，再给出修改及理由。
+   - 每次修改都是文件级、可证伪的主张，下一轮可以验证，并受两个约束：
+     - 修改只能作用于 Harness 工作区。运行目录、tracer、verifier 和 LLM 配置只读，从而阻止关闭 verifier、更换模型或提高推理预算等 reward hacking，使收益可归因于 Harness 修改。
+     - 修改必须由证据驱动。manifesto 条目记录失败证据名称、推断的根因、针对性修复，以及由预期修复和潜在回归组成的影响预测。
+
+在 Terminal-Bench-2 上，除 Hard 难度及少数自演化基线（ACE、TF-GRPO）外，AHE 优于 OpenCode、Terminus-2、Codex 等人工设计 Harness。同一个冻结后的 Harness 在不继续演化的情况下也能迁移到 SWE-bench Verified。这表明，演化后的 Harness 把工程经验编码进了 Harness 组件，而不是只对特定 benchmark 做优化。
+
+### 进化搜索
+
+进化搜索是一类受自然选择启发的优化方法，参见作者此前的[进化算法文章](https://lilianweng.github.io/posts/2019-09-05-evolution-strategies/)。它对解的种群进行变异，只保留群体中 fitness 较高的候选。两类问题尤其适合进化搜索：
+
+1. 搜索空间巨大，或形状不规则。
+2. 很难直接用梯度优化，但容易评测候选解。
+
+Harness 搜索与这两个条件很匹配。
+
+进化搜索过去已被用于提示词工程。**Promptbreeder**（[Fernando et al. 2023](https://arxiv.org/abs/2309.16797)）通过丰富的变异操作优化任务提示词。用于指挥 LLM 修改任务提示词的 mutation prompt，本身也通过进化改进。**GEPA**（[Agrawal et al. 2025](https://arxiv.org/abs/2507.19457)）结合基于[反思](https://lilianweng.github.io/posts/2023-06-23-agent/#self-reflection)的 prompting 与进化搜索，让模型对反复试错的轨迹进行自然语言反思，再提出提示词更新。
+
+[Novikov et al.（2025）](https://arxiv.org/abs/2506.13131)提出 **AlphaEvolve**。这是一个基于编码智能体的进化搜索系统。它保存候选程序池，并提示冻结权重的 LLM 生成改进 diff。系统持续评测子程序并保留成功候选，随着时间推移发现更好的解。
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/alphaevolve.png" alt="AlphaEvolve 在候选程序池中选择父程序、生成修改并评估子程序" />
+  <figcaption>图 16. AlphaEvolve 的工作方式。来源：<a href="https://arxiv.org/abs/2506.13131">Novikov et al. 2025</a>。</figcaption>
+</figure>
+
+AlphaEvolve 的几个设计细节：
+
+- 提示词包含父程序、运行结果、指令，有时也包含元信息。
+- 编码智能体可以访问完整仓库，但允许改进的代码区域由 `# EVOLVE-BLOCK-START` 和 `# EVOLVE-BLOCK-END` 明确标记。
+- 元提示词会根据 LLM 的建议，与指令和上下文共同演化，方式类似于候选程序的演化。
+
+消融实验显示，进化流程、提示词上下文、元提示词、整文件演化和更强 LLM 都会影响结果。
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/alphaevolve-plot.png" alt="AlphaEvolve 关键设计的消融实验" />
+  <figcaption>图 17. AlphaEvolve 关键设计的消融实验。来源：<a href="https://arxiv.org/abs/2506.13131">Novikov et al. 2025</a>。</figcaption>
+</figure>
+
+近期变体继续扩展这条路线。**ThetaEvolve**（[Wang et al. 2025](https://arxiv.org/abs/2511.23473)）结合进化搜索、RL 和 in-context learning。**DemoEvolve**（[Che et al. 2026](https://arxiv.org/abs/2605.24539)）把人类专家示范加入 self-rollout 档案库，作为 Harness 诊断和修改的参考经验。**ShinkaEvolve**（[Lange et al. 2025](https://arxiv.org/abs/2509.19349)）则加入三个组件，提高 LLM 采样效率：
+
+- 设计父代采样，在性能排名和已有后代数量之间平衡，以更少样本完成探索。
+- 用基于 embedding 余弦相似度的代码新颖性拒绝采样，丢弃与现有种群过于相似的候选。
+- 在 meta-scratchpad 中识别成功解的良好模式，用来指导后续变异。
+
+以上方法主要改进任务解。**Darwin Gödel Machine**（DGM，[Zhang et al. 2025](https://arxiv.org/abs/2505.22954)）则明确演化一个可编辑的 Harness 代码仓库。LLM 编码智能体被允许修改自己的 Harness。后续工作 **Hyperagents**（[Zhang et al. 2026](https://arxiv.org/abs/2603.19461)）再加入元智能体，控制如何修改现有任务智能体以产生新智能体。
+
+1. 从池中的一个编码智能体开始。
+2. 每轮选择一个父代。选择概率与性能成正比，与已有子代数量成反比。被选父代经修改和分支后生成新智能体。
+3. 父代智能体检查自己的 benchmark 评测日志，再提出对自身 Harness 代码库的改进，生成新版本。代码编辑只用两类基础工具：`bash`（参数为 `<bash_command>`）与 editor（参数为 `view/create/edit <file_path>`）。
+4. 评测新编码智能体。只有性能足够高的候选才加入池。
+5. 重复第 2 至第 4 步，直到满足停止条件。
+
+DGM 在固定模型下演化 Harness。实验以 `Claude 3.5 Sonnet` 为基础 LLM，从简单 Harness 配置出发。DGM 发现的智能体在 SWE-bench Verified 上从 20% 提高到 50%，在 Polyglot 上从 14.2% 提高到 30.7%，与手工智能体相当或更好。
+
+这类方法适合候选解可自动评测、fitness 容易量化的任务，如矩阵乘法、GPU kernel 优化、算法竞赛和数据中心调度。若评测缓慢、含糊或主要依靠启发式判断，方法就会受限。进化的计算效率与实际效果也仍有疑问。
+
+### 与模型权重联合优化
+
+Harness 演化修改的是模型周围的非参数系统。若要实现完整自改进，也可以同时允许模型更新自己的权重。权重更新可以来自训练流水线改进，也可以来自测试时持续学习。持续学习本身足以单独成文。
+
+**SIA**（[Hebbar et al. 2026](https://arxiv.org/abs/2605.27276)）较早尝试在同一个优化循环中结合 Harness 改进与模型参数更新，包含三个角色：
+
+- **Meta-Agent**：提出初始 Harness。
+- **Task-Specific Agent**：执行任务。
+- **Feedback-Agent**：根据近期轨迹，选择更新 Harness 或模型权重。
+
+<figure>
+  <img src="/assets/blog/harness-engineering-self-improvement-cn/sia.png" alt="SIA 中的 Feedback-Agent 选择下一轮更新 Harness 或模型权重" />
+  <figcaption>图 18. SIA 的 Feedback-Agent 决定下一轮迭代类型。来源：<a href="https://arxiv.org/abs/2605.27276">Hebbar et al. 2026</a>。</figcaption>
+</figure>
+
+SIA 的实验存在若干混杂因素，结果不易解释。任务智能体远弱于 Meta-Agent 和 Feedback-Agent 使用的模型（`gpt-oss-120b` 对 `Claude Sonnet 4.6`），baseline 也太弱，难以与相关方法清晰交叉比较。这一方向有吸引力，但现有证据仍属初步。训练稳定性、Goodhart 效应等问题也没有解决。
+
+**Continual Harness**（[Karten et al. 2026](https://arxiv.org/abs/2605.09998)）在长时程游戏环境中，同时实验了 Harness 更新和策略模型共学习。后者通过在低奖励轨迹上蒸馏强教师模型的标签实现。
+
+## 未来挑战
+
+AI Scientist 一类工作已经证明，专家设计的 Harness 可以协调自动化研究循环中的大部分环节，具体产物是研究论文。但论文生产不等于科学发现。系统能写出表面可信的论文，同时仍可能存在伪造引用、实现偏移或薄弱实验结果。
+
+[Trehan 与 Chopra（2026）](https://arxiv.org/abs/2601.03315)测试了 LLM 能否在最少脚手架和基础工具下，从研究想法走到论文。工具仅包括 `read_file`、`write_file`、`llm_search`、`list_files`。每个想法有专用工作区，智能体可以生成和读取文档，把文件作为上下文的一部分。
+
+实验覆盖世界模型、多智能体 RL、AI 安全与对齐三个领域。每个领域提供 45 至 50 份高质量种子文档，用于启发新想法。人类专家只选出四个想法进入完整流水线，最终只有一个真正完成为论文。实验观察到六种反复出现的失败模式：
+
+- **偏向训练数据默认项**：使用旧库、过时命令、标准格式，或使用没有扎根于实际仓库和数据集的假设。
+- **执行压力下的实现偏移**：方法一旦变得复杂，模型就可能转向常见但更简单的方案，而不是实现提出的方法。
+- **记忆和上下文退化**：长时程项目若不把日志保存成持久产物，就会丢失关键细节。
+- **过度乐观**：面对噪声或失败实验仍宣布成功。[Bubeck et al.（2025）](https://arxiv.org/abs/2511.16072)把类似现象描述为“p-hacking and eureka-ing”。模型会加入“数值胶带”，在信号仍是噪声时宣布胜利。
+- **领域智能不足**：缺少隐性的实践知识，如预估实现复杂度、判断实验结果是否可信、判断哪些 baseline 必不可少。
+- **科学品味薄弱**：实验可以运行，却没有回答正确的问题。
+
+面向完整 RSI，研究已经取得实质进展，但仍有七个瓶颈。
+
+### 1. 弱且模糊的评估器
+
+许多研究主张没有快速、精确的 verifier，大量现实任务也是如此。当前自改进循环最适合指标可测、目标客观的任务，与 [RL 的适用条件](https://lilianweng.github.io/posts/2018-02-19-rl-overview/)相似。
+
+研究品味、新颖性和长期科学价值要难测得多。研究品味混合了问题定义、实验设计，以及判断哪些意外结果值得追、哪些失败值得重试的能力。
+
+### 2. 上下文与记忆生命周期
+
+AI 智能体越自主，记忆越庞大。有效的 Harness 需要管理上下文与记忆，以补偿长上下文生成的现有限制，同时提高长时程任务成功率。人类能在一生中维持记忆。类似地，[上下文工程](https://lilianweng.github.io/posts/2026-07-04-harness/#context-engineering)应当成为智能的一部分，而不应永远停留在软件系统层。
+
+### 3. 负结果
+
+研究者有动力发表成功结果，文献因此偏向成功。LLM 的训练数据主要由人类生成，至少目前如此。成功与失败案例的不平衡，可能使模型不擅长决定何时放弃假设、报告负结果，甚至不擅长承认失败。
+
+研究 Harness 应让失败尝试易于保存。从失败中学习，是压缩任务搜索空间最有效的方式。
+
+### 4. 多样性坍缩
+
+进化与 RL 循环倾向于利用已知的高奖励模式。我们需要[探索机制](https://lilianweng.github.io/posts/2020-06-07-exploration-drl/)，防止种群坍缩为同一解的各种变体。这对开放式研究尤其关键，因为最佳路径在当前 evaluator 下，早期可能看起来更差。
+
+### 5. Reward hacking
+
+自改进循环会优化给定信号。奖励来自单元测试，智能体就可能过拟合测试。奖励来自 judge model，智能体就可能学会针对该 judge 的 reward hacking。奖励来自 benchmark 得分，智能体就可能利用 benchmark 的偶然特征。
+
+Evaluator 与权限控制应位于 Harness 演化循环之外，并配合 held-out 测试、轨迹审计，以及关键决策点上的人类审查。监督可以扩展和自动化到什么程度，仍是开放问题。
+
+### 6. 长期成功
+
+外部优化循环处理的是单次 rollout 之外的奖励。这类奖励可以在训练 sandbox 中模拟。
+
+以编码智能体为例。它们已经提高了软件工程日常生产力，但许多优化目标仍然过于短期。智能体经常能完成眼前任务，却不清楚应如何保护由数百或数千名工程师共同维护的仓库的长期健康。标准 sandbox 中基于 RLVR 的训练，很少覆盖可维护性、所有权边界、迁移成本、向后兼容或未来调试负担。
+
+### 7. 人的角色
+
+人应向抽象栈的上层移动，而不是被移出循环。人需要在正确时间、正确抽象层级提供监督。系统设计也应明确何时、如何设置这些接触点。
+
+上面的许多挑战都需要人的反馈和引导。归根结底，我们是在为人类更好的未来构建技术，而不是反过来。
+
+## 引用
+
+请按以下格式引用原文：
+
+> Weng, Lilian. “Harness Engineering for Self-Improvement”. Lil’Log (Jul 2026). https://lilianweng.github.io/posts/2026-07-04-harness/
+
+BibTeX：
+
+```bibtex
+@article{weng2026harness,
+  title = {Harness Engineering for Self-Improvement},
+  author = {Weng, Lilian},
+  journal = {lilianweng.github.io},
+  year = {2026},
+  month = {July},
+  url = {https://lilianweng.github.io/posts/2026-07-04-harness/}
+}
+```
+
+## 附录：常用评测基准
+
+- **[PaperBench](https://arxiv.org/abs/2504.01848)**：从零复现 20 篇 ICML 2024 Spotlight 和 Oral 论文，覆盖理解论文贡献、开发代码库和成功运行实验。
+  - 每个复现任务被拆成更小、可独立评分的子任务。
+  - 共 8,316 条评分 rubric，由论文作者共同制定。
+  - 当时最好的模型 `Claude 3.5 Sonnet` 得分约 21%，没有超过机器学习博士。
+  - 包含 PaperBench、较轻量的 PaperBench Code-Dev，以及 JudgeEval。
+
+- **[CORE-Bench](https://arxiv.org/abs/2409.11363)**：评测已发表研究的计算可复现性。
+  - 270 个任务，来自计算机科学、社会科学和医学领域的 90 篇论文。
+  - 任务要求基于给定代码和数据复现结果。
+  - 包含多个难度级别，同时覆盖纯语言和视觉语言任务。
+  - 当时最好的已报告智能体 `GPT-4o` 与 `GPT-4o-mini`，在最难任务上只有 21% 准确率。
+
+- **[ScienceAgentBench](https://arxiv.org/abs/2410.05080)**：评测 LLM 智能体进行数据驱动科学发现的能力。
+  - 从数学、化学、生物学、地理学四个领域的 44 篇同行评审论文中提取 102 个任务。
+  - 覆盖数据处理、模型开发、数据分析和信息可视化等基础数据科学任务。
+
+- **[RE-Bench](https://arxiv.org/abs/2411.15114)**：在真实机器学习研发环境中，对比前沿 AI 智能体与人类专家。
+  - 包含 7 个高难度、开放式机器学习研发环境。
+  - 每个环境由评分函数、起始解和参考解组成，最多可使用 8 张 H100 GPU。
+  - 示例包括优化 kernel、运行 scaling-law 实验、修复 embedding、为问答任务微调 GPT-2。
+  - 数据来自 61 位人类专家的 71 次八小时尝试。
+  - 人类专家在 82% 的八小时尝试中获得非零分，24% 达到或超过强参考解。
+  - 两小时时间预算下，最好的 AI 智能体得分是人类的 4 倍。但人类在更长预算下的边际收益更高，并在八小时和 32 小时时超过智能体。
+
+- **[MLE-bench](https://arxiv.org/abs/2410.07095)**：用离线 Kaggle 竞赛评测机器学习工程智能体。
+  - 收录从 Kaggle 筛选的 75 场机器学习工程竞赛。
+  - 测试模型训练、数据集准备、实验运行，以及向评分脚本提交预测。
+  - 用 Kaggle 公开排行榜作为人类基线。
+  - 论文中最好的设置是 `o1-preview` 配合 AIDE 脚手架，在 16.9% 的竞赛中至少达到 Kaggle 铜牌水平。
+  - 包含资源扩展与污染分析。
+
+- **[KernelBench](https://arxiv.org/abs/2502.10517)**：评测生成 GPU kernel 的正确性与速度。
+  - 包含 250 个 PyTorch 任务，用于测试 LLM 能否写出快速、正确的 kernel。
+  - 指标 `fast_p` 表示既正确又比基线更快的生成 kernel 比例。
+
+## 参考文献
+
+[1] Good, I. J. [“Speculations Concerning the First Ultraintelligent Machine.”](https://philpapers.org/rec/GOOSCT) _Advances in Computers_, 6:31–88, 1965.
+
+[2] Yudkowsky, Eliezer. [“Recursive Self-Improvement.”](https://www.lesswrong.com/posts/JBadX7rwdcRFzGuju/recursive-self-improvement) LessWrong, 2008.
+
+[3] Choi, et al. [“Anchored Self-Play for Code Repair.”](https://openreview.net/forum?id=lTbBFAoPSA) ICML 2026.
+
+[4] Zhao, et al. [“Absolute Zero: Reinforced Self-play Reasoning with Zero Data.”](https://arxiv.org/abs/2505.03335) arXiv preprint arXiv:2505.03335, 2025.
+
+[5] Yuan, et al. [“Self-Rewarding Language Models.”](https://arxiv.org/abs/2401.10020) arXiv preprint arXiv:2401.10020, 2024.
+
+[6] Chen, et al. [“Self-Play Fine-Tuning Converts Weak Language Models to Strong Language Models.”](https://arxiv.org/abs/2401.01335) ICML 2024.
+
+[7] Zhang, et al. [“Agentic Context Engineering: Evolving Contexts for Self-Improving Language Models.”](https://arxiv.org/abs/2510.04618) ICLR 2026.
+
+[8] Ye, et al. [“Meta Context Engineering via Agentic Skill Evolution.”](https://arxiv.org/abs/2601.21557) arXiv preprint arXiv:2601.21557, 2026.
+
+[9] Lee, et al. [“Meta-Harness: End-to-End Optimization of Model Harnesses.”](https://arxiv.org/abs/2603.28052) arXiv preprint arXiv:2603.28052, 2026.
+
+[10] Lu, et al. [“Towards end-to-end automation of AI research.”](https://www.nature.com/articles/s41586-026-10265-5) _Nature_, 651:914–919, 2026.
+
+[11] Meng, et al. [“ScientistOne: Towards Human-Level Autonomous Research via Chain-of-Evidence.”](https://arxiv.org/abs/2605.26340) arXiv preprint arXiv:2605.26340, 2026.
+
+[12] Kulikov, et al. [“Autodata: An agentic data scientist to create high quality synthetic data.”](https://arxiv.org/abs/2606.25996) arXiv preprint arXiv:2606.25996, 2026.
+
+[13] Hu, Lu, and Clune. [“Automated Design of Agentic Systems.”](https://arxiv.org/abs/2408.08435) ICLR 2025.
+
+[14] Madaan, et al. [“Self-Refine: Iterative Refinement with Self-Feedback.”](https://arxiv.org/abs/2303.17651) NeurIPS 2023.
+
+[15] Zhang, et al. [“AFlow: Automating Agentic Workflow Generation.”](https://arxiv.org/abs/2410.10762) ICLR 2025.
+
+[16] Zelikman, et al. [“Self-Taught Optimizer (STOP): Recursively Self-Improving Code Generation.”](https://arxiv.org/abs/2310.02304) COLM 2024.
+
+[17] Zhang, et al. [“Self-Harness: Harnesses That Improve Themselves.”](https://arxiv.org/abs/2606.09498) arXiv preprint arXiv:2606.09498, 2026.
+
+[18] Fernando, et al. [“Promptbreeder: Self-Referential Self-Improvement Via Prompt Evolution.”](https://arxiv.org/abs/2309.16797) arXiv preprint arXiv:2309.16797, 2023.
+
+[19] Agrawal, A. et al. [“GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning.”](https://arxiv.org/abs/2507.19457) arXiv preprint arXiv:2507.19457, 2025.
+
+[20] Novikov, et al. [“AlphaEvolve: A coding agent for scientific and algorithmic discovery.”](https://arxiv.org/abs/2506.13131) arXiv preprint arXiv:2506.13131, 2025.
+
+[21] Lange, Imajuku, and Cetin. [“ShinkaEvolve: Towards Open-Ended And Sample-Efficient Program Evolution.”](https://arxiv.org/abs/2509.19349) arXiv preprint arXiv:2509.19349, 2025.
+
+[22] Wang, et al. [“ThetaEvolve: Test-time Learning on Open Problems.”](https://arxiv.org/abs/2511.23473) arXiv preprint arXiv:2511.23473, 2025.
+
+[23] Zhang, et al. [“Darwin Gödel Machine: Open-Ended Evolution of Self-Improving Agents.”](https://arxiv.org/abs/2505.22954) arXiv preprint arXiv:2505.22954, 2025.
+
+[24] Zhang, et al. [“Hyperagents.”](https://arxiv.org/abs/2603.19461) arXiv preprint arXiv:2603.19461, 2026.
+
+[25] Yuksekgonul, et al. [“Learning to Discover at Test Time.”](https://arxiv.org/abs/2601.16175) arXiv preprint arXiv:2601.16175, 2026.
+
+[26] Riaz, et al. [“Epistemic Uncertainty for Test-Time Discovery.”](https://arxiv.org/abs/2605.11328) arXiv preprint arXiv:2605.11328, 2026.
+
+[27] Hebbar, et al. [“SIA: Self Improving AI with Harness & Weight Updates.”](https://arxiv.org/abs/2605.27276) arXiv preprint arXiv:2605.27276, 2026.
+
+[28] Trehan and Chopra. [“Why LLMs Aren’t Scientists Yet: Lessons from Four Autonomous Research Attempts.”](https://arxiv.org/abs/2601.03315) arXiv preprint arXiv:2601.03315, 2026.
+
+[29] Bubeck, et al. [“Early science acceleration experiments with GPT-5.”](https://arxiv.org/abs/2511.16072) arXiv preprint arXiv:2511.16072, 2025.
+
+[30] Starace, et al. [“PaperBench: Evaluating AI’s Ability to Replicate AI Research.”](https://arxiv.org/abs/2504.01848) ICML 2025.
+
+[31] Wijk, et al. [“RE-Bench: Evaluating frontier AI R&D capabilities of language model agents against human experts.”](https://arxiv.org/abs/2411.15114) ICML 2025.
+
+[32] Chan, et al. [“MLE-bench: Evaluating Machine Learning Agents on Machine Learning Engineering.”](https://arxiv.org/abs/2410.07095) arXiv preprint arXiv:2410.07095, 2024.
+
+[33] Chen, et al. [“ScienceAgentBench: Toward Rigorous Assessment of Language Agents for Data-Driven Scientific Discovery.”](https://arxiv.org/abs/2410.05080) ICLR 2025.
+
+[34] Siegel, et al. [“CORE-Bench: Fostering the Credibility of Published Research Through a Computational Reproducibility Agent Benchmark.”](https://arxiv.org/abs/2409.11363) TMLR 2024.
+
+[35] Ouyang, et al. [“KernelBench: Can LLMs Write Efficient GPU Kernels?”](https://arxiv.org/abs/2502.10517) arXiv preprint arXiv:2502.10517, 2025.
+
+[36] Lin, et al. [“Harness Updating Is Not Harness Benefit: Disentangling Evolution Capabilities in Self-Evolving LLM Agents.”](https://arxiv.org/abs/2605.30621) arXiv preprint arXiv:2605.30621, 2026.
+
+[37] Lin, et al. [“Agentic Harness Engineering: Observability-Driven Automatic Evolution of Coding-Agent Harnesses.”](https://arxiv.org/abs/2604.25850) arXiv preprint arXiv:2604.25850, 2026.
+
+[38] Karten, et al. [“Continual Harness: Online Adaptation for Self-Improving Foundation Agents.”](https://arxiv.org/abs/2605.09998) arXiv preprint arXiv:2605.09998, 2026.
+
+[39] Che, et al. [“DemoEvolve: Overcoming Sparse Feedback in Agentic Harness Evolution with Demonstrations.”](https://arxiv.org/abs/2605.24539) arXiv preprint arXiv:2605.24539, 2026.
