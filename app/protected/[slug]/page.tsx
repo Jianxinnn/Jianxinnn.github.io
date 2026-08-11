@@ -76,8 +76,11 @@ export default async function ProtectedPostPage({ params }: ProtectedPostPagePro
   return (
     <article className={`blog-article-page protected-article-page protected-article-${post.slug}`}>
       <header className="blog-article-header">
-        <Link className="back-link" href="/blog">
-          Blog
+        <Link
+          className="back-link"
+          href={post.section === "notes" ? "/notes" : "/blog"}
+        >
+          {post.section === "notes" ? "Notes" : "Blog"}
         </Link>
         <div className="blog-article-title-line">
           <h1>{post.title}</h1>

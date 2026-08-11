@@ -16,11 +16,13 @@ export type ProtectedPostRecord = {
   tags?: string[];
   featured?: boolean;
   listed?: boolean;
+  section?: "blog" | "notes";
   updated?: string;
 };
 
 export type ProtectedPost = BlogPost & {
   encryptedPath: string;
+  section: "blog" | "notes";
   sourceType: "encrypted";
 };
 
@@ -36,6 +38,7 @@ export const protectedPosts: ProtectedPost[] = records.map((post) => ({
   href: `/protected/${post.slug}/`,
   encryptedPath: post.encryptedPath ?? `/protected/${post.slug}.json`,
   badge: post.badge ?? "Protected",
+  section: post.section ?? "blog",
   ...(post.image ? { image: post.image } : {}),
   ...(post.category ? { category: post.category } : {}),
   ...(post.language ? { language: post.language } : {}),
@@ -45,6 +48,14 @@ export const protectedPosts: ProtectedPost[] = records.map((post) => ({
   ...(post.listed === false ? { listed: false } : {}),
   ...(post.updated ? { updated: post.updated } : {})
 }));
+
+export const protectedBlogPosts = protectedPosts.filter(
+  (post) => post.section === "blog"
+);
+
+export const protectedNotes = protectedPosts.filter(
+  (post) => post.section === "notes"
+);
 
 export function getProtectedPost(slug: string) {
   return protectedPosts.find((post) => post.slug === slug);

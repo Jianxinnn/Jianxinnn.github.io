@@ -1,5 +1,6 @@
 import { EntryList } from "@/components/entry-list";
 import { notes } from "@/content/notes/notes";
+import { protectedNotes } from "@/content/protected-posts";
 import { sortEntries } from "@/lib/content";
 
 export const metadata = {
@@ -8,17 +9,32 @@ export const metadata = {
 
 export default function NotesPage() {
   const noteEntries = sortEntries(
-    notes.map((note) => ({
-      slug: note.slug,
-      title: note.title,
-      summary: note.summary,
-      date: note.date,
-      type: "note" as const,
-      collaborators: note.tags?.join(" / ") ?? note.readingTime,
-      image: note.image,
-      href: `/notes/${note.slug}/`,
-      updated: note.updated
-    }))
+    [
+      ...notes.map((note) => ({
+        slug: note.slug,
+        title: note.title,
+        summary: note.summary,
+        date: note.date,
+        type: "note" as const,
+        collaborators: note.tags?.join(" / ") ?? note.readingTime,
+        image: note.image,
+        href: `/notes/${note.slug}/`,
+        updated: note.updated
+      })),
+      ...protectedNotes
+        .filter((note) => note.listed !== false)
+        .map((note) => ({
+          slug: note.slug,
+          title: `🔒 ${note.title}`,
+          summary: note.summary,
+          date: note.date,
+          type: "note" as const,
+          collaborators: note.tags?.join(" / ") ?? note.readingTime,
+          image: note.image,
+          href: note.href,
+          updated: note.updated
+        }))
+    ]
   );
 
   return (

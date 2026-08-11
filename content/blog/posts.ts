@@ -1,7 +1,7 @@
 import { blogPosts as generatedBlogPosts } from "@/.generated/blog-posts";
 import { blogConfig, blogSourceStatuses } from "@/content/blog/config";
 import { blogCategories } from "@/content/blog/categories";
-import { protectedPosts } from "@/content/protected-posts";
+import { protectedBlogPosts } from "@/content/protected-posts";
 import type { BlogPost, BlogSourceStatus } from "@/content/blog/types";
 
 export type {
@@ -13,7 +13,7 @@ export type {
   BlogSourceType
 } from "@/content/blog/types";
 
-export const blogPosts: BlogPost[] = [...generatedBlogPosts, ...protectedPosts];
+export const blogPosts: BlogPost[] = [...generatedBlogPosts, ...protectedBlogPosts];
 
 export const BLOG_PAGE_SIZE = blogConfig.pageSize;
 export const listedBlogPosts = blogPosts.filter((post) => post.listed !== false);
