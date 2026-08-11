@@ -36,9 +36,36 @@ export default function RootLayout({
       }
     })();
   `;
+  const navigationTargets = profile.nav.map(({ href }) =>
+    href === "/" ? "/" : `${href}/`
+  );
+  const navigationSpeculationRules = JSON.stringify({
+    prefetch: [
+      {
+        source: "list",
+        urls: navigationTargets,
+        eagerness: "immediate"
+      }
+    ],
+    prerender: [
+      {
+        source: "document",
+        where: {
+          selector_matches: ".site-route-link:not([aria-current='page'])"
+        },
+        eagerness: "moderate"
+      }
+    ]
+  });
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{ __html: navigationSpeculationRules }}
+          type="speculationrules"
+        />
+      </head>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <SiteHeader />

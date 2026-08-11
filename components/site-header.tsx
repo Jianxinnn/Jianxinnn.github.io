@@ -1,7 +1,6 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BrandMark } from "@/components/brand-mark";
@@ -29,24 +28,24 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <div className="topbar">
-        <Link aria-label="Home" className="brand-link" href="/" prefetch>
+        <a aria-label="Home" className="brand-link" href="/">
           <BrandMark className="brand-logo" />
-        </Link>
+        </a>
         <div className="header-actions">
           <nav aria-label="Main navigation" className="section-tabs">
             {profile.nav.map((item) => {
               const active =
                 item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+              const href = item.href === "/" ? "/" : `${item.href}/`;
               return (
-                <Link
+                <a
                   aria-current={active ? "page" : undefined}
-                  className={active ? "tab active" : "tab"}
-                  href={item.href}
+                  className={active ? "site-route-link tab active" : "site-route-link tab"}
+                  href={href}
                   key={item.href}
-                  prefetch
                 >
                   {item.label}
-                </Link>
+                </a>
               );
             })}
           </nav>
