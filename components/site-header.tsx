@@ -29,7 +29,7 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <div className="topbar">
-        <Link aria-label="Home" className="brand-link" href="/" prefetch={false}>
+        <Link aria-label="Home" className="brand-link" href="/" prefetch>
           <BrandMark className="brand-logo" />
         </Link>
         <div className="header-actions">
@@ -43,7 +43,7 @@ export function SiteHeader() {
                   className={active ? "tab active" : "tab"}
                   href={item.href}
                   key={item.href}
-                  prefetch={false}
+                  prefetch
                 >
                   {item.label}
                 </Link>
