@@ -3,6 +3,7 @@
 import { type FormEvent, useState } from "react";
 import { Lock, RotateCcw, Unlock } from "lucide-react";
 import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 type ProtectedArticlePost = {
   slug: string;
@@ -175,7 +176,7 @@ export function ProtectedArticle({ post }: ProtectedArticleProps) {
           </button>
         </div>
         <div className="mdx-body protected-article-body">
-          <ReactMarkdown urlTransform={protectedUrlTransform}>
+          <ReactMarkdown remarkPlugins={[remarkGfm]} urlTransform={protectedUrlTransform}>
             {article.markdown}
           </ReactMarkdown>
         </div>

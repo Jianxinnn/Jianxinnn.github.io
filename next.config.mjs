@@ -1,7 +1,10 @@
 import createMDX from "@next/mdx";
 
 const withMDX = createMDX({
-  extension: /\.mdx?$/
+  extension: /\.mdx?$/,
+  options: {
+    remarkPlugins: ["remark-gfm"]
+  }
 });
 
 /** @type {import('next').NextConfig} */
