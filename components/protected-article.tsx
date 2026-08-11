@@ -1,9 +1,11 @@
 "use client";
 
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import { Lock, RotateCcw, Unlock } from "lucide-react";
 import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
+import { ensureMathJax, type MathJaxWindow } from "@/components/mathjax";
 
 type ProtectedArticlePost = {
   slug: string;
@@ -142,6 +144,32 @@ export function ProtectedArticle({ post }: ProtectedArticleProps) {
   const [article, setArticle] = useState<DecryptedArticle | null>(null);
   const [error, setError] = useState("");
   const [isUnlocking, setIsUnlocking] = useState(false);
+  const articleBodyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!article) {
+      return;
+    }
+
+    let cancelled = false;
+
+    ensureMathJax()
+      .then(async () => {
+        const root = articleBodyRef.current;
+        const mathJax = (window as MathJaxWindow).MathJax;
+
+        if (!cancelled && root && mathJax?.typesetPromise) {
+          await mathJax.typesetPromise([root]);
+        }
+      })
+      .catch(() => {
+        // Leave readable TeX in place if MathJax cannot load.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [article]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -175,8 +203,12 @@ export function ProtectedArticle({ post }: ProtectedArticleProps) {
             Lock
           </button>
         </div>
-        <div className="mdx-body protected-article-body">
-          <ReactMarkdown remarkPlugins={[remarkGfm]} urlTransform={protectedUrlTransform}>
+        <div className="mdx-body protected-article-body" ref={articleBodyRef}>
+          <ReactMarkdown
+            rehypePlugins={[rehypeRaw]}
+            remarkPlugins={[remarkGfm]}
+            urlTransform={protectedUrlTransform}
+          >
             {article.markdown}
           </ReactMarkdown>
         </div>

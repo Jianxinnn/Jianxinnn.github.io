@@ -1,5 +1,5 @@
 import protectedPostRecords from "@/content/protected-posts.json";
-import type { BlogLanguage, BlogPost } from "@/content/blog/types";
+import type { BlogLanguage, BlogPost, BlogPostSource } from "@/content/blog/types";
 
 export type ProtectedPostRecord = {
   slug: string;
@@ -12,6 +12,7 @@ export type ProtectedPostRecord = {
   badge?: string;
   category?: string;
   language?: BlogLanguage;
+  source?: BlogPostSource;
   tags?: string[];
   featured?: boolean;
   listed?: boolean;
@@ -38,6 +39,7 @@ export const protectedPosts: ProtectedPost[] = records.map((post) => ({
   ...(post.image ? { image: post.image } : {}),
   ...(post.category ? { category: post.category } : {}),
   ...(post.language ? { language: post.language } : {}),
+  ...(post.source ? { source: post.source } : {}),
   ...(post.tags?.length ? { tags: post.tags } : {}),
   ...(post.featured ? { featured: true } : {}),
   ...(post.listed === false ? { listed: false } : {}),

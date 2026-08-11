@@ -69,30 +69,6 @@ export const blogPosts: BlogPost[] = [
     ]
   },
   {
-    "slug": "harness-engineering-self-improvement-cn",
-    "title": "面向自我改进的 Harness 工程",
-    "summary": "从上下文工程、工作流搜索、自改进 Harness、进化搜索到模型权重联合优化，梳理递归自我改进的系统层路径与瓶颈。",
-    "date": "2026-07-30",
-    "readingTime": "26 min read",
-    "sourceType": "mdx",
-    "href": "/blog/harness-engineering-self-improvement-cn/",
-    "image": "/assets/blog/harness-engineering-self-improvement-cn/openai-agent-loop.png",
-    "category": "Research systems",
-    "language": "zh",
-    "source": {
-      "status": "translation",
-      "label": "授权翻译 / 个人学习",
-      "originalTitle": "Harness Engineering for Self-Improvement",
-      "originalUrl": "https://lilianweng.github.io/posts/2026-07-04-harness/",
-      "note": "经原作者 Lilian Weng 授权翻译转载，仅供个人学习。"
-    },
-    "tags": [
-      "AI agents",
-      "auto-research",
-      "self-improvement"
-    ]
-  },
-  {
     "slug": "protein-sequence-diffusion-models-cn",
     "title": "蛋白序列扩散模型详解",
     "summary": "从 token、PLM latent、结构 token 到进化编辑，梳理蛋白序列扩散模型的噪声空间、关键公式和代表论文。",
