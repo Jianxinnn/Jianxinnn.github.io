@@ -26,9 +26,6 @@ export default function BlogPage() {
 
   return (
     <div className="blog-page blog-library-page">
-      <header className="blog-index-header compact-page-header">
-        <p className="eyebrow">Blog</p>
-      </header>
       <BlogSearch />
       <section className="blog-library-summary" aria-label="Blog summary">
         <div>
