@@ -1,4 +1,8 @@
 import { BilingualArticle } from "@/components/bilingual-article";
-import { lectureNotesSegments } from "./segments";
+import { flowMatchingZhHtml } from "@/.generated/bilingual-articles";
 
-<BilingualArticle className="lecture-note-article" segments={lectureNotesSegments} />
+<BilingualArticle
+  className="lecture-note-article"
+  initialHtml={flowMatchingZhHtml}
+  segmentsPath="/blog/flow-matching-diffusion-models-cn/segments.json"
+/>

@@ -13,7 +13,7 @@ export function BlogTags({ tags }: BlogTagsProps) {
   return (
     <div className="blog-tags" aria-label="Tags">
       {tags.map((tag) => (
-        <Link href={`/blog/tags/${slugifyTag(tag)}`} key={tag}>
+        <Link href={`/blog/tags/${slugifyTag(tag)}`} key={tag} prefetch={false}>
           {tag}
         </Link>
       ))}

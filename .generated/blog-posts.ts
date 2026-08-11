@@ -76,7 +76,7 @@ export const blogPosts: BlogPost[] = [
     "readingTime": "10 min read",
     "sourceType": "mdx",
     "href": "/blog/protein-sequence-diffusion-models-cn/",
-    "image": "/assets/blog/protein-sequence-diffusion-models-cn/fig1-taxonomy.png",
+    "image": "/assets/thumbnails/protein-sequence-diffusion-models-cn.webp",
     "category": "Technical explainers",
     "language": "zh",
     "source": {
@@ -97,7 +97,7 @@ export const blogPosts: BlogPost[] = [
     "readingTime": "12 min read",
     "sourceType": "mdx",
     "href": "/blog/vla-wam-world-models-cn/",
-    "image": "/assets/blog/vla-wam-world-models-cn/wam-concept.jpg",
+    "image": "/assets/thumbnails/vla-wam-world-models-cn.webp",
     "category": "Technical explainers",
     "language": "zh",
     "source": {
@@ -118,7 +118,7 @@ export const blogPosts: BlogPost[] = [
     "readingTime": "7 min read",
     "sourceType": "mdx",
     "href": "/blog/what-are-world-models-cn/",
-    "image": "/assets/blog/world-models-cn/three-paradigms.jpg",
+    "image": "/assets/thumbnails/what-are-world-models-cn.webp",
     "category": "Technical explainers",
     "language": "zh",
     "source": {
@@ -139,7 +139,7 @@ export const blogPosts: BlogPost[] = [
     "readingTime": "6 min read",
     "sourceType": "mdx",
     "href": "/blog/world-model-video-routes-cn/",
-    "image": "/assets/blog/world-model-video-routes-cn/fig1-sora.png",
+    "image": "/assets/thumbnails/world-model-video-routes-cn.webp",
     "category": "Technical explainers",
     "language": "zh",
     "source": {
@@ -160,7 +160,7 @@ export const blogPosts: BlogPost[] = [
     "readingTime": "10 min read",
     "sourceType": "mdx",
     "href": "/blog/world-models-guide-action-cn/",
-    "image": "/assets/blog/world-models-guide-action-cn/pan-latent-world-model.jpg",
+    "image": "/assets/thumbnails/world-models-guide-action-cn.webp",
     "category": "Technical explainers",
     "language": "zh",
     "source": {

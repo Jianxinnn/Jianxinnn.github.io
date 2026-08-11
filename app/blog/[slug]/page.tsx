@@ -4,7 +4,6 @@ import { BlogSectionNav } from "@/components/blog-section-nav";
 import { BlogSourceMark } from "@/components/blog-source-mark";
 import { BlogTags } from "@/components/blog-tags";
 import { ReadingProgress } from "@/components/reading-progress";
-import { ViewCountBadge } from "@/components/view-count-badge";
 import { blogPostContent } from "@/content/blog/content";
 import { getBlogPost, listedBlogPosts } from "@/content/blog/posts";
 import { formatDate } from "@/lib/content";
@@ -82,8 +81,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 <span>{post.category}</span>
               </>
             ) : null}
-            <span aria-hidden="true">·</span>
-            <ViewCountBadge scope="blog" slug={post.slug} />
           </div>
           <BlogSourceMark source={post.source} variant="article" />
           <BlogTags tags={post.tags} />

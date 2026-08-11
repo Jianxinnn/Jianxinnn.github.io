@@ -2,11 +2,9 @@ import Link from "next/link";
 import { Mail } from "lucide-react";
 import { BlogPostImage } from "@/components/blog-post-image";
 import { EntryList } from "@/components/entry-list";
-import { ViewCountBadge } from "@/components/view-count-badge";
 import { entries } from "@/content/entries";
 import { profile } from "@/content/profile";
 import { formatDate, formatEntryType, sortEntries } from "@/lib/content";
-import { viewCountTargetForEntry } from "@/lib/view-count";
 
 export default function HomePage() {
   const allEntries = sortEntries(entries);
@@ -31,7 +29,7 @@ export default function HomePage() {
               <p className="eyebrow">Current index</p>
               <h1 id="current-work-heading">Latest writing, notes, and readings</h1>
             </div>
-            <Link href="/archive">Archive</Link>
+            <Link href="/archive" prefetch={false}>Archive</Link>
           </div>
 
           <div className="current-work-list">
@@ -63,6 +61,7 @@ export default function HomePage() {
                       aria-label={entry.title}
                       className="current-work-image-link"
                       href={entry.href ?? `/archive#${entry.slug}`}
+                      prefetch
                     >
                       <BlogPostImage
                         alt=""
@@ -80,8 +79,6 @@ export default function HomePage() {
                     <time dateTime={entry.date}>{formatDate(entry.date)}</time>
                     <span aria-hidden="true">·</span>
                     <span>{formatEntryType(entry.type)}</span>
-                    <span aria-hidden="true">·</span>
-                    <ViewCountBadge {...viewCountTargetForEntry(entry)} />
                   </div>
                   <div className="current-title-line">
                     <h2>
@@ -90,7 +87,7 @@ export default function HomePage() {
                           {entry.title}
                         </a>
                       ) : (
-                        <Link href={entry.href ?? `/archive#${entry.slug}`}>
+                        <Link href={entry.href ?? `/archive#${entry.slug}`} prefetch>
                           {entry.title}
                         </Link>
                       )}
@@ -108,9 +105,9 @@ export default function HomePage() {
         <div className="recent-log">
           <div className="section-heading">
             <h2>Recent log</h2>
-            <Link href="/archive">Archive</Link>
+            <Link href="/archive" prefetch={false}>Archive</Link>
           </div>
-          <EntryList entries={history} showViewCounts />
+          <EntryList entries={history} />
         </div>
 
         <aside className="mail-panel" aria-label="Email updates">

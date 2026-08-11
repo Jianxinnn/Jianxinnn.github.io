@@ -47,7 +47,7 @@ export default function BlogPage() {
           <section aria-labelledby="all-posts">
             <div className="section-heading">
               <h2 id="all-posts">All posts</h2>
-              <Link href="/blog/archive">Archive</Link>
+              <Link href="/blog/archive" prefetch={false}>Archive</Link>
             </div>
             <BlogList posts={page.posts} />
             <BlogPagination currentPage={page.currentPage} totalPages={page.totalPages} />
@@ -60,7 +60,11 @@ export default function BlogPage() {
               <h2>Categories</h2>
               <nav>
                 {categories.map((category) => (
-                  <Link href={`/blog/categories/${category.slug}`} key={category.slug}>
+                  <Link
+                    href={`/blog/categories/${category.slug}`}
+                    key={category.slug}
+                    prefetch={false}
+                  >
                     <span>{category.label}</span>
                     <span>{category.count}</span>
                   </Link>
@@ -74,7 +78,7 @@ export default function BlogPage() {
               <h2>Tags</h2>
               <nav className="blog-tag-cloud">
                 {tags.map((tag) => (
-                  <Link href={`/blog/tags/${tag.slug}`} key={tag.slug}>
+                  <Link href={`/blog/tags/${tag.slug}`} key={tag.slug} prefetch={false}>
                     {tag.label}
                     <span>{tag.count}</span>
                   </Link>
@@ -88,7 +92,11 @@ export default function BlogPage() {
               <h2>Sources</h2>
               <div className="blog-source-stats">
                 {sourceStats.map((item) => (
-                  <Link href={`/blog/sources/${item.status}`} key={item.status}>
+                  <Link
+                    href={`/blog/sources/${item.status}`}
+                    key={item.status}
+                    prefetch={false}
+                  >
                     <span>{item.label}</span>
                     <span>{item.count}</span>
                   </Link>
@@ -102,7 +110,11 @@ export default function BlogPage() {
               <h2>Years</h2>
               <nav>
                 {archive.map((group) => (
-                  <Link href={`/blog/archive#year-${group.year}`} key={group.year}>
+                  <Link
+                    href={`/blog/archive#year-${group.year}`}
+                    key={group.year}
+                    prefetch={false}
+                  >
                     <span>{group.year}</span>
                     <span>{group.posts.length}</span>
                   </Link>

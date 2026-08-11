@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { BlogPostImage } from "@/components/blog-post-image";
 import { BlogSourceMark } from "@/components/blog-source-mark";
 import { BlogTags } from "@/components/blog-tags";
-import { ViewCountBadge } from "@/components/view-count-badge";
 import type { BlogPost } from "@/content/blog/posts";
 import { formatDate } from "@/lib/content";
 
@@ -15,10 +14,12 @@ type BlogListProps = {
 function PostLink({
   children,
   className,
+  prefetch,
   post
 }: {
   children: ReactNode;
   className?: string;
+  prefetch?: boolean;
   post: BlogPost;
 }) {
   if (post.href.startsWith("http")) {
@@ -29,8 +30,16 @@ function PostLink({
     );
   }
 
+  if (post.sourceType === "html") {
+    return (
+      <a className={className} href={post.href}>
+        {children}
+      </a>
+    );
+  }
+
   return (
-    <Link className={className} href={post.href}>
+    <Link className={className} href={post.href} prefetch={prefetch}>
       {children}
     </Link>
   );
@@ -39,11 +48,11 @@ function PostLink({
 export function BlogList({ posts, showImages = true }: BlogListProps) {
   return (
     <div className="blog-feed">
-      {posts.map((post) => (
+      {posts.map((post, index) => (
         <article className="blog-card" key={post.slug}>
           <div className="blog-card-copy">
             <div className="blog-title-line">
-              <PostLink className="blog-card-title" post={post}>
+              <PostLink className="blog-card-title" post={post} prefetch={index < 3}>
                 {post.title}
               </PostLink>
               {post.badge ? <span className="blog-badge">{post.badge}</span> : null}
@@ -60,16 +69,14 @@ export function BlogList({ posts, showImages = true }: BlogListProps) {
                   <span>{post.category}</span>
                 </>
               ) : null}
-              <span aria-hidden="true">·</span>
-              <ViewCountBadge scope="blog" slug={post.slug} />
             </div>
             <BlogTags tags={post.tags} />
           </div>
-          <PostLink className="blog-card-year" post={post}>
+          <PostLink className="blog-card-year" post={post} prefetch={index < 3}>
             {new Date(post.date).getFullYear()}
           </PostLink>
           {showImages && post.image ? (
-            <PostLink className="blog-card-image-link" post={post}>
+            <PostLink className="blog-card-image-link" post={post} prefetch={index < 3}>
               <BlogPostImage
                 alt=""
                 className="blog-card-image"

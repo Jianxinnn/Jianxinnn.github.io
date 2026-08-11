@@ -7,7 +7,7 @@ import { MathBlock, MathInline } from "@/components/math-block";
 这里的 <MathInline tex={String.raw`s_t`} /> 是当前状态，<MathInline tex={String.raw`a_t`} /> 是动作，<MathInline tex={String.raw`s_{t+1}`} /> 是动作之后的下一状态。这个公式比“预测未来”多了一个关键条件：动作。没有动作条件，模型只是预测接下来可能出现的画面；有了动作条件，模型才开始支持“如果我这样做，会怎样”的反事实推演。
 
 <figure>
-  <img src="/assets/blog/world-models-cn/state-action-transition.jpg" alt="World model state action transition definition" />
+  <img loading="lazy" decoding="async" width={2133} height={1200} src="/assets/blog/world-models-cn/state-action-transition.jpg" alt="World model state action transition definition" />
   <figcaption>图 1. 狭义世界模型的最小形式：给定状态和动作，预测下一状态。来源：CMU Generative AI Lecture 26，本地课件。</figcaption>
 </figure>
 
@@ -101,7 +101,7 @@ Ha 与 Schmidhuber 的 World Models 把智能体拆成三块：
 3. `C`：根据当前 latent 和历史记忆输出动作。
 
 <figure>
-  <img src="/assets/blog/world-models-cn/ha-schmidhuber-vmc.jpg" alt="Ha and Schmidhuber V M C world model architecture" />
+  <img loading="lazy" decoding="async" width={1386} height={780} src="/assets/blog/world-models-cn/ha-schmidhuber-vmc.jpg" alt="Ha and Schmidhuber V M C world model architecture" />
   <figcaption>图 2. V-M-C 架构把观测编码、世界记忆和动作控制拆开。读这张图时要带上时间维度：M 的记忆给 C，C 的动作再反馈给 M。来源：Edmund Goodman, World Models slide deck。</figcaption>
 </figure>
 
@@ -219,7 +219,7 @@ z_t &= E_{\phi}(o_{\le t}) \\
 现代世界模型大致可以分成三条路线。它们都试图学习世界变化，但内部表示不同。
 
 <figure>
-  <img src="/assets/blog/world-models-cn/three-paradigms.jpg" alt="Three paradigms for modern world models" />
+  <img loading="lazy" decoding="async" width={2133} height={1200} src="/assets/blog/world-models-cn/three-paradigms.jpg" alt="Three paradigms for modern world models" />
   <figcaption>图 3. 现代世界模型的三种路线：显式 3D 表示、交互式视频、潜空间世界表征。来源：CMU Generative AI Lecture 26，本地课件。</figcaption>
 </figure>
 
@@ -235,7 +235,7 @@ x_{t+1} &= D(z_{t+1})
 />
 
 <figure>
-  <img src="/assets/blog/world-models-cn/genie1-architecture.jpg" alt="Genie 1 interactive video generation architecture" />
+  <img loading="lazy" decoding="async" width={2133} height={1200} src="/assets/blog/world-models-cn/genie1-architecture.jpg" alt="Genie 1 interactive video generation architecture" />
   <figcaption>图 4. Genie-1 的核心组件：视频 tokenizer、latent action model 和 dynamics model。来源：CMU Generative AI Lecture 26，本地课件。</figcaption>
 </figure>
 
@@ -244,7 +244,7 @@ x_{t+1} &= D(z_{t+1})
 第三类是潜空间世界表征，例如 V-JEPA 和 PAN。它们尽量不在像素上做长程预测，而是在 latent space 里预测，再按需要解码。
 
 <figure>
-  <img src="/assets/blog/world-models-cn/pan-latent-world-model.jpg" alt="PAN latent world model architecture" />
+  <img loading="lazy" decoding="async" width={2133} height={1200} src="/assets/blog/world-models-cn/pan-latent-world-model.jpg" alt="PAN latent world model architecture" />
   <figcaption>图 5. PAN 把长程预测放在 latent space，把短程视觉质量交给视频解码器。来源：CMU Generative AI Lecture 26，本地课件。</figcaption>
 </figure>
 

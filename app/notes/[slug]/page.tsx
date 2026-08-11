@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ViewCountBadge } from "@/components/view-count-badge";
 import { getNote, notes } from "@/content/notes/notes";
 import { formatDate } from "@/lib/content";
 
@@ -57,8 +56,6 @@ export default async function NotePage({ params }: NotePageProps) {
           <time dateTime={note.date}>{formatDate(note.date)}</time>
           <span aria-hidden="true">·</span>
           <span>Note</span>
-          <span aria-hidden="true">·</span>
-          <ViewCountBadge scope="note" slug={note.slug} />
         </div>
       </header>
       <div className="mdx-body" data-pagefind-body>

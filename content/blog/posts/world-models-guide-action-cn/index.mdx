@@ -18,7 +18,7 @@ a_t &= \arg\max_{a \in \mathcal{A}} U(\hat{\tau}_{t:t+H}(a), l)
 这里的 <MathInline tex={String.raw`z_t`} /> 是内部状态，<MathInline tex={String.raw`a_t`} /> 是动作，<MathInline tex={String.raw`r_t`} /> 是奖励或任务反馈，<MathInline tex={String.raw`l`} /> 是语言目标，<MathInline tex={String.raw`U`} /> 是评估未来好坏的函数。这个式子不对应某个固定算法，只是说明世界模型在行动系统里的位置：模型回答“会怎样”，行动系统判断“哪一个未来更值得执行”。([Model-based RL Survey](https://arxiv.org/abs/2006.16712), [MuZero](https://arxiv.org/abs/1911.08265), [TD-MPC2](https://arxiv.org/abs/2310.16828))
 
 <figure>
-  <img src="/assets/blog/world-models-guide-action-cn/three-paradigms.jpg" alt="Three paradigms for world models" />
+  <img loading="lazy" decoding="async" width={2133} height={1200} src="/assets/blog/world-models-guide-action-cn/three-paradigms.jpg" alt="Three paradigms for world models" />
   <figcaption>图 1. 世界模型可以是 3D 场景模拟、交互式视频，也可以是 latent world representation。放到行动问题里看，形式不是第一位的，关键是模型能否稳定回答动作条件下的未来。来源：CMU Generative AI Lecture，本地课件。</figcaption>
 </figure>
 
@@ -51,14 +51,14 @@ JEPA 路线也在强调这一点。I-JEPA 和 V-JEPA 不生成完整图像或视
 但视频模型要进入行动系统，必须接入动作。PAN 这类工作把观测编码成 latent world state，再在动作和历史条件下预测未来 latent，最后用 decoder 还原视觉结果。读这类模型时，应把视频输出和动作条件 latent transition 分开看：decoder 决定未来长什么样，latent transition 决定动作怎样改变世界。([PAN](https://arxiv.org/abs/2511.09057), [Interactive Video World Modeling](https://arxiv.org/abs/2606.01164))
 
 <figure>
-  <img src="/assets/blog/world-models-guide-action-cn/pan-latent-world-model.jpg" alt="PAN latent world model" />
+  <img loading="lazy" decoding="async" width={2133} height={1200} src="/assets/blog/world-models-guide-action-cn/pan-latent-world-model.jpg" alt="PAN latent world model" />
   <figcaption>图 2. PAN 将观测映射到 latent world state，在动作条件下做长时预测，再由 decoder 生成视觉结果。图里的黄色模块是行动问题最关心的部分：它把历史、动作和未来状态连接起来。来源：PAN Team, <a href="https://arxiv.org/abs/2511.09057">PAN</a>，本地课件裁剪。</figcaption>
 </figure>
 
 Genie 解决的是另一个入口：互联网上有大量视频，却没有动作标签。它从无动作标签视频中学习 latent action，让生成环境可以被逐帧控制。它学的不是单纯的 <MathInline tex={String.raw`p(x_{1:T} \mid prompt)`} />，而是开始靠近 <MathInline tex={String.raw`p(x_{t+1:t+H} \mid x_{\le t}, a_{t:t+H})`} />。([Genie](https://arxiv.org/abs/2402.15391))
 
 <figure>
-  <img src="/assets/blog/world-models-guide-action-cn/genie-latent-action.jpg" alt="Genie latent action architecture" />
+  <img loading="lazy" decoding="async" width={2133} height={1200} src="/assets/blog/world-models-guide-action-cn/genie-latent-action.jpg" alt="Genie latent action architecture" />
   <figcaption>图 3. Genie 用 video tokenizer、latent action model 和 dynamics model，把无标注视频转成可交互环境。这里真正值得注意的是黄色的 latent action model：动作接口可以从视频中自监督学出来。来源：Bruce et al., <a href="https://arxiv.org/abs/2402.15391">Genie</a>，本地课件裁剪。</figcaption>
 </figure>
 
@@ -79,7 +79,7 @@ WAM 可以看成世界模型向动作生成靠近之后的结果。它希望动�
 第四，latent action learning 正在解决动作标签稀缺。要让互联网视频成为世界模型训练数据，就必须从视频里抽取可迁移、可对齐、可控制的 latent action。Genie、AdaWorld、Olaf-World、DiLA 都在处理这个问题。([AdaWorld](https://arxiv.org/abs/2503.18938), [Olaf-World](https://arxiv.org/abs/2602.10104), [DiLA](https://arxiv.org/abs/2605.15725))
 
 <figure>
-  <img src="/assets/blog/world-models-guide-action-cn/adaworld-framework.jpg" alt="AdaWorld action-aware pretraining framework" />
+  <img loading="lazy" decoding="async" width={637} height={751} src="/assets/blog/world-models-guide-action-cn/adaworld-framework.jpg" alt="AdaWorld action-aware pretraining framework" />
   <figcaption>图 4. AdaWorld 把 action-agnostic pretraining 改成 action-aware pretraining。它的重点不是生成更好看的视频，而是在预训练阶段学出 latent action interface，让世界模型更容易迁移到新的机器人动作空间。来源：Gao et al., <a href="https://arxiv.org/abs/2503.18938">AdaWorld</a>，论文 PDF 页面裁剪。</figcaption>
 </figure>
 

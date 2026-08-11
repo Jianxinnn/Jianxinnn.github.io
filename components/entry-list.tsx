@@ -1,53 +1,50 @@
-import Image from "next/image";
 import Link from "next/link";
-import { ViewCountBadge } from "@/components/view-count-badge";
+import { BlogPostImage } from "@/components/blog-post-image";
 import type { Entry } from "@/content/entries";
 import { formatDate, formatEntryType } from "@/lib/content";
-import { viewCountTargetForEntry } from "@/lib/view-count";
 
 type EntryListProps = {
   entries: Entry[];
   showImages?: boolean;
-  showViewCounts?: boolean;
 };
 
-export function EntryList({
-  entries,
-  showImages = true,
-  showViewCounts = false
-}: EntryListProps) {
+export function EntryList({ entries, showImages = true }: EntryListProps) {
   return (
     <div className="entry-list">
-      {entries.map((entry) => (
-        <article className="entry-row" key={entry.slug}>
-          <div className="entry-copy">
-            <Link className="entry-title" href={entry.href ?? `/archive#${entry.slug}`}>
-              {entry.title}
-            </Link>
-            <p className="entry-summary">{entry.summary}</p>
-            <div className="entry-meta">
-              <time dateTime={entry.date}>{formatDate(entry.date)}</time>
-              <span aria-hidden="true">·</span>
-              <span>{formatEntryType(entry.type)}</span>
-              {showViewCounts ? (
-                <>
-                  <span aria-hidden="true">·</span>
-                  <ViewCountBadge {...viewCountTargetForEntry(entry)} />
-                </>
-              ) : null}
+      {entries.map((entry, index) => {
+        const href = entry.href ?? `/archive#${entry.slug}`;
+
+        return (
+          <article className="entry-row" key={entry.slug}>
+            <div className="entry-copy">
+              {href.startsWith("http") ? (
+                <a className="entry-title" href={href} rel="noreferrer" target="_blank">
+                  {entry.title}
+                </a>
+              ) : (
+                <Link className="entry-title" href={href} prefetch={index < 3}>
+                  {entry.title}
+                </Link>
+              )}
+              <p className="entry-summary">{entry.summary}</p>
+              <div className="entry-meta">
+                <time dateTime={entry.date}>{formatDate(entry.date)}</time>
+                <span aria-hidden="true">·</span>
+                <span>{formatEntryType(entry.type)}</span>
+              </div>
             </div>
-          </div>
-          {showImages && entry.image ? (
-            <Image
-              alt=""
-              className="entry-thumb"
-              height={214}
-              src={entry.image}
-              width={320}
-            />
-          ) : null}
-        </article>
-      ))}
+            {showImages && entry.image ? (
+              <BlogPostImage
+                alt=""
+                className="entry-thumb"
+                height={214}
+                src={entry.image}
+                width={320}
+              />
+            ) : null}
+          </article>
+        );
+      })}
     </div>
   );
 }

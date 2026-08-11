@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { blogConfig } from "@/content/blog/config";
 
@@ -113,10 +114,10 @@ export function BlogSearch() {
       {status === "ready" && results.length > 0 ? (
         <div className="blog-search-results">
           {results.map((result) => (
-            <a href={result.url} key={result.url}>
+            <Link href={result.url} key={result.url} prefetch={false}>
               <strong>{result.title}</strong>
               <span dangerouslySetInnerHTML={{ __html: result.excerpt }} />
-            </a>
+            </Link>
           ))}
         </div>
       ) : null}

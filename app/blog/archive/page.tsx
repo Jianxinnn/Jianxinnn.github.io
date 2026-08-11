@@ -18,7 +18,7 @@ function PostTitleLink({ post }: { post: BlogPost }) {
     );
   }
 
-  return <Link href={post.href}>{post.title}</Link>;
+  return <Link href={post.href} prefetch={false}>{post.title}</Link>;
 }
 
 export default function BlogArchivePage() {

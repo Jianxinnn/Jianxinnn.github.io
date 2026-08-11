@@ -9,7 +9,7 @@ import { MathBlock, MathInline } from "@/components/math-block"
 差别只在一件事：噪声落在哪里。落在 amino-acid token 上，就是离散序列扩散。落在 ESM、ESMc、SaProt 这类 PLM embedding 上，就是 latent diffusion。落在 sequence token 和 structure token 上，就是多模态 diffusion PLM。落在 substitution、insertion、deletion 上，就是 evolution-style edit diffusion。
 
 <figure>
-  <img src="/assets/blog/protein-sequence-diffusion-models-cn/fig1-taxonomy.png" alt="Protein sequence diffusion model noise space taxonomy" />
+  <img loading="lazy" decoding="async" width={1672} height={941} src="/assets/blog/protein-sequence-diffusion-models-cn/fig1-taxonomy.png" alt="Protein sequence diffusion model noise space taxonomy" />
   <figcaption>图 1. 蛋白序列扩散模型按噪声空间分成四类。先看噪声落在哪里，再看模型名。</figcaption>
 </figure>
 
@@ -67,7 +67,7 @@ q(x_t^i=\mathrm{[MASK]}\mid x_0^i)&=1-\bar{\alpha}_t
 普通 MLM 只学固定 mask ratio。masked diffusion 学整条时间轴。低噪声阶段补细节。高噪声阶段重建整体序列。[MDLM](https://arxiv.org/abs/2406.07524) 进一步说明，这类目标可以看成多组 masked cross entropy 的混合，也让 encoder-only model 有了明确采样过程。
 
 <figure>
-  <img src="/assets/blog/protein-sequence-diffusion-models-cn/fig2-discrete-mask.png" alt="Masked diffusion iterative filling process" />
+  <img loading="lazy" decoding="async" width={1672} height={941} src="/assets/blog/protein-sequence-diffusion-models-cn/fig2-discrete-mask.png" alt="Masked diffusion iterative filling process" />
   <figcaption>图 2. masked diffusion 是多轮填空。前向逐步 mask，反向从高噪声状态开始反复预测、保留和 remask。</figcaption>
 </figure>
 
@@ -112,7 +112,7 @@ DSM 的 Figure 1 展示了两件事。普通 DSM 学序列恢复。DSM-ppi 加�
 离散 token 精确，但不平滑。guidance 难，长度变化也难。另一种做法，是先用 PLM encoder 把序列变成 continuous representation，再在 latent 上扩散。
 
 <figure>
-  <img src="/assets/blog/protein-sequence-diffusion-models-cn/fig3-latent.png" alt="Diffusion on protein language model latent space" />
+  <img loading="lazy" decoding="async" width={1672} height={941} src="/assets/blog/protein-sequence-diffusion-models-cn/fig3-latent.png" alt="Diffusion on protein language model latent space" />
   <figcaption>图 3. PLM latent diffusion 先把序列编码成连续表征，再在 latent space 中加噪和去噪。收益是平滑可微，代价是解码风险。</figcaption>
 </figure>
 
@@ -135,7 +135,7 @@ latent diffusion 适合 family generation、fold-specific design、属性条件�
 序列决定结构。结构也筛选序列。多模态 diffusion PLM 想把二者放进同一个去噪过程。
 
 <figure>
-  <img src="/assets/blog/protein-sequence-diffusion-models-cn/fig4-multimodal.png" alt="Joint sequence structure diffusion protein language model" />
+  <img loading="lazy" decoding="async" width={1672} height={941} src="/assets/blog/protein-sequence-diffusion-models-cn/fig4-multimodal.png" alt="Joint sequence structure diffusion protein language model" />
   <figcaption>图 4. sequence-structure diffusion PLM 在同一个上下文里联合去噪序列和结构。重点是 co-designed sequence 与 compatible structure。</figcaption>
 </figure>
 

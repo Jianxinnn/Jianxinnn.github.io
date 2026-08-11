@@ -6,7 +6,7 @@ const meta = {
     "从 Ha 与 Schmidhuber 的 V-M-C 架构，到 Genie、V-JEPA、PAN 和 NVIDIA 的物理 AI 视角，梳理世界模型的定义、公式、路线和边界。",
   date: "2026-06-21",
   sourceType: "mdx",
-  image: "/assets/blog/world-models-cn/three-paradigms.jpg",
+  image: "/assets/thumbnails/what-are-world-models-cn.webp",
   category: "Technical explainers",
   language: "zh",
   source: {

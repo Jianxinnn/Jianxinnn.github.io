@@ -6,7 +6,7 @@ const meta = {
     "以动作闭环为主线，梳理世界模型从 model-based RL、latent dynamics 到交互式视频模型和机器人行动接口的发展脉络。",
   date: "2026-06-23",
   sourceType: "mdx",
-  image: "/assets/blog/world-models-guide-action-cn/pan-latent-world-model.jpg",
+  image: "/assets/thumbnails/world-models-guide-action-cn.webp",
   category: "Technical explainers",
   language: "zh",
   source: {

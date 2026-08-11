@@ -8,7 +8,7 @@
     "blog:new": "tsx scripts/new-blog-post.ts",
     "protected:new": "tsx scripts/new-protected-post.ts",
     "protected:encrypt": "tsx scripts/encrypt-protected-post.ts",
-    "content:generate": "tsx scripts/generate-blog-index.ts",
+    "content:generate": "tsx scripts/generate-blog-index.ts && tsx scripts/generate-bilingual-assets.ts",
     "content:validate": "tsx scripts/validate-content.ts",
     "content:audit-lecture-notes": "python3 scripts/audit-lecture-notes.py",
     "notify:blog": "tsx scripts/send-blog-update.ts",

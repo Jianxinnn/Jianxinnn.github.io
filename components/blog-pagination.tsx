@@ -17,7 +17,7 @@ export function BlogPagination({ currentPage, totalPages }: BlogPaginationProps)
   return (
     <nav aria-label="Blog pagination" className="blog-pagination">
       {currentPage > 1 ? (
-        <Link href={pageHref(currentPage - 1)}>Newer</Link>
+        <Link href={pageHref(currentPage - 1)} prefetch={false}>Newer</Link>
       ) : (
         <span aria-hidden="true">Newer</span>
       )}
@@ -27,13 +27,14 @@ export function BlogPagination({ currentPage, totalPages }: BlogPaginationProps)
             aria-current={page === currentPage ? "page" : undefined}
             href={pageHref(page)}
             key={page}
+            prefetch={false}
           >
             {page}
           </Link>
         ))}
       </div>
       {currentPage < totalPages ? (
-        <Link href={pageHref(currentPage + 1)}>Older</Link>
+        <Link href={pageHref(currentPage + 1)} prefetch={false}>Older</Link>
       ) : (
         <span aria-hidden="true">Older</span>
       )}

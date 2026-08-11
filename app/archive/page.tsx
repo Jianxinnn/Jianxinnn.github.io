@@ -18,7 +18,7 @@ export default function ArchivePage() {
             <article className="archive-entry" id={entry.slug} key={entry.slug}>
               <h3>
                 {entry.href ? (
-                  <Link href={entry.href}>{entry.title}</Link>
+                  <Link href={entry.href} prefetch={false}>{entry.title}</Link>
                 ) : (
                   entry.title
                 )}

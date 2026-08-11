@@ -26,6 +26,7 @@ export function BlogPostImage({
       <img
         alt={alt}
         className={className}
+        decoding="async"
         height={height}
         loading={priority ? "eager" : "lazy"}
         src={src}
@@ -40,6 +41,7 @@ export function BlogPostImage({
       className={className}
       height={height}
       priority={priority}
+      sizes="(max-width: 720px) 100vw, 320px"
       src={src}
       width={width}
     />

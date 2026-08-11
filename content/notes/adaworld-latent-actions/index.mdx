@@ -3,7 +3,7 @@ import { MathBlock, MathInline } from "@/components/math-block";
 AdaWorld 的关键不是再做一个更强的视频预测器，而是在预训练阶段就学习一个可迁移的 latent action interface，让新环境适配从“重新学习控制”变成“把新动作映射到已有动作表征”。
 
 <figure>
-  <img src="/assets/blog/adaworld-latent-actions/fig1-framework.jpg" alt="AdaWorld action-aware pretraining framework" />
+  <img loading="lazy" decoding="async" width={637} height={751} src="/assets/blog/adaworld-latent-actions/fig1-framework.jpg" alt="AdaWorld action-aware pretraining framework" />
   <figcaption>图 1. AdaWorld 把 latent actions 作为统一条件写入 world model 预训练，使新环境适配更像接口校准，而不是从零学习控制。</figcaption>
 </figure>
 
@@ -20,7 +20,7 @@ AdaWorld 改成 action-aware pretraining：
 ## 算法核心
 
 <figure>
-  <img src="/assets/blog/adaworld-latent-actions/fig2-latent-action-autoencoder.jpg" alt="AdaWorld latent action autoencoder" />
+  <img loading="lazy" decoding="async" width={656} height={254} src="/assets/blog/adaworld-latent-actions/fig2-latent-action-autoencoder.jpg" alt="AdaWorld latent action autoencoder" />
   <figcaption>图 2. Latent action autoencoder 用信息瓶颈从相邻帧中压出最能解释状态变化的紧凑变量。</figcaption>
 </figure>
 
@@ -37,7 +37,7 @@ decoder 再用 <MathInline tex={String.raw`(f_t, \tilde a)`} /> 重建 <MathInli
 <MathInline tex={String.raw`\beta`} /> 控制一个关键 tradeoff：太小会让 latent action 带入过多场景细节，太大会压掉动作表达能力。
 
 <figure>
-  <img src="/assets/blog/adaworld-latent-actions/fig3-action-aware-pretraining.jpg" alt="AdaWorld action-aware world model pretraining" />
+  <img loading="lazy" decoding="async" width={646} height={367} src="/assets/blog/adaworld-latent-actions/fig3-action-aware-pretraining.jpg" alt="AdaWorld action-aware world model pretraining" />
   <figcaption>图 3. 训练好 latent action encoder 后，用它为大规模无标注视频生成动作条件，再训练可逐帧 rollout 的 world model。</figcaption>
 </figure>
 

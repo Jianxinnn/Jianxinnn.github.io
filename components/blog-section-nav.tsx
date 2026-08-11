@@ -13,8 +13,6 @@ type BlogSectionNavProps = {
   targetSelector?: string;
 };
 
-const IMAGE_WARMUP_TIMEOUT = 700;
-
 function slugifyHeading(value: string) {
   return value
     .toLowerCase()
@@ -28,47 +26,6 @@ function getScrollOffset() {
     document.querySelector<HTMLElement>(".site-header")?.getBoundingClientRect().height ?? 64;
 
   return headerHeight + 34;
-}
-
-function waitForImage(image: HTMLImageElement) {
-  if (image.complete) {
-    return image.decode ? image.decode().catch(() => undefined) : Promise.resolve();
-  }
-
-  return new Promise<void>((resolve) => {
-    const cleanup = () => {
-      image.removeEventListener("load", cleanup);
-      image.removeEventListener("error", cleanup);
-      resolve();
-    };
-
-    image.addEventListener("load", cleanup, { once: true });
-    image.addEventListener("error", cleanup, { once: true });
-  });
-}
-
-async function warmImagesBeforeTarget(root: Element | null, target: HTMLElement) {
-  if (!root) {
-    return;
-  }
-
-  const images = Array.from(root.querySelectorAll<HTMLImageElement>("img[loading='lazy']")).filter(
-    (image) => image.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING
-  );
-
-  if (!images.length) {
-    return;
-  }
-
-  images.forEach((image) => {
-    image.loading = "eager";
-    image.decoding = "async";
-  });
-
-  await Promise.race([
-    Promise.all(images.map((image) => waitForImage(image))),
-    new Promise((resolve) => window.setTimeout(resolve, IMAGE_WARMUP_TIMEOUT))
-  ]);
 }
 
 function scrollWindowTo(top: number, behavior: ScrollBehavior) {
@@ -136,20 +93,11 @@ export function BlogSectionNav({ targetSelector = ".mdx-body" }: BlogSectionNavP
       );
     };
 
-    let frame = 0;
-    const scheduleRebuild = () => {
-      window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(rebuild);
-    };
-
     rebuild();
-
-    const observer = new MutationObserver(scheduleRebuild);
-    observer.observe(root, { childList: true, subtree: true });
+    window.addEventListener("article-content-change", rebuild);
 
     return () => {
-      window.cancelAnimationFrame(frame);
-      observer.disconnect();
+      window.removeEventListener("article-content-change", rebuild);
     };
   }, [targetSelector]);
 
@@ -162,9 +110,7 @@ export function BlogSectionNav({ targetSelector = ".mdx-body" }: BlogSectionNavP
       .map((heading) => document.getElementById(heading.id))
       .filter(Boolean) as HTMLElement[];
 
-    let frame = 0;
-
-    const syncActiveHeading = () => {
+    const syncInitialHeading = () => {
       const anchorLine = window.innerHeight * 0.28;
       let nextActiveId = elements[0]?.id;
 
@@ -181,19 +127,26 @@ export function BlogSectionNav({ targetSelector = ".mdx-body" }: BlogSectionNavP
       }
     };
 
-    const scheduleSync = () => {
-      window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(syncActiveHeading);
-    };
+    syncInitialHeading();
 
-    syncActiveHeading();
-    window.addEventListener("scroll", scheduleSync, { passive: true });
-    window.addEventListener("resize", scheduleSync);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        const nextActiveId = visible.at(-1)?.target.id;
+
+        if (nextActiveId) {
+          setActiveId(nextActiveId);
+        }
+      },
+      { rootMargin: "0px 0px -72% 0px" }
+    );
+
+    elements.forEach((element) => observer.observe(element));
 
     return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", scheduleSync);
-      window.removeEventListener("resize", scheduleSync);
+      observer.disconnect();
     };
   }, [headings]);
 
@@ -235,7 +188,7 @@ export function BlogSectionNav({ targetSelector = ".mdx-body" }: BlogSectionNavP
       activeLink.offsetTop - panel.clientHeight / 2 + activeLink.clientHeight / 2;
   }, [activeId, headings.length]);
 
-  const handleHeadingClick = async (event: MouseEvent<HTMLAnchorElement>, id: string) => {
+  const handleHeadingClick = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
     if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0) {
       return;
     }
@@ -249,8 +202,6 @@ export function BlogSectionNav({ targetSelector = ".mdx-body" }: BlogSectionNavP
     event.preventDefault();
     setActiveId(id);
     setOpen(true);
-
-    await warmImagesBeforeTarget(document.querySelector(targetSelector), target);
 
     const getTargetTop = () =>
       Math.max(0, target.getBoundingClientRect().top + window.scrollY - getScrollOffset());

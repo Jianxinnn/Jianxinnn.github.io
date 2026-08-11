@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BlogTags } from "@/components/blog-tags";
 import { ProtectedArticle } from "@/components/protected-article";
-import { ViewCountBadge } from "@/components/view-count-badge";
 import { getProtectedPost, protectedPosts } from "@/content/protected-posts";
 import { formatDate } from "@/lib/content";
 
@@ -97,8 +96,6 @@ export default async function ProtectedPostPage({ params }: ProtectedPostPagePro
               <span>{post.category}</span>
             </>
           ) : null}
-          <span aria-hidden="true">·</span>
-          <ViewCountBadge scope="blog" slug={post.slug} />
         </div>
         <BlogTags tags={post.tags} />
       </header>
